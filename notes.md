@@ -30,31 +30,21 @@ cloudflare({
 - handler.production.ts
 
 ```ts
-ssr: {
-    dev: {
+  environments: {
+    ssr: {
+      dev: {
         createEnvironment(name, config) {
-            return createFetchableDevEnvironment(name, config, {
-                hot: true,
-                transport: createServerHotChannel(),
-                async handleRequest(request) {
-                    if (!runner)
-                        throw new Error('The module runner should have been created by now');
-
-                    try {
-                        /**
-                         * @type {{
-                         *   respond: (request: Request, remote_address: string | undefined, kit: import('types').ValidatedKitConfig) => Promise<Response>
-                         * }}
-                         */
-                        const { respond } = await runner.import('__sveltekit/server-entry');
-                        return await respond(request, dev_environment?.remote_address, kit);
-                    } catch (error) {
-                        console.error(error);
-                        throw error;
-                    }
-                }
-            });
-        }
-    }
-}
+          const environment = createFetchableDevEnvironment(name, config, {
+            hot: true,
+            async handleRequest(request) {
+              const mod = await runner.import("...");
+              return await mod.fetch(request);
+            },
+          });
+          const runner = createServerModuleRunner(environment);
+          return environment;
+        },
+      },
+    },
+  },
 ```

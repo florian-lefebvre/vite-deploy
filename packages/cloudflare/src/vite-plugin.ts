@@ -335,7 +335,7 @@ function prerenderPlugin(options: InternalOptions): Plugin {
 }
 
 export function cloudflare({ config, ...options }: Options): Array<Plugin> {
-  const plugins: Array<Plugin> = [
+  return [
     ...cloudflarePlugin({
       ...config,
       viteEnvironment: { name: VITE_ENVIRONMENT_NAMES.server },
@@ -344,6 +344,4 @@ export function cloudflare({ config, ...options }: Options): Array<Plugin> {
     configPlugin(),
     prerenderPlugin(options),
   ];
-
-  return plugins;
 }
