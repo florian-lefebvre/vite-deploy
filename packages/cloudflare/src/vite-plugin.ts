@@ -1,9 +1,10 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { preview, type Plugin } from "vite";
 import { cloudflare as cloudflarePlugin } from "@cloudflare/vite-plugin";
 import type { InternalOptions, Options, PrerenderEntrypoint } from "./types.js";
 import { fileURLToPath } from "node:url";
+import { styleText } from "node:util";
 
 const PACKAGE_NAME = "@vite-deploy/cloudflare";
 const DIST_DIR = "dist";
@@ -54,8 +55,16 @@ function configPlugin(): Plugin {
   };
 }
 
+function getTimeStat(timeStart: number, timeEnd: number): string {
+  const buildTime = timeEnd - timeStart;
+  return buildTime < 750
+    ? `${Math.round(buildTime)}ms`
+    : `${(buildTime / 1000).toFixed(2)}s`;
+}
+
 function prerenderPlugin(options: InternalOptions): Plugin {
-  let prerender = true;
+  // In server mode, it's always false and not updated later
+  let prerender = options.output !== "server";
 
   return {
     name: `${PACKAGE_NAME}:prerender`,
@@ -100,13 +109,14 @@ function prerenderPlugin(options: InternalOptions): Plugin {
     buildApp: {
       order: "post",
       async handler(builder) {
+        if (options.output === "server") return;
+
         const serverEnv = builder.environments[VITE_ENVIRONMENT_NAMES.server];
         const clientEnv = builder.environments[VITE_ENVIRONMENT_NAMES.client];
         if (!serverEnv || !clientEnv) {
           throw new Error("Missing environments");
         }
 
-        serverEnv.logger.info("Starting prerendering...");
         const mod: { default: PrerenderEntrypoint } = await import(
           // TODO: more robust way to get this using writeBundle?
           join(
@@ -115,8 +125,12 @@ function prerenderPlugin(options: InternalOptions): Plugin {
             "prerender.js",
           )
         );
-        // TODO: normalize
+        // TODO: normalize and dedupe
         const paths = await mod.default.getStaticPaths();
+        serverEnv.logger.info(
+          `\nprerendering (${paths.length} route${paths.length === 1 ? "" : "s"})...\n`,
+        );
+        const now = performance.now();
 
         const previewServer = await preview({
           configFile: serverEnv.config.configFile,
@@ -131,23 +145,38 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         }
         const baseUrl = new URL(localUrl);
 
+        const clientOutDir = join(
+          clientEnv.config.root,
+          clientEnv.config.build.outDir,
+        );
+
         for (const path of paths) {
           const url = new URL(path, baseUrl);
           const response = await fetch(url);
           const contents = await response.text();
           // TODO: better check
           // TODO: options, eg directory/file
-          const targetPath = join(
-            clientEnv.config.root,
-            clientEnv.config.build.outDir,
-            `${path}.html`,
-          );
+          const targetPath = join(clientOutDir, `${path}.html`);
           await mkdir(dirname(targetPath), { recursive: true });
           await writeFile(targetPath, contents);
         }
 
         await previewServer.close();
-        serverEnv.logger.info("Finished prerendering in Xms");
+        serverEnv.logger.info(
+          styleText(
+            "green",
+            `\n✓ prerendered in ${getTimeStat(now, performance.now())}\n`,
+          ),
+        );
+
+        if (options.output === "static") {
+          const distDir = dirname(clientOutDir);
+          const tempDir = `${distDir}_tmp`;
+          await rename(clientOutDir, tempDir);
+          await rm(distDir, { force: true, recursive: true });
+          await rename(tempDir, distDir);
+          return;
+        }
 
         // TODO: normalize
         // @ts-expect-error to be normalized
@@ -161,10 +190,6 @@ function prerenderPlugin(options: InternalOptions): Plugin {
   };
 }
 
-// TODO: if server, skip prerendering
-// TODO: if hybrid, keep current logic
-// TODO: if static, no need for another ssr build + clean server dir + move client to root
-
 export function cloudflare({ config, ...options }: Options): Array<Plugin> {
   const plugins: Array<Plugin> = [
     ...cloudflarePlugin({
@@ -173,7 +198,6 @@ export function cloudflare({ config, ...options }: Options): Array<Plugin> {
     }),
     cleanOutdirPlugin(),
     configPlugin(),
-    // TODO: only include as needed
     prerenderPlugin(options),
   ];
 
