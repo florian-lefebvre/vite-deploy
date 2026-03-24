@@ -1,8 +1,8 @@
 import { mkdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { preview, type Plugin } from "vite";
+import { preview, type Logger, type Plugin } from "vite";
 import { cloudflare as cloudflarePlugin } from "@cloudflare/vite-plugin";
-import type { InternalOptions, Options, PrerenderEntrypoint } from "./types.js";
+import type { Format, InternalOptions, Options } from "./types.js";
 import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 
@@ -31,6 +31,34 @@ function cleanOutdirPlugin(): Plugin {
       ran = true;
     },
   };
+}
+
+async function getStaticPaths(
+  mod: Record<string, any>,
+): Promise<Array<string>> {
+  if (!("default" in mod && "getStaticPaths" in mod.default)) {
+    throw new Error("Prerender entrypoint returns an invalid shape");
+  }
+  const paths = await mod.default.getStaticPaths();
+  if (!Array.isArray(paths) || !paths.every((e) => typeof e === "string")) {
+    throw new Error(
+      "Paths returned by getStaticPaths() are not an array of strings",
+    );
+  }
+  return paths;
+}
+
+function normalizePaths(input: Array<string>): Array<string> {
+  return [
+    ...new Set(
+      input.map((path) => {
+        if (path[0] !== "/") {
+          path = "/" + path;
+        }
+        return path;
+      }),
+    ),
+  ];
 }
 
 function configPlugin(): Plugin {
@@ -68,6 +96,80 @@ function getTimeStat(timeStart: number, timeEnd: number): string {
     : `${(buildTime / 1000).toFixed(2)}s`;
 }
 
+function isRedirectResponse(res: Response): boolean {
+  return res.status >= 300 && res.status < 400 && res.headers.has("location");
+}
+
+async function localFetch({
+  path,
+  baseUrl,
+  options,
+  maxRedirects = 5,
+  logger,
+}: {
+  path: string;
+  baseUrl: URL;
+  options?: RequestInit;
+  maxRedirects?: number;
+  logger: Logger;
+}): Promise<Response> {
+  const url = new URL(path, baseUrl);
+  const request = new Request(url, options);
+  const response = await fetch(request);
+
+  if (isRedirectResponse(response) && maxRedirects > 0) {
+    const location = response.headers.get("location")!;
+    if (location.startsWith("http://localhost") || location.startsWith("/")) {
+      const newUrl = location.replace("http://localhost", "");
+      return localFetch({
+        path: newUrl,
+        baseUrl,
+        options,
+        maxRedirects: maxRedirects - 1,
+        logger,
+      });
+    } else {
+      logger.warn(`Skipping redirect to external location: ${location}`);
+    }
+  }
+
+  return response;
+}
+
+function getRouteFilename({
+  path,
+  htmlContentType,
+  format,
+}: {
+  path: string;
+  htmlContentType: boolean;
+  format: Format;
+}): string {
+  // No magic for non-HTML files
+  if (!htmlContentType && !path.endsWith(".html")) {
+    return path;
+  }
+
+  if (path.endsWith("/")) {
+    return path + "index.html";
+  }
+
+  if (format === "file") {
+    if (path.endsWith(".html")) {
+      return path;
+    }
+    return path + ".html";
+  }
+
+  if (path.endsWith("/index.html")) {
+    return path;
+  }
+  if (path.endsWith(".html")) {
+    return path.slice(0, -5) + "/index.html";
+  }
+  return path + "/index.html";
+}
+
 function prerenderPlugin(options: InternalOptions): Plugin {
   // In server mode, it's always false and not updated later
   let prerender = options.output !== "server";
@@ -100,7 +202,7 @@ function prerenderPlugin(options: InternalOptions): Plugin {
 
         config.build.rolldownOptions.input ??= {};
         config.build.rolldownOptions.input[PRERENDER_INPUT] = fileURLToPath(
-          options.prerenderEntrypoint,
+          options.prerender.entrypoint,
         );
       }
     },
@@ -131,15 +233,17 @@ function prerenderPlugin(options: InternalOptions): Plugin {
           throw new Error("Missing environments");
         }
 
-        const mod: { default: PrerenderEntrypoint } = await import(
+        const prerenderEntrypointMod = await import(
           join(
             serverEnv.config.root,
             serverEnv.config.build.outDir,
             `${PRERENDER_INPUT}.mjs`,
           )
         );
-        // TODO: normalize and dedupe
-        const paths = await mod.default.getStaticPaths();
+        const paths = normalizePaths(
+          await getStaticPaths(prerenderEntrypointMod),
+        );
+
         serverEnv.logger.info(
           `\nprerendering (${paths.length} route${paths.length === 1 ? "" : "s"})...\n`,
         );
@@ -164,14 +268,40 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         );
 
         for (const path of paths) {
-          const url = new URL(path, baseUrl);
-          const response = await fetch(url);
-          const contents = await response.text();
-          // TODO: better check
-          // TODO: options, eg directory/file
-          const targetPath = join(clientOutDir, `${path}.html`);
-          await mkdir(dirname(targetPath), { recursive: true });
-          await writeFile(targetPath, contents);
+          const res = await localFetch({
+            path,
+            baseUrl,
+            logger: serverEnv.logger,
+            options: {
+              headers: options.prerender.headers,
+            },
+          });
+
+          if (!res.ok) {
+            if (isRedirectResponse(res)) {
+              serverEnv.logger.warn(`Max redirects reached for ${path}`);
+            }
+            throw new Error(`Failed to fetch ${path}: ${res.statusText}`, {
+              cause: res,
+            });
+          }
+
+          const cleanPagePath = path.split(/[?#]/)[0]!;
+
+          const filename = getRouteFilename({
+            path: cleanPagePath,
+            format: options.prerender.format ?? "file",
+            htmlContentType: !!res.headers
+              .get("content-type")
+              ?.includes("html"),
+          });
+
+          const html = await res.text();
+
+          const filepath = join(clientOutDir, filename);
+
+          await mkdir(dirname(filepath), { recursive: true });
+          await writeFile(filepath, html);
         }
 
         await previewServer.close();
@@ -182,6 +312,7 @@ function prerenderPlugin(options: InternalOptions): Plugin {
           ),
         );
 
+        // TODO: check how static projects should be structured on cloudflare
         if (options.output === "static") {
           const distDir = dirname(clientOutDir);
           const tempDir = `${distDir}_tmp`;

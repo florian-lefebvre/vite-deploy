@@ -1,7 +1,7 @@
 export default {
   fetch(request) {
     const url = new URL(request.url);
-    if (import.meta.env.PRERENDER && url.pathname === "/foo") {
+    if (import.meta.env.PRERENDER && url.pathname === "/") {
       return new Response("<div>foo</div>", {
         status: 200,
         headers: {

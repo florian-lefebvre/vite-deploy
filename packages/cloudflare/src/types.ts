@@ -1,5 +1,7 @@
 import type { PluginConfig } from "@cloudflare/vite-plugin";
 
+export type Format = "file" | "directory";
+
 export type InternalOptions =
   | {
       output: "server";
@@ -7,7 +9,11 @@ export type InternalOptions =
   | {
       output: "static" | "hybrid";
       // TODO: allow string, check wip astro node pr
-      prerenderEntrypoint: URL;
+      prerender: {
+        entrypoint: URL;
+        headers?: Headers;
+        format?: Format;
+      };
     };
 
 export type Options = InternalOptions & {
