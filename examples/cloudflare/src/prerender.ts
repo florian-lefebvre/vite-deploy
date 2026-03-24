@@ -5,6 +5,3 @@ export default {
     return ["/foo", ...virtual];
   },
 };
-
-// full ssr build (prerender: true)
-// partial ssr build (prerender: false)

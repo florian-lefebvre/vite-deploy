@@ -1,12 +1,24 @@
-import { cloudflare } from "@cloudflare/vite-plugin";
+import { cloudflare, type PluginConfig } from "@cloudflare/vite-plugin";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { defineConfig, Plugin, preview } from "vite";
 
-interface Options {
-  prerenderEntrypoint: URL;
-}
+type Options = (
+  | {
+      output: "server";
+    }
+  | {
+      output: "static" | "hybrid";
+      // TODO: allow string, check wip astro node pr
+      prerenderEntrypoint: URL;
+    }
+) &
+  PluginConfig;
+
+// TODO: if server, skip prerendering
+// TODO: if hybrid, keep current logic
+// TODO: if static, no need for another ssr build + clean server dir + move client to root
 
 function plugin(options: Options): Array<Plugin> {
   return [
@@ -48,6 +60,7 @@ function plugin(options: Options): Array<Plugin> {
             build: {
               rolldownOptions: {
                 input: {
+                  // TODO: normalize
                   ...(config.build?.rolldownOptions?.input as any),
                   prerender: fileURLToPath(options.prerenderEntrypoint),
                 },
@@ -87,6 +100,7 @@ function plugin(options: Options): Array<Plugin> {
             pathToFileURL(builder.environments.ssr.config.root + "/"),
           );
           const mod = await import(fileURLToPath(prerenderUrl));
+          // TODO: normalize
           const paths: Array<string> = await mod.default.getStaticPaths();
 
           const previewServer = await preview({
@@ -102,6 +116,8 @@ function plugin(options: Options): Array<Plugin> {
             const url = new URL(path, baseUrl);
             const response = await fetch(url);
             const contents = await response.text();
+            // TODO: better check
+            // TODO: options, eg directory/file
             const targetUrl = new URL(
               `.${path}.html`,
               new URL(
@@ -116,6 +132,7 @@ function plugin(options: Options): Array<Plugin> {
           await previewServer.close();
           builder.environments.ssr.logger.info("Finished prerendering in Xms");
 
+          // TODO: normalize
           delete builder.environments.ssr.config.build.rolldownOptions.input
             .prerender;
 
@@ -131,6 +148,7 @@ function plugin(options: Options): Array<Plugin> {
 export default defineConfig({
   plugins: [
     plugin({
+      output: "hybrid",
       prerenderEntrypoint: new URL("./src/prerender.ts", import.meta.url),
     }),
     {
