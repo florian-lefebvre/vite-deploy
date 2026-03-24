@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.30.0",
     "@typescript/native-preview": "^7.0.0-dev.20260324.1",
+    "@vite-deploy/cloudflare": "workspace:*",
     "vite": "^8.0.2",
     "wrangler": "^4.76.0"
   }

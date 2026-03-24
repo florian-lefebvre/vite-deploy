@@ -1,7 +1,7 @@
-import virtual from "virtual:test"
+import type { PrerenderEntrypoint } from "@vite-deploy/cloudflare";
 
 export default {
-  getStaticPaths(): Array<string> {
-    return ["/foo", ...virtual];
+  getStaticPaths() {
+    return ["/foo"];
   },
-};
+} satisfies PrerenderEntrypoint;

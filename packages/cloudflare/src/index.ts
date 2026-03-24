@@ -1,3 +1,4 @@
-export function add(a: number, b: number): number {
-  return a + b;
-}
+import { cloudflare } from "./vite-plugin.js";
+export type { Options, PrerenderEntrypoint } from "./types.js";
+
+export default cloudflare;
