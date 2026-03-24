@@ -12,6 +12,7 @@ const VITE_ENVIRONMENT_NAMES = {
   server: "ssr",
   client: "client",
 };
+const PRERENDER_INPUT = "prerender";
 
 function cleanOutdirPlugin(): Plugin {
   let ran = false;
@@ -48,6 +49,11 @@ function configPlugin(): Plugin {
         return {
           build: {
             outDir: `${DIST_DIR}/server`,
+            rolldownOptions: {
+              output: {
+                entryFileNames: "[name].mjs",
+              },
+            },
           },
         };
       }
@@ -75,19 +81,27 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         options.output !== "server" &&
         name === VITE_ENVIRONMENT_NAMES.server
       ) {
-        return {
-          build: {
-            rolldownOptions: {
-              input: {
-                // TODO: normalize
-                ...(config.build?.rolldownOptions?.input as any),
-                prerender: fileURLToPath(options.prerenderEntrypoint),
-              },
-            },
-            // Clean the prerender specific files
-            emptyOutDir: true,
-          },
-        };
+        config.build ??= {};
+        // Clean the prerender specific files when running the full server build
+        config.build.emptyOutDir = true;
+        config.build.rolldownOptions ??= {};
+
+        // We normalize the rolldown input because the object is the only one
+        // which allows identifying specific ones
+        if (typeof config.build.rolldownOptions.input === "string") {
+          config.build.rolldownOptions.input = {
+            index: config.build.rolldownOptions.input,
+          };
+        } else if (Array.isArray(config.build.rolldownOptions.input)) {
+          config.build.rolldownOptions.input = Object.fromEntries(
+            config.build.rolldownOptions.input.map((v, i) => [`index_${i}`, v]),
+          );
+        }
+
+        config.build.rolldownOptions.input ??= {};
+        config.build.rolldownOptions.input[PRERENDER_INPUT] = fileURLToPath(
+          options.prerenderEntrypoint,
+        );
       }
     },
     transform: {
@@ -118,11 +132,10 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         }
 
         const mod: { default: PrerenderEntrypoint } = await import(
-          // TODO: more robust way to get this using writeBundle?
           join(
             serverEnv.config.root,
             serverEnv.config.build.outDir,
-            "prerender.js",
+            `${PRERENDER_INPUT}.mjs`,
           )
         );
         // TODO: normalize and dedupe
@@ -178,10 +191,10 @@ function prerenderPlugin(options: InternalOptions): Plugin {
           return;
         }
 
-        // TODO: normalize
-        // @ts-expect-error to be normalized
-        delete serverEnv.config.build.rolldownOptions.input.prerender;
-
+        // It is normalized by now
+        delete (
+          serverEnv.config.build.rolldownOptions.input as Record<string, string>
+        ).prerender;
         prerender = false;
 
         await builder.build(serverEnv);
