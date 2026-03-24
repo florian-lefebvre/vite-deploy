@@ -1,0 +1,22 @@
+{
+  "name": "@vite-deploy/cloudflare",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsgo --watch",
+    "build": "tsgo --build"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260324.1"
+  }
+}
