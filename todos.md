@@ -1,0 +1,32 @@
+- [ ] pocs
+  - [x] cloudflare
+  - [ ] netlify
+  - [ ] vercel
+  - [ ] node
+- [ ] abstract shared stuff in common package
+- [ ] examples (and utilities as needed)
+  - [ ] outputs
+  - [ ] cloudflare
+    - [ ] simple fetch
+    - [ ] hono
+    - [ ] express
+    - [ ] framework?
+  - [ ] netlify
+    - [ ] simple fetch
+    - [ ] hono
+    - [ ] express
+    - [ ] framework?
+  - [ ] vercel
+    - [ ] simple fetch
+    - [ ] hono
+    - [ ] express
+    - [ ] framework?
+  - [ ] node
+    - [ ] simple fetch
+    - [ ] node handler
+    - [ ] hono
+    - [ ] express
+    - [ ] output
+      - [ ] standalone
+      - [ ] middleware
+      - [ ] cluster
