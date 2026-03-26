@@ -1,9 +1,11 @@
 - [ ] pocs
   - [x] cloudflare
-  - [ ] netlify
+  - [x] netlify
   - [ ] vercel
   - [ ] node
 - [ ] abstract shared stuff in common package
+- [ ] todos
+- [ ] emit correct files
 - [ ] examples (and utilities as needed)
   - [ ] outputs
   - [ ] cloudflare
