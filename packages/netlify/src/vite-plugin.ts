@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import {
   isRunnableDevEnvironment,
   preview,
+  type Connect,
   type Logger,
   type Manifest,
   type Plugin,
@@ -21,6 +22,7 @@ const VITE_ENVIRONMENT_NAMES = {
   server: "ssr",
   client: "client",
 } as const;
+const MAIN_INPUT = "index";
 const PRERENDER_INPUT = "prerender";
 const CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/client-fallback-entry`;
 const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE =
@@ -99,7 +101,8 @@ function configPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
             outDir: `${DIST_DIR}/server`,
             rolldownOptions: {
               input: {
-                index: fileURLToPath(options.serverEntrypoint),
+                // TODO: virtual module that emits the handler
+                [MAIN_INPUT]: fileURLToPath(options.serverEntrypoint),
               },
               output: {
                 entryFileNames: "[name].mjs",
@@ -113,8 +116,7 @@ function configPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
   };
 }
 
-function getTimeStat(timeStart: number, timeEnd: number): string {
-  const buildTime = timeEnd - timeStart;
+function getTimeStat(buildTime: number): string {
   return buildTime < 750
     ? `${Math.round(buildTime)}ms`
     : `${(buildTime / 1000).toFixed(2)}s`;
@@ -340,7 +342,7 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         // which allows identifying specific ones
         if (typeof config.build.rolldownOptions.input === "string") {
           config.build.rolldownOptions.input = {
-            index: config.build.rolldownOptions.input,
+            [MAIN_INPUT]: config.build.rolldownOptions.input,
           };
         } else if (Array.isArray(config.build.rolldownOptions.input)) {
           config.build.rolldownOptions.input = Object.fromEntries(
@@ -456,7 +458,7 @@ function prerenderPlugin(options: InternalOptions): Plugin {
         serverEnv.logger.info(
           styleText(
             "green",
-            `\n✓ prerendered in ${getTimeStat(now, performance.now())}\n`,
+            `\n✓ prerendered in ${getTimeStat(performance.now() - now)}\n`,
           ),
         );
 
@@ -482,51 +484,104 @@ function prerenderPlugin(options: InternalOptions): Plugin {
   };
 }
 
+function createMiddleware({
+  getMod,
+  onResponse,
+}: {
+  getMod: () => Promise<Record<string, any>>;
+  onResponse: ((response: Response, duration: number) => void) | undefined;
+}): Connect.NextHandleFunction {
+  return async function middleware(req, res, next) {
+    let request: Request | undefined;
+
+    try {
+      const now = performance.now();
+      // Built in vite middleware trims out the base path when passing in the request
+      // We can restore it by using the `originalUrl` property
+      // This makes sure the worker receives the correct url in both dev using vite and production
+      if (req.originalUrl) {
+        req.url = req.originalUrl;
+      }
+      request = createRequest(req, res);
+
+      const mod = await getMod();
+      let response = await mod.default.fetch(request);
+
+      // Vite uses HTTP/2 when `server.https` or `preview.https` is enabled
+      if (req.httpVersionMajor === 2) {
+        // HTTP/2 disallows use of the `transfer-encoding` header
+        response.headers.delete("transfer-encoding");
+      }
+
+      onResponse?.(response, performance.now() - now);
+
+      await sendResponse(res, response);
+    } catch (error) {
+      if (request?.signal.aborted) {
+        // If the request was aborted, ignore the error
+        return;
+      }
+
+      next(error);
+    }
+  };
+}
+
 function devPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
   return {
     name: `${PACKAGE_NAME}:dev`,
     sharedDuringBuild: true,
-    async configureServer(server) {
+    configureServer(server) {
       return () => {
-        server.middlewares.use(async (req, res, next) => {
-          const serverEnv = server.environments[VITE_ENVIRONMENT_NAMES.server];
-          if (!isRunnableDevEnvironment(serverEnv)) {
-            throw new Error("Non runnable server env");
-          }
-
-          let request: Request | undefined;
-
-          try {
-            // Built in vite middleware trims out the base path when passing in the request
-            // We can restore it by using the `originalUrl` property
-            // This makes sure the worker receives the correct url in both dev using vite and production
-            if (req.originalUrl) {
-              req.url = req.originalUrl;
-            }
-            request = createRequest(req, res);
-
-            const mod = await serverEnv.runner.import(
-              fileURLToPath(options.serverEntrypoint),
-            );
-            let response = await mod.default.fetch(request);
-
-            // Vite uses HTTP/2 when `server.https` or `preview.https` is enabled
-            if (req.httpVersionMajor === 2) {
-              // HTTP/2 disallows use of the `transfer-encoding` header
-              response.headers.delete("transfer-encoding");
-            }
-
-            await sendResponse(res, response);
-          } catch (error) {
-            if (request?.signal.aborted) {
-              // If the request was aborted, ignore the error
-              return;
-            }
-
-            next(error);
-          }
-        });
+        server.middlewares.use(
+          createMiddleware({
+            async getMod() {
+              const serverEnv =
+                server.environments[VITE_ENVIRONMENT_NAMES.server];
+              if (!isRunnableDevEnvironment(serverEnv)) {
+                throw new Error("Non runnable server env");
+              }
+              return await serverEnv.runner.import(
+                fileURLToPath(options.serverEntrypoint),
+              );
+            },
+            onResponse: undefined,
+          }),
+        );
       };
+    },
+  };
+}
+
+function previewPlugin(): Plugin {
+  let config: ResolvedConfig;
+  return {
+    name: `${PACKAGE_NAME}:preview`,
+    sharedDuringBuild: true,
+    configResolved(_config) {
+      config = _config;
+    },
+    configurePreviewServer(server) {
+      // TODO: serve static
+      server.middlewares.use(
+        createMiddleware({
+          async getMod() {
+            return await import(
+              join(
+                config.root,
+                config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
+                  .outDir,
+                `${MAIN_INPUT}.mjs`,
+              )
+            );
+          },
+          onResponse(response, duration) {
+            console.log(
+              `${styleText("bold", "GET")} ${response.url || "/"} ${styleText("bold", styleText("green", response.status.toString()))} ${response.ok ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
+            );
+          },
+        }),
+      );
     },
   };
 }
@@ -543,5 +598,6 @@ export function netlify({ config, ...options }: Options): Array<Plugin> {
     devPlugin(options),
     buildPlugin(),
     virtualClientFallbackPlugin(),
+    previewPlugin(),
   ];
 }

@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [
     netlify({
-      output: "server",
+      output: "hybrid",
       prerender: {
         entrypoint: new URL("./src/prerender.ts", import.meta.url),
         format: "directory",
