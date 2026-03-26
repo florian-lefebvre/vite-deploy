@@ -9,7 +9,7 @@ export default defineConfig({
         entrypoint: new URL("./src/prerender.ts", import.meta.url),
         format: "directory",
       },
-      serverEntrypoint: new URL("./src/server.ts", import.meta.url),
+      handlerEntrypoint: new URL("./src/handler.ts", import.meta.url),
     }),
   ],
 });

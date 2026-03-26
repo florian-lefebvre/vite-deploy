@@ -1,5 +1,8 @@
+import type { ExportedHandler } from "@vite-deploy/netlify";
+
 export default {
-  fetch(request) {
+  fetch(request, context) {
+    console.log(context.ip);
     const url = new URL(request.url);
     if (import.meta.env.PRERENDER && url.pathname === "/") {
       return new Response("<div>foo</div>", {
@@ -11,7 +14,4 @@ export default {
     }
     return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
   },
-  // TODO: export type
-} satisfies {
-  fetch: (request: Request) => Response | Promise<Response>;
-};
+} satisfies ExportedHandler;

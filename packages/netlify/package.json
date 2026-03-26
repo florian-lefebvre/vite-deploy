@@ -20,6 +20,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20260324.1"
   },
   "dependencies": {
+    "@netlify/functions": "^5.1.5",
     "@netlify/vite-plugin": "^2.11.2",
     "@remix-run/node-fetch-server": "^0.13.0"
   }

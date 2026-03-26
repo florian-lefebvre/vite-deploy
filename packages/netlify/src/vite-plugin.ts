@@ -10,7 +10,12 @@ import {
   type ResolvedConfig,
 } from "vite";
 import netlifyPlugin from "@netlify/vite-plugin";
-import type { Format, InternalOptions, Options } from "./types.js";
+import type {
+  ExportedHandler,
+  Format,
+  InternalOptions,
+  Options,
+} from "./types.js";
 import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
@@ -76,7 +81,7 @@ function normalizePaths(input: Array<string>): Array<string> {
   ];
 }
 
-function configPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
+function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
   return {
     name: `${PACKAGE_NAME}:config`,
     sharedDuringBuild: true,
@@ -102,7 +107,7 @@ function configPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
             rolldownOptions: {
               input: {
                 // TODO: virtual module that emits the handler
-                [MAIN_INPUT]: fileURLToPath(options.serverEntrypoint),
+                [MAIN_INPUT]: fileURLToPath(options.handlerEntrypoint),
               },
               output: {
                 entryFileNames: "[name].mjs",
@@ -484,6 +489,15 @@ function prerenderPlugin(options: InternalOptions): Plugin {
   };
 }
 
+function validateMod(mod: Record<string, any>) {
+  if (!("default" in mod && "fetch" in mod.default)) {
+    throw new Error("Handler entrypoint returns an invalid shape");
+  }
+  return mod as {
+    default: ExportedHandler;
+  };
+}
+
 function createMiddleware({
   getMod,
   onResponse,
@@ -504,8 +518,82 @@ function createMiddleware({
       }
       request = createRequest(req, res);
 
-      const mod = await getMod();
-      let response = await mod.default.fetch(request);
+      const mod = validateMod(await getMod());
+
+      const isHttps = req.headers["x-forwarded-proto"] === "https";
+      const parseBase64JSON = <T = unknown>(header: string): T | undefined => {
+        if (typeof req.headers[header] === "string") {
+          try {
+            return JSON.parse(
+              Buffer.from(req.headers[header] as string, "base64").toString(
+                "utf8",
+              ),
+            );
+          } catch {}
+        }
+      };
+      const isRunningInNetlify = Boolean(
+        process.env.NETLIFY ||
+        process.env.NETLIFY_LOCAL ||
+        process.env.NETLIFY_DEV,
+      );
+
+      let response = await mod.default.fetch(request, {
+        get url() {
+          return new URL(request!.url);
+        },
+        // The dev server is a long running process, so promises will run even with a noop
+        waitUntil: () => {},
+        account: parseBase64JSON("x-nf-account-info") ?? {
+          id: "mock-netlify-account-id",
+        },
+        deploy: {
+          context: "dev",
+          id:
+            typeof req.headers["x-nf-deploy-id"] === "string"
+              ? req.headers["x-nf-deploy-id"]
+              : "mock-netlify-deploy-id",
+          published: false,
+        },
+        site: parseBase64JSON("x-nf-site-info") ?? {
+          id: "mock-netlify-site-id",
+          name: "mock-netlify-site.netlify.app",
+          url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
+        },
+        geo: parseBase64JSON("x-nf-geo") ?? {
+          city: "Mock City",
+          country: { code: "mock", name: "Mock Country" },
+          subdivision: { code: "SD", name: "Mock Subdivision" },
+          timezone: "UTC",
+          longitude: 0,
+          latitude: 0,
+        },
+        ip:
+          typeof req.headers["x-nf-client-connection-ip"] === "string"
+            ? req.headers["x-nf-client-connection-ip"]
+            : (req.socket.remoteAddress ?? "127.0.0.1"),
+        server: {
+          region: "local-dev",
+        },
+        requestId:
+          typeof req.headers["x-nf-request-id"] === "string"
+            ? req.headers["x-nf-request-id"]
+            : "mock-netlify-request-id",
+        get cookies(): never {
+          throw new Error("Not implemented.");
+        },
+        json: (input) => Response.json(input),
+        log: console.info,
+        next() {
+          throw new Error("Not implemented.");
+        },
+        get params(): never {
+          throw new Error("Not implemented.");
+        },
+        rewrite() {
+          throw new Error("Not implemented.");
+        },
+      });
 
       // Vite uses HTTP/2 when `server.https` or `preview.https` is enabled
       if (req.httpVersionMajor === 2) {
@@ -527,7 +615,7 @@ function createMiddleware({
   };
 }
 
-function devPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
+function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
   return {
     name: `${PACKAGE_NAME}:dev`,
     sharedDuringBuild: true,
@@ -542,7 +630,7 @@ function devPlugin(options: Pick<Options, "serverEntrypoint">): Plugin {
                 throw new Error("Non runnable server env");
               }
               return await serverEnv.runner.import(
-                fileURLToPath(options.serverEntrypoint),
+                fileURLToPath(options.handlerEntrypoint),
               );
             },
             onResponse: undefined,
