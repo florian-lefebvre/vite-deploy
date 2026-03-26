@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
+import sirv from "sirv";
 
 const PACKAGE_NAME = "@vite-deploy/netlify";
 const DIST_DIR = "dist";
@@ -650,7 +651,17 @@ function previewPlugin(): Plugin {
       config = _config;
     },
     configurePreviewServer(server) {
-      // TODO: serve static
+      server.middlewares.use(
+        sirv(
+          join(
+            config.root,
+            config.environments[VITE_ENVIRONMENT_NAMES.client]!.build.outDir,
+          ),
+          {
+            dev: true,
+          },
+        ),
+      );
       server.middlewares.use(
         createMiddleware({
           async getMod() {
