@@ -240,13 +240,11 @@ function buildPlugin(): Plugin {
               importedAssetPaths.size ||
               getHasPublicAssets(builder.config)
             ) {
-              // TODO: https://github.com/vitejs/vite/issues/22033
-              clientEnv.config.build.rollupOptions = {
-                input: CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE,
-                logLevel: "silent",
-                output: {
-                  entryFileNames: CLIENT_FALLBACK_ENTRY_NAME,
-                },
+              clientEnv.config.build.rolldownOptions.input =
+                CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
+              clientEnv.config.build.rolldownOptions.logLevel = "silent";
+              clientEnv.config.build.rolldownOptions.output = {
+                entryFileNames: CLIENT_FALLBACK_ENTRY_NAME,
               };
 
               await builder.build(clientEnv);

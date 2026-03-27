@@ -32,3 +32,4 @@
       - [ ] standalone
       - [ ] middleware
       - [ ] cluster
+    - [ ] framework?
