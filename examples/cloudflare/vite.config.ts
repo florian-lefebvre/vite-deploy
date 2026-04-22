@@ -6,7 +6,7 @@ export default defineConfig({
     cloudflare({
       output: "hybrid",
       prerender: {
-        entrypoint: new URL("./src/prerender.ts", import.meta.url),
+        entrypoint: "./src/prerender.ts",
         format: "directory",
       },
     }),

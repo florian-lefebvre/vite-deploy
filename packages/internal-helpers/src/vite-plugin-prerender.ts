@@ -10,6 +10,7 @@ import packageJson from "../package.json" with { type: "json" };
 const PACKAGE_NAME = packageJson.name;
 const DIST_DIR = "dist";
 const PRERENDER_INPUT = "prerender";
+const ENTRYPOINT_VIRTUAL_MODULE = `${PACKAGE_NAME}/entrypoint`;
 
 function cleanOutdirPlugin(): Plugin {
   let ran = false;
@@ -175,14 +176,19 @@ interface Options {
 function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
   // In server mode, it's always false and not updated later
   let prerender = userOptions.output !== "server";
-  let root: string;
+  let resolvedEntrypoint: string | undefined;
 
   return {
     name: `${PACKAGE_NAME}:prerender`,
     enforce: "post",
     sharedDuringBuild: true,
-    config(config) {
-      root = config.root ?? process.cwd();
+    configResolved(config) {
+      if (userOptions.output !== "server") {
+        resolvedEntrypoint = normalizeEntrypoint(
+          config.root,
+          userOptions.prerender.entrypoint,
+        );
+      }
     },
     configEnvironment(name, config) {
       if (
@@ -208,8 +214,16 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
 
         config.build.rolldownOptions.input ??= {};
         config.build.rolldownOptions.input[PRERENDER_INPUT] =
-          normalizeEntrypoint(root, userOptions.prerender.entrypoint);
+          ENTRYPOINT_VIRTUAL_MODULE;
       }
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return resolvedEntrypoint;
+      },
     },
     transform: {
       order: "pre",

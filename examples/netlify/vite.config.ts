@@ -6,10 +6,10 @@ export default defineConfig({
     netlify({
       output: "hybrid",
       prerender: {
-        entrypoint: new URL("./src/prerender.ts", import.meta.url),
+        entrypoint: "./src/prerender.ts",
         format: "directory",
       },
-      handlerEntrypoint: new URL("./src/handler.ts", import.meta.url),
+      handlerEntrypoint: "./src/handler.ts",
     }),
   ],
 });
