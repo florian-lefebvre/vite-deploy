@@ -19,22 +19,23 @@ import {
   type ResolvedConfig,
 } from "vite";
 import type { ExportedHandler, Options } from "./types.js";
+import packageJson from "../package.json" with { type: "json" };
 
-const PACKAGE_NAME = "@vite-deploy/netlify";
+const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
 const CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/client-fallback-entry`;
 const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE =
   "\0" + CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
 const CLIENT_FALLBACK_ENTRY_NAME = "__netlify_fallback_entry__";
+const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-handler`;
+const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
+  "\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
 
-function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let root: string;
-
+function configPlugin(): Plugin {
   return {
     name: `${PACKAGE_NAME}:config`,
     sharedDuringBuild: true,
-    config(config) {
-      root = config.root ?? process.cwd();
+    config() {
       return {
         environments: {
           [VITE_ENVIRONMENT_NAMES.server]: {},
@@ -47,10 +48,7 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
           build: {
             rolldownOptions: {
               input: {
-                [MAIN_INPUT]: normalizeEntrypoint(
-                  root,
-                  options.handlerEntrypoint,
-                ),
+                [MAIN_INPUT]: PRODUCTION_HANDLER_VIRTUAL_MODULE,
               },
             },
             manifest: true,
@@ -184,6 +182,53 @@ function virtualClientFallbackPlugin(): Plugin {
       },
       handler() {
         return "";
+      },
+    },
+  };
+}
+
+function productionHandlerPlugin(
+  options: Pick<Options, "handlerEntrypoint">,
+): Plugin {
+  let resolvedEntrypoint: string;
+
+  return {
+    name: `${PACKAGE_NAME}:production-handler`,
+    sharedDuringBuild: true,
+    applyToEnvironment(environment) {
+      return environment.name === VITE_ENVIRONMENT_NAMES.server;
+    },
+    configResolved(config) {
+      resolvedEntrypoint = normalizeEntrypoint(
+        config.root,
+        options.handlerEntrypoint,
+      );
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
+      },
+    },
+    load: {
+      filter: {
+        id: new RegExp(`^(${RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return `
+import handlerEntrypoint from "${resolvedEntrypoint}";
+
+export default handlerEntrypoint.fetch;
+
+export const config = {
+  name: "${PACKAGE_NAME} server handler",
+  generator: "${PACKAGE_NAME}@${packageJson.version}",
+  path: "/*",
+  preferStatic: true,
+};
+`;
       },
     },
   };
@@ -364,7 +409,7 @@ function previewPlugin(): Plugin {
       server.middlewares.use(
         createMiddleware({
           async getMod() {
-            return await import(
+            const mod = await import(
               join(
                 config.root,
                 config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
@@ -372,6 +417,11 @@ function previewPlugin(): Plugin {
                 `${MAIN_INPUT}.mjs`,
               )
             );
+            return {
+              default: {
+                fetch: mod.default,
+              },
+            };
           },
           onResponse(response, duration) {
             console.log(
@@ -405,10 +455,11 @@ export function netlify({
         await rename(tempDir, distDir);
       },
     }),
-    configPlugin({ handlerEntrypoint }),
+    configPlugin(),
     devPlugin({ handlerEntrypoint }),
     buildPlugin(),
     virtualClientFallbackPlugin(),
     previewPlugin(),
+    productionHandlerPlugin({ handlerEntrypoint }),
   ];
 }

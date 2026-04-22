@@ -5,8 +5,9 @@ import type { Format, PrerenderOptions } from "./types.js";
 import { styleText } from "node:util";
 import { VITE_ENVIRONMENT_NAMES } from "./constants.js";
 import { normalizeEntrypoint } from "./utils.js";
+import packageJson from "../package.json" with { type: "json" };
 
-const PACKAGE_NAME = "@vite-deploy/internal-helpers";
+const PACKAGE_NAME = packageJson.name;
 const DIST_DIR = "dist";
 const PRERENDER_INPUT = "prerender";
 
