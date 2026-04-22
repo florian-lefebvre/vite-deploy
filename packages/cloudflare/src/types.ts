@@ -1,25 +1,6 @@
 import type { PluginConfig } from "@cloudflare/vite-plugin";
+import type { PrerenderOptions } from "@vite-deploy/internal-helpers";
 
-export type Format = "file" | "directory";
-
-export type InternalOptions =
-  | {
-      output: "server";
-    }
-  | {
-      output: "static" | "hybrid";
-      // TODO: allow string, check wip astro node pr
-      prerender: {
-        entrypoint: URL;
-        headers?: Headers;
-        format?: Format;
-      };
-    };
-
-export type Options = InternalOptions & {
+export type Options = PrerenderOptions & {
   config?: Omit<PluginConfig, "viteEnvironment">;
 };
-
-export interface PrerenderEntrypoint {
-  getStaticPaths: () => Array<string> | Promise<Array<string>>;
-}

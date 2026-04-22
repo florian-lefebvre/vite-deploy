@@ -1,5 +1,5 @@
 {
-  "name": "@vite-deploy/cloudflare",
+  "name": "@vite-deploy/internal-helpers",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,15 +13,10 @@
     "build": "tsgo --build"
   },
   "peerDependencies": {
-    "vite": "^8.0.0",
-    "wrangler": "^4.76.0"
+    "vite": "^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@typescript/native-preview": "^7.0.0-dev.20260324.1"
-  },
-  "dependencies": {
-    "@cloudflare/vite-plugin": "^1.30.0",
-    "@vite-deploy/internal-helpers": "workspace:*"
   }
 }

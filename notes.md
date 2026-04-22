@@ -20,14 +20,12 @@ cloudflare({
 @vite-deploy/cloudflare
 - worker.ts
 @vite-deploy/netlify
-- handler.production.ts
 - handler.ts
 @vite-deploy/node
 - handler.ts
 - server.ts
 @vite-deploy/vercel
 - handler.ts
-- handler.production.ts
 
 ```ts
   environments: {

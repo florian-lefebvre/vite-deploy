@@ -1,5 +1,5 @@
 import { netlify } from "./vite-plugin.js";
-export type { Options, PrerenderEntrypoint, ExportedHandler } from "./types.js";
-export type { Context } from "@netlify/functions";
+export type { Options, ExportedHandler } from "./types.js";
+export type { PrerenderEntrypoint } from "@vite-deploy/internal-helpers";
 
 export default netlify;
