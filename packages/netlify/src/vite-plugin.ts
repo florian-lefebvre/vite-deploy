@@ -333,7 +333,7 @@ export function netlify({
       ...config,
       middleware: true,
     }),
-    ...createBuildPlugin(),
+    createBuildPlugin(),
     createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {

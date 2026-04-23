@@ -235,7 +235,7 @@ export function node({
   ...userOptions
 }: Options): Array<Plugin> {
   return [
-    ...createBuildPlugin(),
+    createBuildPlugin(),
     createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {

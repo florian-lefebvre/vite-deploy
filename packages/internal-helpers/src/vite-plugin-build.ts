@@ -10,10 +10,29 @@ const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE =
   "\0" + CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
 const CLIENT_FALLBACK_ENTRY_NAME = "__client_fallback_entry__";
 
-function buildPlugin(): Plugin {
+export function createBuildPlugin(): Plugin {
   return {
     name: `${PACKAGE_NAME}:build`,
     sharedDuringBuild: true,
+    applyToEnvironment(environment) {
+      return environment.name === VITE_ENVIRONMENT_NAMES.client;
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
+      },
+    },
+    load: {
+      filter: {
+        id: new RegExp(`^(${RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return "";
+      },
+    },
     config() {
       return {
         builder: {
@@ -105,33 +124,4 @@ function loadViteManifest(directory: string) {
   );
 
   return JSON.parse(contents) as Manifest;
-}
-
-function virtualClientFallbackPlugin(): Plugin {
-  return {
-    name: `${PACKAGE_NAME}:virtual-client-fallback`,
-    applyToEnvironment(environment) {
-      return environment.name === VITE_ENVIRONMENT_NAMES.client;
-    },
-    resolveId: {
-      filter: {
-        id: new RegExp(`^(${CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
-      },
-    },
-    load: {
-      filter: {
-        id: new RegExp(`^(${RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return "";
-      },
-    },
-  };
-}
-
-export function createBuildPlugin(): Array<Plugin> {
-  return [buildPlugin(), virtualClientFallbackPlugin()];
 }
