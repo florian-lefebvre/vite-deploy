@@ -5,8 +5,8 @@ import {
   normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
-import { rm } from "node:fs/promises";
-import { join } from "node:path";
+import { rename, rm } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import { styleText } from "node:util";
 import sirv from "sirv";
 import {
@@ -23,72 +23,6 @@ const MAIN_INPUT = "index";
 const HANDLER_INPUT = "handler";
 const MAIN_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/main-entrypoint`;
 const HANDLER_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/handler-entrypoint`;
-
-function configPlugin(options: Options): Plugin {
-  let resolvedHandlerEntrypoint: string;
-  let resolvedServerEntrypoint: string | undefined;
-
-  return {
-    name: `${PACKAGE_NAME}:config`,
-    sharedDuringBuild: true,
-    config() {
-      return {
-        environments: {
-          [VITE_ENVIRONMENT_NAMES.server]: {},
-        },
-      };
-    },
-    configResolved(config) {
-      resolvedHandlerEntrypoint = normalizeEntrypoint(
-        config.root,
-        options.handlerEntrypoint,
-      );
-      if (options.output !== "static") {
-        resolvedServerEntrypoint = normalizeEntrypoint(
-          config.root,
-          options.serverEntrypoint,
-        );
-      }
-    },
-    configEnvironment(name) {
-      if (name === VITE_ENVIRONMENT_NAMES.client) {
-        return {
-          build: {
-            outDir: "dist/client",
-          },
-        };
-      }
-      if (name === VITE_ENVIRONMENT_NAMES.server) {
-        return {
-          build: {
-            outDir: "dist/server",
-            rolldownOptions: {
-              input: {
-                [MAIN_INPUT]: MAIN_ENTRYPOINT_VIRTUAL_MODULE,
-                [HANDLER_INPUT]: HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
-              },
-            },
-            manifest: true,
-            copyPublicDir: false,
-          },
-        };
-      }
-    },
-    resolveId: {
-      filter: {
-        id: new RegExp(
-          `^(${MAIN_ENTRYPOINT_VIRTUAL_MODULE}|${HANDLER_ENTRYPOINT_VIRTUAL_MODULE})$`,
-        ),
-      },
-      handler(id) {
-        if (id === MAIN_ENTRYPOINT_VIRTUAL_MODULE) {
-          return resolvedServerEntrypoint;
-        }
-        return resolvedHandlerEntrypoint;
-      },
-    },
-  };
-}
 
 function getTimeStat(buildTime: number): string {
   return buildTime < 750
@@ -155,17 +89,75 @@ function createMiddleware({
   };
 }
 
-function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
+function handlerPlugin(options: Options): Plugin {
   let resolvedHandlerEntrypoint: string;
+  let resolvedServerEntrypoint: string | undefined;
+  let config: ResolvedConfig;
 
   return {
-    name: `${PACKAGE_NAME}:dev`,
+    name: `${PACKAGE_NAME}:handler`,
     sharedDuringBuild: true,
-    configResolved(config) {
+    applyToEnvironment(environment) {
+      return environment.name === VITE_ENVIRONMENT_NAMES.server;
+    },
+    config() {
+      return {
+        environments: {
+          [VITE_ENVIRONMENT_NAMES.server]: {},
+        },
+      };
+    },
+    configEnvironment(name) {
+      if (name === VITE_ENVIRONMENT_NAMES.client) {
+        return {
+          build: {
+            outDir: "dist/client",
+          },
+        };
+      }
+      if (name === VITE_ENVIRONMENT_NAMES.server) {
+        return {
+          build: {
+            outDir: "dist/server",
+            rolldownOptions: {
+              input: {
+                ...(options.output === "static"
+                  ? {}
+                  : { [MAIN_INPUT]: MAIN_ENTRYPOINT_VIRTUAL_MODULE }),
+                [HANDLER_INPUT]: HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
+              },
+            },
+            manifest: true,
+            copyPublicDir: false,
+          },
+        };
+      }
+    },
+    configResolved(_config) {
+      config = _config;
       resolvedHandlerEntrypoint = normalizeEntrypoint(
-        config.root,
+        _config.root,
         options.handlerEntrypoint,
       );
+      if (options.output !== "static") {
+        resolvedServerEntrypoint = normalizeEntrypoint(
+          _config.root,
+          options.serverEntrypoint,
+        );
+      }
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(
+          `^(${MAIN_ENTRYPOINT_VIRTUAL_MODULE}|${HANDLER_ENTRYPOINT_VIRTUAL_MODULE})$`,
+        ),
+      },
+      handler(id) {
+        if (id === MAIN_ENTRYPOINT_VIRTUAL_MODULE) {
+          return resolvedServerEntrypoint;
+        }
+        return resolvedHandlerEntrypoint;
+      },
     },
     configureServer(server) {
       return () => {
@@ -183,17 +175,6 @@ function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
           }),
         );
       };
-    },
-  };
-}
-
-function previewPlugin(): Plugin {
-  let config: ResolvedConfig;
-  return {
-    name: `${PACKAGE_NAME}:preview`,
-    sharedDuringBuild: true,
-    configResolved(_config) {
-      config = _config;
     },
     configurePreviewServer(server) {
       server.middlewares.use(
@@ -238,7 +219,7 @@ export function node({
     createBuildPlugin(),
     createPrerenderPlugin({
       userOptions,
-      onBuildDone: async ({ output, serverEnvironment }) => {
+      onBuildDone: async ({ output, serverEnvironment, clientEnvironment }) => {
         if (output !== "static") return;
 
         await rm(
@@ -251,10 +232,18 @@ export function node({
             recursive: true,
           },
         );
+
+        const clientOutDir = join(
+          clientEnvironment.config.root,
+          clientEnvironment.config.build.outDir,
+        );
+        const distDir = dirname(clientOutDir);
+        const tempDir = `${distDir}_tmp`;
+        await rename(clientOutDir, tempDir);
+        await rm(distDir, { force: true, recursive: true });
+        await rename(tempDir, distDir);
       },
     }),
-    configPlugin({ handlerEntrypoint, ...userOptions }),
-    devPlugin({ handlerEntrypoint }),
-    previewPlugin(),
+    handlerPlugin({ handlerEntrypoint, ...userOptions }),
   ];
 }
