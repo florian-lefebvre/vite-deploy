@@ -22,59 +22,6 @@ const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
 const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
 
-function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let resolvedEntrypoint: string;
-
-  return {
-    name: `${PACKAGE_NAME}:config`,
-    sharedDuringBuild: true,
-    config() {
-      return {
-        environments: {
-          [VITE_ENVIRONMENT_NAMES.server]: {},
-        },
-      };
-    },
-    configResolved(config) {
-      resolvedEntrypoint = normalizeEntrypoint(
-        config.root,
-        options.handlerEntrypoint,
-      );
-    },
-    configEnvironment(name) {
-      if (name === VITE_ENVIRONMENT_NAMES.client) {
-        return {
-          build: {
-            outDir: ".vercel/output/static",
-          },
-        };
-      }
-      if (name === VITE_ENVIRONMENT_NAMES.server) {
-        return {
-          build: {
-            outDir: ".vercel/output/render.func",
-            rolldownOptions: {
-              input: {
-                [MAIN_INPUT]: ENTRYPOINT_VIRTUAL_MODULE,
-              },
-            },
-            manifest: true,
-            copyPublicDir: false,
-          },
-        };
-      }
-    },
-    resolveId: {
-      filter: {
-        id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return resolvedEntrypoint;
-      },
-    },
-  };
-}
-
 function getTimeStat(buildTime: number): string {
   return buildTime < 750
     ? `${Math.round(buildTime)}ms`
@@ -135,17 +82,57 @@ function createMiddleware({
   };
 }
 
-function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
+function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
   let resolvedEntrypoint: string;
+  let config: ResolvedConfig;
 
   return {
-    name: `${PACKAGE_NAME}:dev`,
+    name: `${PACKAGE_NAME}:handler`,
     sharedDuringBuild: true,
-    configResolved(config) {
+    config() {
+      return {
+        environments: {
+          [VITE_ENVIRONMENT_NAMES.server]: {},
+        },
+      };
+    },
+    configEnvironment(name) {
+      if (name === VITE_ENVIRONMENT_NAMES.client) {
+        return {
+          build: {
+            outDir: ".vercel/output/static",
+          },
+        };
+      }
+      if (name === VITE_ENVIRONMENT_NAMES.server) {
+        return {
+          build: {
+            outDir: ".vercel/output/render.func",
+            rolldownOptions: {
+              input: {
+                [MAIN_INPUT]: ENTRYPOINT_VIRTUAL_MODULE,
+              },
+            },
+            manifest: true,
+            copyPublicDir: false,
+          },
+        };
+      }
+    },
+    configResolved(_config) {
+      config = _config;
       resolvedEntrypoint = normalizeEntrypoint(
-        config.root,
+        _config.root,
         options.handlerEntrypoint,
       );
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return resolvedEntrypoint;
+      },
     },
     configureServer(server) {
       return () => {
@@ -163,17 +150,6 @@ function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
           }),
         );
       };
-    },
-  };
-}
-
-function previewPlugin(): Plugin {
-  let config: ResolvedConfig;
-  return {
-    name: `${PACKAGE_NAME}:preview`,
-    sharedDuringBuild: true,
-    configResolved(_config) {
-      config = _config;
     },
     configurePreviewServer(server) {
       server.middlewares.use(
@@ -257,8 +233,6 @@ export function vercel({
         ]);
       },
     }),
-    configPlugin({ handlerEntrypoint }),
-    devPlugin({ handlerEntrypoint }),
-    previewPlugin(),
+    handlerPlugin({ handlerEntrypoint }),
   ];
 }
