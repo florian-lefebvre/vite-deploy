@@ -1,4 +1,5 @@
 export { createPrerenderPlugin } from "./vite-plugin-prerender.js";
+export { createBuildPlugin } from "./vite-plugin-build.js";
 export type {
   Format,
   PrerenderEntrypoint,
