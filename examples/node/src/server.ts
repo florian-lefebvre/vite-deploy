@@ -10,6 +10,7 @@ const server = http.createServer((req, res) =>
     res,
     () => {
       createRequestListener(mod.fetch)(req, res);
+      // mod.handler(req, res);
     },
   ),
 );
