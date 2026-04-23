@@ -6,7 +6,8 @@
   "exports": {
     ".": {
       "default": "./dist/index.js"
-    }
+    },
+    "./types": "./types.d.ts"
   },
   "scripts": {
     "dev": "tsgo --watch",
