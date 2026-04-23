@@ -4,7 +4,7 @@ import {
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { rename, rm } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 import type { Plugin } from "vite";
 import type { Options } from "./types.js";
 import packageJson from "../package.json" with { type: "json" };
@@ -20,7 +20,11 @@ export function cloudflare({ config, ...userOptions }: Options): Array<Plugin> {
     ...createPrerenderPlugin({
       userOptions,
       // TODO: check how static projects should be structured on cloudflare
-      onStaticBuildDone: async ({ clientOutDir }) => {
+      onStaticBuildDone: async ({ clientEnvironment }) => {
+        const clientOutDir = join(
+          clientEnvironment.config.root,
+          clientEnvironment.config.build.outDir,
+        );
         const distDir = dirname(clientOutDir);
         const tempDir = `${distDir}_tmp`;
         await rename(clientOutDir, tempDir);

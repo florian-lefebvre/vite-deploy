@@ -1,6 +1,12 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { preview, type Logger, type Plugin, type ResolvedConfig } from "vite";
+import {
+  BuildEnvironment,
+  preview,
+  type Logger,
+  type Plugin,
+  type ResolvedConfig,
+} from "vite";
 import type { Format, PrerenderOptions } from "./types.js";
 import { styleText } from "node:util";
 import { VITE_ENVIRONMENT_NAMES } from "./constants.js";
@@ -173,7 +179,8 @@ function getRouteFilename({
 interface Options {
   userOptions: PrerenderOptions;
   onStaticBuildDone?: (params: {
-    clientOutDir: string;
+    clientEnvironment: BuildEnvironment;
+    serverEnvironment: BuildEnvironment;
   }) => void | Promise<void>;
 }
 
@@ -250,16 +257,18 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
       async handler(builder) {
         if (userOptions.output === "server") return;
 
-        const serverEnv = builder.environments[VITE_ENVIRONMENT_NAMES.server];
-        const clientEnv = builder.environments[VITE_ENVIRONMENT_NAMES.client];
-        if (!serverEnv || !clientEnv) {
+        const serverEnvironment =
+          builder.environments[VITE_ENVIRONMENT_NAMES.server];
+        const clientEnvironment =
+          builder.environments[VITE_ENVIRONMENT_NAMES.client];
+        if (!serverEnvironment || !clientEnvironment) {
           throw new Error("Missing environments");
         }
 
         const prerenderEntrypointMod = await import(
           join(
-            serverEnv.config.root,
-            serverEnv.config.build.outDir,
+            serverEnvironment.config.root,
+            serverEnvironment.config.build.outDir,
             `${PRERENDER_INPUT}.mjs`,
           )
         );
@@ -267,13 +276,13 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
           await getStaticPaths(prerenderEntrypointMod),
         );
 
-        serverEnv.logger.info(
+        serverEnvironment.logger.info(
           `\nprerendering (${paths.length} route${paths.length === 1 ? "" : "s"})...\n`,
         );
         const now = performance.now();
 
         const previewServer = await preview({
-          configFile: serverEnv.config.configFile,
+          configFile: serverEnvironment.config.configFile,
           preview: {
             port: 0,
             open: false,
@@ -285,16 +294,11 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         }
         const baseUrl = new URL(localUrl);
 
-        const clientOutDir = join(
-          clientEnv.config.root,
-          clientEnv.config.build.outDir,
-        );
-
         for (const path of paths) {
           const res = await localFetch({
             path,
             baseUrl,
-            logger: serverEnv.logger,
+            logger: serverEnvironment.logger,
             options: {
               headers: userOptions.prerender.headers,
             },
@@ -302,7 +306,9 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
 
           if (!res.ok) {
             if (isRedirectResponse(res)) {
-              serverEnv.logger.warn(`Max redirects reached for ${path}`);
+              serverEnvironment.logger.warn(
+                `Max redirects reached for ${path}`,
+              );
             }
             throw new Error(`Failed to fetch ${path}: ${res.statusText}`, {
               cause: res,
@@ -321,14 +327,18 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
 
           const html = await res.text();
 
-          const filepath = join(clientOutDir, filename);
+          const filepath = join(
+            clientEnvironment.config.root,
+            clientEnvironment.config.build.outDir,
+            filename,
+          );
 
           await mkdir(dirname(filepath), { recursive: true });
           await writeFile(filepath, html);
         }
 
         await previewServer.close();
-        serverEnv.logger.info(
+        serverEnvironment.logger.info(
           styleText(
             "green",
             `\n✓ prerendered in ${getTimeStat(now, performance.now())}\n`,
@@ -336,17 +346,23 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         );
 
         if (userOptions.output === "static") {
-          await onStaticBuildDone?.({ clientOutDir });
+          await onStaticBuildDone?.({
+            clientEnvironment,
+            serverEnvironment,
+          });
           return;
         }
 
         // It is normalized by now
         delete (
-          serverEnv.config.build.rolldownOptions.input as Record<string, string>
+          serverEnvironment.config.build.rolldownOptions.input as Record<
+            string,
+            string
+          >
         ).prerender;
         prerender = false;
 
-        await builder.build(serverEnv);
+        await builder.build(serverEnvironment);
       },
     },
   };

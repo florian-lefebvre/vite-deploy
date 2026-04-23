@@ -19,6 +19,7 @@ import {
 } from "vite";
 import type { ExportedHandler, Options } from "./types.js";
 import packageJson from "../package.json" with { type: "json" };
+import { rm } from "node:fs/promises";
 
 const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
@@ -454,6 +455,18 @@ export function netlify({
     }),
     ...createPrerenderPlugin({
       userOptions,
+      onStaticBuildDone: async ({ serverEnvironment }) => {
+        await rm(
+          join(
+            serverEnvironment.config.root,
+            serverEnvironment.config.build.outDir,
+          ),
+          {
+            force: true,
+            recursive: true,
+          },
+        );
+      },
     }),
     configPlugin(),
     devPlugin({ handlerEntrypoint }),
