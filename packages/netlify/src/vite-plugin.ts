@@ -8,7 +8,6 @@ import {
 } from "@vite-deploy/internal-helpers";
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 import sirv from "sirv";
 import {
@@ -165,6 +164,7 @@ function createMiddleware({
         process.env.NETLIFY_DEV,
       );
 
+      // TODO: implement missing
       let response = await mod.default.fetch(request, {
         get url() {
           return new URL(request!.url);
@@ -185,6 +185,7 @@ function createMiddleware({
         site: parseBase64JSON("x-nf-site-info") ?? {
           id: "mock-netlify-site-id",
           name: "mock-netlify-site.netlify.app",
+          // TODO: do not hardcode 4321
           url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
         },
         geo: parseBase64JSON("x-nf-geo") ?? {
@@ -243,9 +244,17 @@ function createMiddleware({
 }
 
 function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
+  let resolvedEntrypoint: string;
+
   return {
     name: `${PACKAGE_NAME}:dev`,
     sharedDuringBuild: true,
+    configResolved(config) {
+      resolvedEntrypoint = normalizeEntrypoint(
+        config.root,
+        options.handlerEntrypoint,
+      );
+    },
     configureServer(server) {
       return () => {
         server.middlewares.use(
@@ -256,9 +265,7 @@ function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
               if (!isRunnableDevEnvironment(serverEnv)) {
                 throw new Error("Non runnable server env");
               }
-              return await serverEnv.runner.import(
-                fileURLToPath(options.handlerEntrypoint),
-              );
+              return await serverEnv.runner.import(resolvedEntrypoint);
             },
             onResponse: undefined,
           }),
