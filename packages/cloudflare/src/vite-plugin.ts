@@ -1,7 +1,7 @@
 import { cloudflare as cloudflarePlugin } from "@cloudflare/vite-plugin";
 import {
-    createPrerenderPlugin,
-    VITE_ENVIRONMENT_NAMES,
+  createPrerenderPlugin,
+  VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -20,7 +20,9 @@ export function cloudflare({ config, ...userOptions }: Options): Array<Plugin> {
     ...createPrerenderPlugin({
       userOptions,
       // May be handled ootb by https://github.com/cloudflare/workers-sdk/pull/12788
-      onStaticBuildDone: async ({ serverEnvironment }) => {
+      onBuildDone: async ({ output, serverEnvironment }) => {
+        if (output !== "static") return;
+
         const serverOutDir = join(
           serverEnvironment.config.root,
           serverEnvironment.config.build.outDir,

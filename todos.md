@@ -1,12 +1,15 @@
 - [ ] pocs
   - [x] cloudflare
   - [x] netlify
-  - [ ] vercel
+  - [x] vercel
   - [ ] node
 - [x] abstract shared stuff in common package
 - [x] todos
 - [x] emit correct files
 - [ ] headers for static assets
+- [ ] conversion utilities
+  - [ ] toNodeHandler()
+  - [ ] toWebHandler()
 - [ ] examples (and utilities as needed)
   - [ ] outputs
   - [ ] cloudflare

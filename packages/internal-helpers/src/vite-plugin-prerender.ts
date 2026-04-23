@@ -15,7 +15,7 @@ import packageJson from "../package.json" with { type: "json" };
 
 const PACKAGE_NAME = packageJson.name;
 const PRERENDER_INPUT = "prerender";
-const ENTRYPOINT_VIRTUAL_MODULE = `${PACKAGE_NAME}/entrypoint`;
+const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
 
 function cleanOutdirPlugin(): Plugin {
   let ran = false;
@@ -178,13 +178,14 @@ function getRouteFilename({
 
 interface Options {
   userOptions: PrerenderOptions;
-  onStaticBuildDone?: (params: {
+  onBuildDone?: (params: {
+    output: PrerenderOptions["output"];
     clientEnvironment: BuildEnvironment;
     serverEnvironment: BuildEnvironment;
   }) => void | Promise<void>;
 }
 
-function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
+function prerenderPlugin({ userOptions, onBuildDone }: Options): Plugin {
   // In server mode, it's always false and not updated later
   let prerender = userOptions.output !== "server";
   let resolvedEntrypoint: string | undefined;
@@ -255,14 +256,21 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
     buildApp: {
       order: "post",
       async handler(builder) {
-        if (userOptions.output === "server") return;
-
         const serverEnvironment =
           builder.environments[VITE_ENVIRONMENT_NAMES.server];
         const clientEnvironment =
           builder.environments[VITE_ENVIRONMENT_NAMES.client];
         if (!serverEnvironment || !clientEnvironment) {
           throw new Error("Missing environments");
+        }
+
+        if (userOptions.output === "server") {
+          await onBuildDone?.({
+            output: "server",
+            clientEnvironment,
+            serverEnvironment,
+          });
+          return;
         }
 
         const prerenderEntrypointMod = await import(
@@ -346,7 +354,8 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         );
 
         if (userOptions.output === "static") {
-          await onStaticBuildDone?.({
+          await onBuildDone?.({
+            output: "static",
             clientEnvironment,
             serverEnvironment,
           });
@@ -363,6 +372,12 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         prerender = false;
 
         await builder.build(serverEnvironment);
+
+        await onBuildDone?.({
+          output: "hybrid",
+          clientEnvironment,
+          serverEnvironment,
+        });
       },
     },
   };

@@ -1,4 +1,3 @@
-import netlifyPlugin from "@netlify/vite-plugin";
 import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
   createBuildPlugin,
@@ -6,7 +5,7 @@ import {
   normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
-import { rm } from "node:fs/promises";
+import { rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { styleText } from "node:util";
 import sirv from "sirv";
@@ -21,11 +20,11 @@ import type { ExportedHandler, Options } from "./types.js";
 
 const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
-const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-handler`;
-const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
-  "\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
+const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
 
-function configPlugin(): Plugin {
+function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
+  let resolvedEntrypoint: string;
+
   return {
     name: `${PACKAGE_NAME}:config`,
     sharedDuringBuild: true,
@@ -36,21 +35,27 @@ function configPlugin(): Plugin {
         },
       };
     },
+    configResolved(config) {
+      resolvedEntrypoint = normalizeEntrypoint(
+        config.root,
+        options.handlerEntrypoint,
+      );
+    },
     configEnvironment(name) {
       if (name === VITE_ENVIRONMENT_NAMES.client) {
         return {
           build: {
-            outDir: "dist",
+            outDir: ".vercel/output/static",
           },
         };
       }
       if (name === VITE_ENVIRONMENT_NAMES.server) {
         return {
           build: {
-            outDir: ".netlify/v1/functions",
+            outDir: ".vercel/output/render.func",
             rolldownOptions: {
               input: {
-                [MAIN_INPUT]: PRODUCTION_HANDLER_VIRTUAL_MODULE,
+                [MAIN_INPUT]: ENTRYPOINT_VIRTUAL_MODULE,
               },
             },
             manifest: true,
@@ -59,6 +64,14 @@ function configPlugin(): Plugin {
         };
       }
     },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return resolvedEntrypoint;
+      },
+    },
   };
 }
 
@@ -66,53 +79,6 @@ function getTimeStat(buildTime: number): string {
   return buildTime < 750
     ? `${Math.round(buildTime)}ms`
     : `${(buildTime / 1000).toFixed(2)}s`;
-}
-
-function productionHandlerPlugin(
-  options: Pick<Options, "handlerEntrypoint">,
-): Plugin {
-  let resolvedEntrypoint: string;
-
-  return {
-    name: `${PACKAGE_NAME}:production-handler`,
-    sharedDuringBuild: true,
-    applyToEnvironment(environment) {
-      return environment.name === VITE_ENVIRONMENT_NAMES.server;
-    },
-    configResolved(config) {
-      resolvedEntrypoint = normalizeEntrypoint(
-        config.root,
-        options.handlerEntrypoint,
-      );
-    },
-    resolveId: {
-      filter: {
-        id: new RegExp(`^(${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
-      },
-    },
-    load: {
-      filter: {
-        id: new RegExp(`^(${RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return `
-import handlerEntrypoint from "${resolvedEntrypoint}";
-
-export default handlerEntrypoint.fetch;
-
-export const config = {
-  name: "${PACKAGE_NAME} server handler",
-  generator: "${PACKAGE_NAME}@${packageJson.version}",
-  path: "/*",
-  preferStatic: true,
-};
-`;
-      },
-    },
-  };
 }
 
 function validateMod(mod: Record<string, any>) {
@@ -143,85 +109,11 @@ function createMiddleware({
         req.url = req.originalUrl;
       }
       request = createRequest(req, res);
+      // TODO: https://vercel.com/docs/headers/request-headers?framework=other
 
       const mod = validateMod(await getMod());
 
-      const isHttps = req.headers["x-forwarded-proto"] === "https";
-      const parseBase64JSON = <T = unknown>(header: string): T | undefined => {
-        if (typeof req.headers[header] === "string") {
-          try {
-            return JSON.parse(
-              Buffer.from(req.headers[header] as string, "base64").toString(
-                "utf8",
-              ),
-            );
-          } catch {}
-        }
-      };
-      const isRunningInNetlify = Boolean(
-        process.env.NETLIFY ||
-        process.env.NETLIFY_LOCAL ||
-        process.env.NETLIFY_DEV,
-      );
-
-      // TODO: implement missing
-      let response = await mod.default.fetch(request, {
-        get url() {
-          return new URL(request!.url);
-        },
-        // The dev server is a long running process, so promises will run even with a noop
-        waitUntil: () => {},
-        account: parseBase64JSON("x-nf-account-info") ?? {
-          id: "mock-netlify-account-id",
-        },
-        deploy: {
-          context: "dev",
-          id:
-            typeof req.headers["x-nf-deploy-id"] === "string"
-              ? req.headers["x-nf-deploy-id"]
-              : "mock-netlify-deploy-id",
-          published: false,
-        },
-        site: parseBase64JSON("x-nf-site-info") ?? {
-          id: "mock-netlify-site-id",
-          name: "mock-netlify-site.netlify.app",
-          // TODO: do not hardcode 4321
-          url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
-        },
-        geo: parseBase64JSON("x-nf-geo") ?? {
-          city: "Mock City",
-          country: { code: "mock", name: "Mock Country" },
-          subdivision: { code: "SD", name: "Mock Subdivision" },
-          timezone: "UTC",
-          longitude: 0,
-          latitude: 0,
-        },
-        ip:
-          typeof req.headers["x-nf-client-connection-ip"] === "string"
-            ? req.headers["x-nf-client-connection-ip"]
-            : (req.socket.remoteAddress ?? "127.0.0.1"),
-        server: {
-          region: "local-dev",
-        },
-        requestId:
-          typeof req.headers["x-nf-request-id"] === "string"
-            ? req.headers["x-nf-request-id"]
-            : "mock-netlify-request-id",
-        get cookies(): never {
-          throw new Error("Not implemented.");
-        },
-        json: (input) => Response.json(input),
-        log: console.info,
-        next() {
-          throw new Error("Not implemented.");
-        },
-        get params(): never {
-          throw new Error("Not implemented.");
-        },
-        rewrite() {
-          throw new Error("Not implemented.");
-        },
-      });
+      let response = await mod.default.fetch(request);
 
       // Vite uses HTTP/2 when `server.https` or `preview.https` is enabled
       if (req.httpVersionMajor === 2) {
@@ -297,8 +189,8 @@ function previewPlugin(): Plugin {
       );
       server.middlewares.use(
         createMiddleware({
-          async getMod() {
-            const mod = await import(
+          getMod() {
+            return import(
               join(
                 config.root,
                 config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
@@ -306,11 +198,6 @@ function previewPlugin(): Plugin {
                 `${MAIN_INPUT}.mjs`,
               )
             );
-            return {
-              default: {
-                fetch: mod.default,
-              },
-            };
           },
           onResponse(response, duration) {
             console.log(
@@ -323,37 +210,59 @@ function previewPlugin(): Plugin {
   };
 }
 
-export function netlify({
-  config,
+// always: write config.json
+// static: remove server dir
+// server-like: package.json + vc config
+
+export function vercel({
   handlerEntrypoint,
   ...userOptions
 }: Options): Array<Plugin> {
   return [
-    ...netlifyPlugin({
-      ...config,
-      middleware: true,
-    }),
     ...createBuildPlugin(),
     ...createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
-        if (output !== "static") return;
+        const serverOutDir = join(
+          serverEnvironment.config.root,
+          serverEnvironment.config.build.outDir,
+        );
 
-        await rm(
-          join(
-            serverEnvironment.config.root,
-            serverEnvironment.config.build.outDir,
-          ),
-          {
+        await writeFile(
+          join(serverOutDir, "../config.json"),
+          JSON.stringify({ version: 3 }),
+          "utf-8",
+        );
+
+        if (output === "static") {
+          await rm(serverOutDir, {
             force: true,
             recursive: true,
-          },
-        );
+          });
+          return;
+        }
+
+        await Promise.all([
+          writeFile(
+            join(serverOutDir, "package.json"),
+            JSON.stringify({ type: "module" }),
+            "utf-8",
+          ),
+          writeFile(
+            join(serverOutDir, ".vc-config.json"),
+            JSON.stringify({
+              runtime: "nodejs",
+              handler: `${MAIN_INPUT}.mjs`,
+              launcherType: "Nodejs",
+              supportsResponseStreaming: true,
+            }),
+            "utf-8",
+          ),
+        ]);
       },
     }),
-    configPlugin(),
+    configPlugin({ handlerEntrypoint }),
     devPlugin({ handlerEntrypoint }),
     previewPlugin(),
-    productionHandlerPlugin({ handlerEntrypoint }),
   ];
 }
