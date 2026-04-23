@@ -216,7 +216,7 @@ export function vercel({
 }: Options): Array<Plugin> {
   return [
     ...createBuildPlugin(),
-    ...createPrerenderPlugin({
+    createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
         const serverOutDir = join(

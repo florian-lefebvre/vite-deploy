@@ -17,36 +17,6 @@ const PACKAGE_NAME = packageJson.name;
 const PRERENDER_INPUT = "prerender";
 const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
 
-function cleanOutdirPlugin(): Plugin {
-  let ran = false;
-  let config: ResolvedConfig;
-
-  return {
-    name: `${PACKAGE_NAME}:clean-outdir`,
-    sharedDuringBuild: true,
-    enforce: "pre",
-    configResolved(_config) {
-      config = _config;
-    },
-    async buildStart() {
-      if (ran) return;
-
-      for (const environment of Object.values(config.environments)) {
-        const candidate = dirname(join(config.root, environment.build.outDir));
-        if (candidate === config.root) {
-          continue;
-        }
-        await rm(dirname(join(config.root, environment.build.outDir)), {
-          force: true,
-          recursive: true,
-        });
-      }
-
-      ran = true;
-    },
-  };
-}
-
 async function getStaticPaths(
   mod: Record<string, any>,
 ): Promise<Array<string>> {
@@ -73,26 +43,6 @@ function normalizePaths(input: Array<string>): Array<string> {
       }),
     ),
   ];
-}
-
-function configPlugin(): Plugin {
-  return {
-    name: `${PACKAGE_NAME}:config`,
-    sharedDuringBuild: true,
-    configEnvironment(name) {
-      if (name === VITE_ENVIRONMENT_NAMES.server) {
-        return {
-          build: {
-            rolldownOptions: {
-              output: {
-                entryFileNames: "[name].mjs",
-              },
-            },
-          },
-        };
-      }
-    },
-  };
 }
 
 function getTimeStat(timeStart: number, timeEnd: number): string {
@@ -185,48 +135,66 @@ interface Options {
   }) => void | Promise<void>;
 }
 
-function prerenderPlugin({ userOptions, onBuildDone }: Options): Plugin {
+export function createPrerenderPlugin({
+  userOptions,
+  onBuildDone,
+}: Options): Plugin {
   // In server mode, it's always false and not updated later
   let prerender = userOptions.output !== "server";
   let resolvedEntrypoint: string | undefined;
+  let cleaned = false;
+  let config: ResolvedConfig;
 
   return {
     name: `${PACKAGE_NAME}:prerender`,
     enforce: "post",
     sharedDuringBuild: true,
-    configResolved(config) {
-      if (userOptions.output !== "server") {
-        resolvedEntrypoint = normalizeEntrypoint(
-          config.root,
-          userOptions.prerender.entrypoint,
-        );
+    configEnvironment(name, config) {
+      if (name === VITE_ENVIRONMENT_NAMES.server) {
+        config.build ??= {};
+        config.build.rolldownOptions ??= {};
+        config.build.rolldownOptions.output ??= [];
+        if (!Array.isArray(config.build.rolldownOptions.output)) {
+          config.build.rolldownOptions.output = [
+            config.build.rolldownOptions.output,
+          ];
+        }
+        config.build.rolldownOptions.output.push({
+          entryFileNames: "[name].mjs",
+        });
+
+        if (userOptions.output !== "server") {
+          // Clean the prerender specific files when running the full server build
+          config.build.emptyOutDir = true;
+
+          // We normalize the rolldown input because the object is the only one
+          // which allows identifying specific ones
+          if (typeof config.build.rolldownOptions.input === "string") {
+            config.build.rolldownOptions.input = {
+              index: config.build.rolldownOptions.input,
+            };
+          } else if (Array.isArray(config.build.rolldownOptions.input)) {
+            config.build.rolldownOptions.input = Object.fromEntries(
+              config.build.rolldownOptions.input.map((v, i) => [
+                `index_${i}`,
+                v,
+              ]),
+            );
+          }
+
+          config.build.rolldownOptions.input ??= {};
+          config.build.rolldownOptions.input[PRERENDER_INPUT] =
+            ENTRYPOINT_VIRTUAL_MODULE;
+        }
       }
     },
-    configEnvironment(name, config) {
-      if (
-        userOptions.output !== "server" &&
-        name === VITE_ENVIRONMENT_NAMES.server
-      ) {
-        config.build ??= {};
-        // Clean the prerender specific files when running the full server build
-        config.build.emptyOutDir = true;
-        config.build.rolldownOptions ??= {};
-
-        // We normalize the rolldown input because the object is the only one
-        // which allows identifying specific ones
-        if (typeof config.build.rolldownOptions.input === "string") {
-          config.build.rolldownOptions.input = {
-            index: config.build.rolldownOptions.input,
-          };
-        } else if (Array.isArray(config.build.rolldownOptions.input)) {
-          config.build.rolldownOptions.input = Object.fromEntries(
-            config.build.rolldownOptions.input.map((v, i) => [`index_${i}`, v]),
-          );
-        }
-
-        config.build.rolldownOptions.input ??= {};
-        config.build.rolldownOptions.input[PRERENDER_INPUT] =
-          ENTRYPOINT_VIRTUAL_MODULE;
+    configResolved(_config) {
+      config = _config;
+      if (userOptions.output !== "server") {
+        resolvedEntrypoint = normalizeEntrypoint(
+          _config.root,
+          userOptions.prerender.entrypoint,
+        );
       }
     },
     resolveId: {
@@ -252,6 +220,22 @@ function prerenderPlugin({ userOptions, onBuildDone }: Options): Plugin {
           );
         }
       },
+    },
+    async buildStart() {
+      if (cleaned) return;
+
+      for (const environment of Object.values(config.environments)) {
+        const candidate = dirname(join(config.root, environment.build.outDir));
+        if (candidate === config.root) {
+          continue;
+        }
+        await rm(dirname(join(config.root, environment.build.outDir)), {
+          force: true,
+          recursive: true,
+        });
+      }
+
+      cleaned = true;
     },
     buildApp: {
       order: "post",
@@ -381,8 +365,4 @@ function prerenderPlugin({ userOptions, onBuildDone }: Options): Plugin {
       },
     },
   };
-}
-
-export function createPrerenderPlugin(options: Options): Array<Plugin> {
-  return [cleanOutdirPlugin(), configPlugin(), prerenderPlugin(options)];
 }

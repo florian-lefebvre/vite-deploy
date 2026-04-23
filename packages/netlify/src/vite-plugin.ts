@@ -334,7 +334,7 @@ export function netlify({
       middleware: true,
     }),
     ...createBuildPlugin(),
-    ...createPrerenderPlugin({
+    createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
         if (output !== "static") return;

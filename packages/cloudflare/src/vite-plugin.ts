@@ -17,7 +17,7 @@ export function cloudflare({ config, ...userOptions }: Options): Array<Plugin> {
       ...config,
       viteEnvironment: { name: VITE_ENVIRONMENT_NAMES.server },
     }),
-    ...createPrerenderPlugin({
+    createPrerenderPlugin({
       userOptions,
       // May be handled ootb by https://github.com/cloudflare/workers-sdk/pull/12788
       onBuildDone: async ({ output, serverEnvironment }) => {

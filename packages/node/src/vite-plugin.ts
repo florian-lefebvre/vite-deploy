@@ -236,7 +236,7 @@ export function node({
 }: Options): Array<Plugin> {
   return [
     ...createBuildPlugin(),
-    ...createPrerenderPlugin({
+    createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
         if (output !== "static") return;

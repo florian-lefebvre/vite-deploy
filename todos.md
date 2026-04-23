@@ -38,4 +38,19 @@
   - [ ] conversion utilities (using remix node package)
     - [ ] toNodeHandler()
     - [ ] toWebHandler()
+  - [ ] philosophy
+  - [ ] when to use / when not to use
+  - [ ] how it works
+  - [ ] contributing (missing guide, platform etc)
+  - [ ] Docs per adapter
+  - [ ] hosts guides (take list from nitro)
+  - [ ] integrations guides (hono, express etc)
+  - [ ] aknowledgement
+    - [ ] nitro
+    - [ ] astro
+    - [ ] tanstack start
+    - [ ] universal deploy
 - [ ] publish
+- [ ] Check integration template
+  - [ ] publishing/versioning
+  - [ ] linting/formatting
