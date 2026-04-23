@@ -1,15 +1,12 @@
-- [ ] pocs
+- [x] pocs
   - [x] cloudflare
   - [x] netlify
   - [x] vercel
-  - [ ] node
+  - [x] node
 - [x] abstract shared stuff in common package
 - [x] todos
 - [x] emit correct files
 - [ ] headers for static assets
-- [ ] conversion utilities
-  - [ ] toNodeHandler()
-  - [ ] toWebHandler()
 - [ ] examples (and utilities as needed)
   - [ ] outputs
   - [ ] cloudflare
@@ -37,3 +34,8 @@
       - [ ] middleware
       - [ ] cluster
     - [ ] framework?
+- [ ] docs
+  - [ ] conversion utilities (using remix node package)
+    - [ ] toNodeHandler()
+    - [ ] toWebHandler()
+- [ ] publish

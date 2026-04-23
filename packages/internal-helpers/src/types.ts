@@ -1,17 +1,26 @@
 export type Format = "file" | "directory";
 
-export type PrerenderOptions =
-  | {
-      output: "server";
-    }
-  | {
-      output: "static" | "hybrid";
-      prerender: {
-        entrypoint: Entrypoint;
-        headers?: Headers;
-        format?: Format;
-      };
-    };
+export interface ServerOptions {
+  output: "server";
+}
+
+interface _PrerenderOptions {
+  entrypoint: Entrypoint;
+  headers?: Headers;
+  format?: Format;
+}
+
+export interface StaticOptions {
+  output: "static";
+  prerender: _PrerenderOptions;
+}
+
+export interface HybridOptions {
+  output: "hybrid";
+  prerender: _PrerenderOptions;
+}
+
+export type PrerenderOptions = ServerOptions | StaticOptions | HybridOptions;
 
 export interface PrerenderEntrypoint {
   getStaticPaths: () => Array<string> | Promise<Array<string>>;

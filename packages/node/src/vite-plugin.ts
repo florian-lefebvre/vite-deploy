@@ -5,7 +5,7 @@ import {
   normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
-import { rm, writeFile } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import { styleText } from "node:util";
 import sirv from "sirv";
@@ -20,10 +20,13 @@ import type { ExportedHandler, Options } from "./types.js";
 
 const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
-const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
+const HANDLER_INPUT = "handler";
+const MAIN_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/main-entrypoint`;
+const HANDLER_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/handler-entrypoint`;
 
-function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let resolvedEntrypoint: string;
+function configPlugin(options: Options): Plugin {
+  let resolvedHandlerEntrypoint: string;
+  let resolvedServerEntrypoint: string | undefined;
 
   return {
     name: `${PACKAGE_NAME}:config`,
@@ -36,26 +39,33 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
       };
     },
     configResolved(config) {
-      resolvedEntrypoint = normalizeEntrypoint(
+      resolvedHandlerEntrypoint = normalizeEntrypoint(
         config.root,
         options.handlerEntrypoint,
       );
+      if (options.output !== "static") {
+        resolvedServerEntrypoint = normalizeEntrypoint(
+          config.root,
+          options.serverEntrypoint,
+        );
+      }
     },
     configEnvironment(name) {
       if (name === VITE_ENVIRONMENT_NAMES.client) {
         return {
           build: {
-            outDir: ".vercel/output/static",
+            outDir: "dist/client",
           },
         };
       }
       if (name === VITE_ENVIRONMENT_NAMES.server) {
         return {
           build: {
-            outDir: ".vercel/output/render.func",
+            outDir: "dist/server",
             rolldownOptions: {
               input: {
-                [MAIN_INPUT]: ENTRYPOINT_VIRTUAL_MODULE,
+                [MAIN_INPUT]: MAIN_ENTRYPOINT_VIRTUAL_MODULE,
+                [HANDLER_INPUT]: HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
               },
             },
             manifest: true,
@@ -66,10 +76,15 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
     },
     resolveId: {
       filter: {
-        id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
+        id: new RegExp(
+          `^(${MAIN_ENTRYPOINT_VIRTUAL_MODULE}|${HANDLER_ENTRYPOINT_VIRTUAL_MODULE})$`,
+        ),
       },
-      handler() {
-        return resolvedEntrypoint;
+      handler(id) {
+        if (id === MAIN_ENTRYPOINT_VIRTUAL_MODULE) {
+          return resolvedServerEntrypoint;
+        }
+        return resolvedHandlerEntrypoint;
       },
     },
   };
@@ -82,7 +97,9 @@ function getTimeStat(buildTime: number): string {
 }
 
 function validateMod(mod: Record<string, any>) {
-  if (!("default" in mod && "fetch" in mod.default)) {
+  if (
+    !("default" in mod && ("fetch" in mod.default || "handler" in mod.default))
+  ) {
     throw new Error("Handler entrypoint returns an invalid shape");
   }
   return mod as {
@@ -108,10 +125,13 @@ function createMiddleware({
       if (req.originalUrl) {
         req.url = req.originalUrl;
       }
-      request = createRequest(req, res);
-      // TODO: https://vercel.com/docs/headers/request-headers?framework=other
-
       const mod = validateMod(await getMod());
+
+      if ("handler" in mod.default) {
+        return mod.default.handler(req, res);
+      }
+
+      request = createRequest(req, res);
 
       let response = await mod.default.fetch(request);
 
@@ -136,13 +156,13 @@ function createMiddleware({
 }
 
 function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let resolvedEntrypoint: string;
+  let resolvedHandlerEntrypoint: string;
 
   return {
     name: `${PACKAGE_NAME}:dev`,
     sharedDuringBuild: true,
     configResolved(config) {
-      resolvedEntrypoint = normalizeEntrypoint(
+      resolvedHandlerEntrypoint = normalizeEntrypoint(
         config.root,
         options.handlerEntrypoint,
       );
@@ -157,7 +177,7 @@ function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
               if (!isRunnableDevEnvironment(serverEnv)) {
                 throw new Error("Non runnable server env");
               }
-              return await serverEnv.runner.import(resolvedEntrypoint);
+              return await serverEnv.runner.import(resolvedHandlerEntrypoint);
             },
             onResponse: undefined,
           }),
@@ -195,7 +215,7 @@ function previewPlugin(): Plugin {
                 config.root,
                 config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
                   .outDir,
-                `${MAIN_INPUT}.mjs`,
+                `${HANDLER_INPUT}.mjs`,
               )
             );
           },
@@ -210,7 +230,7 @@ function previewPlugin(): Plugin {
   };
 }
 
-export function vercel({
+export function node({
   handlerEntrypoint,
   ...userOptions
 }: Options): Array<Plugin> {
@@ -219,45 +239,21 @@ export function vercel({
     ...createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
-        const serverOutDir = join(
-          serverEnvironment.config.root,
-          serverEnvironment.config.build.outDir,
-        );
+        if (output !== "static") return;
 
-        await writeFile(
-          join(serverOutDir, "../config.json"),
-          JSON.stringify({ version: 3 }),
-          "utf-8",
-        );
-
-        if (output === "static") {
-          await rm(serverOutDir, {
+        await rm(
+          join(
+            serverEnvironment.config.root,
+            serverEnvironment.config.build.outDir,
+          ),
+          {
             force: true,
             recursive: true,
-          });
-          return;
-        }
-
-        await Promise.all([
-          writeFile(
-            join(serverOutDir, "package.json"),
-            JSON.stringify({ type: "module" }),
-            "utf-8",
-          ),
-          writeFile(
-            join(serverOutDir, ".vc-config.json"),
-            JSON.stringify({
-              runtime: "nodejs",
-              handler: `${MAIN_INPUT}.mjs`,
-              launcherType: "Nodejs",
-              supportsResponseStreaming: true,
-            }),
-            "utf-8",
-          ),
-        ]);
+          },
+        );
       },
     }),
-    configPlugin({ handlerEntrypoint }),
+    configPlugin({ handlerEntrypoint, ...userOptions }),
     devPlugin({ handlerEntrypoint }),
     previewPlugin(),
   ];

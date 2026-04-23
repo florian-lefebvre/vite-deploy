@@ -35,6 +35,24 @@ importers:
         specifier: ^8.0.2
         version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
 
+  examples/node:
+    devDependencies:
+      '@remix-run/node-fetch-server':
+        specifier: ^0.13.0
+        version: 0.13.0
+      '@typescript/native-preview':
+        specifier: ^7.0.0-dev.20260324.1
+        version: 7.0.0-dev.20260324.1
+      '@vite-deploy/node':
+        specifier: workspace:*
+        version: link:../../packages/node
+      sirv:
+        specifier: ^3.0.2
+        version: 3.0.2
+      vite:
+        specifier: ^8.0.2
+        version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
+
   examples/vercel:
     devDependencies:
       '@typescript/native-preview':
@@ -90,6 +108,28 @@ importers:
       '@netlify/vite-plugin':
         specifier: ^2.11.2
         version: 2.11.2(vite@8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3))
+      '@remix-run/node-fetch-server':
+        specifier: ^0.13.0
+        version: 0.13.0
+      '@vite-deploy/internal-helpers':
+        specifier: workspace:*
+        version: link:../internal-helpers
+      sirv:
+        specifier: ^3.0.2
+        version: 3.0.2
+      vite:
+        specifier: ^8.0.0
+        version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+      '@typescript/native-preview':
+        specifier: ^7.0.0-dev.20260324.1
+        version: 7.0.0-dev.20260324.1
+
+  packages/node:
+    dependencies:
       '@remix-run/node-fetch-server':
         specifier: ^0.13.0
         version: 0.13.0

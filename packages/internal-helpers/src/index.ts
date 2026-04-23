@@ -5,6 +5,9 @@ export type {
   PrerenderEntrypoint,
   PrerenderOptions,
   Entrypoint,
+  ServerOptions,
+  StaticOptions,
+  HybridOptions,
 } from "./types.js";
 export { VITE_ENVIRONMENT_NAMES } from "./constants.js";
 export { normalizeEntrypoint } from "./utils.js";

@@ -1,0 +1,28 @@
+{
+  "name": "@vite-deploy/node",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "default": "./dist/index.js"
+    },
+    "./types": "./types.d.ts"
+  },
+  "scripts": {
+    "dev": "tsgo --watch",
+    "build": "tsgo --build"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260324.1"
+  },
+  "dependencies": {
+    "@remix-run/node-fetch-server": "^0.13.0",
+    "@vite-deploy/internal-helpers": "workspace:*",
+    "sirv": "^3.0.2"
+  }
+}
