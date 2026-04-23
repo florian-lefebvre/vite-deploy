@@ -25,94 +25,10 @@ const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-ha
 const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
   "\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
 
-function configPlugin(): Plugin {
-  return {
-    name: `${PACKAGE_NAME}:config`,
-    sharedDuringBuild: true,
-    config() {
-      return {
-        environments: {
-          [VITE_ENVIRONMENT_NAMES.server]: {},
-        },
-      };
-    },
-    configEnvironment(name) {
-      if (name === VITE_ENVIRONMENT_NAMES.client) {
-        return {
-          build: {
-            outDir: "dist",
-          },
-        };
-      }
-      if (name === VITE_ENVIRONMENT_NAMES.server) {
-        return {
-          build: {
-            outDir: ".netlify/v1/functions",
-            rolldownOptions: {
-              input: {
-                [MAIN_INPUT]: PRODUCTION_HANDLER_VIRTUAL_MODULE,
-              },
-            },
-            manifest: true,
-            copyPublicDir: false,
-          },
-        };
-      }
-    },
-  };
-}
-
 function getTimeStat(buildTime: number): string {
   return buildTime < 750
     ? `${Math.round(buildTime)}ms`
     : `${(buildTime / 1000).toFixed(2)}s`;
-}
-
-function productionHandlerPlugin(
-  options: Pick<Options, "handlerEntrypoint">,
-): Plugin {
-  let resolvedEntrypoint: string;
-
-  return {
-    name: `${PACKAGE_NAME}:production-handler`,
-    sharedDuringBuild: true,
-    applyToEnvironment(environment) {
-      return environment.name === VITE_ENVIRONMENT_NAMES.server;
-    },
-    configResolved(config) {
-      resolvedEntrypoint = normalizeEntrypoint(
-        config.root,
-        options.handlerEntrypoint,
-      );
-    },
-    resolveId: {
-      filter: {
-        id: new RegExp(`^(${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
-      },
-    },
-    load: {
-      filter: {
-        id: new RegExp(`^(${RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
-      },
-      handler() {
-        return `
-import handlerEntrypoint from "${resolvedEntrypoint}";
-
-export default handlerEntrypoint.fetch;
-
-export const config = {
-  name: "${PACKAGE_NAME} server handler",
-  generator: "${PACKAGE_NAME}@${packageJson.version}",
-  path: "/*",
-  preferStatic: true,
-};
-`;
-      },
-    },
-  };
 }
 
 function validateMod(mod: Record<string, any>) {
@@ -243,17 +159,79 @@ function createMiddleware({
   };
 }
 
-function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
+function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
   let resolvedEntrypoint: string;
+  let config: ResolvedConfig;
 
   return {
-    name: `${PACKAGE_NAME}:dev`,
+    name: `${PACKAGE_NAME}:handler`,
     sharedDuringBuild: true,
-    configResolved(config) {
+    applyToEnvironment(environment) {
+      return environment.name === VITE_ENVIRONMENT_NAMES.server;
+    },
+    config() {
+      return {
+        environments: {
+          [VITE_ENVIRONMENT_NAMES.server]: {},
+        },
+      };
+    },
+    configEnvironment(name) {
+      if (name === VITE_ENVIRONMENT_NAMES.client) {
+        return {
+          build: {
+            outDir: "dist",
+          },
+        };
+      }
+      if (name === VITE_ENVIRONMENT_NAMES.server) {
+        return {
+          build: {
+            outDir: ".netlify/v1/functions",
+            rolldownOptions: {
+              input: {
+                [MAIN_INPUT]: PRODUCTION_HANDLER_VIRTUAL_MODULE,
+              },
+            },
+            manifest: true,
+            copyPublicDir: false,
+          },
+        };
+      }
+    },
+    configResolved(_config) {
+      config = _config;
       resolvedEntrypoint = normalizeEntrypoint(
-        config.root,
+        _config.root,
         options.handlerEntrypoint,
       );
+    },
+    resolveId: {
+      filter: {
+        id: new RegExp(`^(${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
+      },
+    },
+    load: {
+      filter: {
+        id: new RegExp(`^(${RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
+      },
+      handler() {
+        return `
+import handlerEntrypoint from "${resolvedEntrypoint}";
+
+export default handlerEntrypoint.fetch;
+
+export const config = {
+  name: "${PACKAGE_NAME} server handler",
+  generator: "${PACKAGE_NAME}@${packageJson.version}",
+  path: "/*",
+  preferStatic: true,
+};
+`;
+      },
     },
     configureServer(server) {
       return () => {
@@ -271,17 +249,6 @@ function devPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
           }),
         );
       };
-    },
-  };
-}
-
-function previewPlugin(): Plugin {
-  let config: ResolvedConfig;
-  return {
-    name: `${PACKAGE_NAME}:preview`,
-    sharedDuringBuild: true,
-    configResolved(_config) {
-      config = _config;
     },
     configurePreviewServer(server) {
       server.middlewares.use(
@@ -351,9 +318,6 @@ export function netlify({
         );
       },
     }),
-    configPlugin(),
-    devPlugin({ handlerEntrypoint }),
-    previewPlugin(),
-    productionHandlerPlugin({ handlerEntrypoint }),
+    handlerPlugin({ handlerEntrypoint }),
   ];
 }
