@@ -341,7 +341,7 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         serverEnvironment.logger.info(
           styleText(
             "green",
-            `\n✓ prerendered in ${getTimeStat(now, performance.now())}\n`,
+            `\n✓ prerendered in ${getTimeStat(now, performance.now())}${userOptions.output === "static" ? "" : "\n"}`,
           ),
         );
 

@@ -4,8 +4,8 @@
   - [ ] vercel
   - [ ] node
 - [x] abstract shared stuff in common package
-- [ ] todos
-- [ ] emit correct files
+- [x] todos
+- [x] emit correct files
 - [ ] headers for static assets
 - [ ] examples (and utilities as needed)
   - [ ] outputs
