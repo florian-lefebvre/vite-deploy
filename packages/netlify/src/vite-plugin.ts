@@ -6,8 +6,7 @@ import {
   normalizeEntrypoint,
 } from "@vite-deploy/internal-helpers";
 import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
-import { rename, rm } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { styleText } from "node:util";
 import sirv from "sirv";
@@ -43,15 +42,24 @@ function configPlugin(): Plugin {
       };
     },
     configEnvironment(name) {
+      if (name === VITE_ENVIRONMENT_NAMES.client) {
+        return {
+          build: {
+            outDir: "dist",
+          },
+        };
+      }
       if (name === VITE_ENVIRONMENT_NAMES.server) {
         return {
           build: {
+            outDir: ".netlify/v1/functions",
             rolldownOptions: {
               input: {
                 [MAIN_INPUT]: PRODUCTION_HANDLER_VIRTUAL_MODULE,
               },
             },
             manifest: true,
+            copyPublicDir: false,
           },
         };
       }
@@ -446,14 +454,6 @@ export function netlify({
     }),
     ...createPrerenderPlugin({
       userOptions,
-      // TODO: check how static projects should be structured on netlify
-      onStaticBuildDone: async ({ clientOutDir }) => {
-        const distDir = dirname(clientOutDir);
-        const tempDir = `${distDir}_tmp`;
-        await rename(clientOutDir, tempDir);
-        await rm(distDir, { force: true, recursive: true });
-        await rename(tempDir, distDir);
-      },
     }),
     configPlugin(),
     devPlugin({ handlerEntrypoint }),

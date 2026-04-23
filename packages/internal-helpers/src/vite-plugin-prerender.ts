@@ -1,6 +1,6 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { preview, type Logger, type Plugin } from "vite";
+import { preview, type Logger, type Plugin, type ResolvedConfig } from "vite";
 import type { Format, PrerenderOptions } from "./types.js";
 import { styleText } from "node:util";
 import { VITE_ENVIRONMENT_NAMES } from "./constants.js";
@@ -8,24 +8,34 @@ import { normalizeEntrypoint } from "./utils.js";
 import packageJson from "../package.json" with { type: "json" };
 
 const PACKAGE_NAME = packageJson.name;
-const DIST_DIR = "dist";
 const PRERENDER_INPUT = "prerender";
 const ENTRYPOINT_VIRTUAL_MODULE = `${PACKAGE_NAME}/entrypoint`;
 
 function cleanOutdirPlugin(): Plugin {
   let ran = false;
+  let config: ResolvedConfig;
 
   return {
     name: `${PACKAGE_NAME}:clean-outdir`,
     sharedDuringBuild: true,
     enforce: "pre",
+    configResolved(_config) {
+      config = _config;
+    },
     async buildStart() {
       if (ran) return;
 
-      await rm(join(this.environment.config.root, DIST_DIR), {
-        force: true,
-        recursive: true,
-      });
+      for (const environment of Object.values(config.environments)) {
+        const candidate = dirname(join(config.root, environment.build.outDir));
+        if (candidate === config.root) {
+          continue;
+        }
+        await rm(dirname(join(config.root, environment.build.outDir)), {
+          force: true,
+          recursive: true,
+        });
+      }
+
       ran = true;
     },
   };
@@ -64,17 +74,9 @@ function configPlugin(): Plugin {
     name: `${PACKAGE_NAME}:config`,
     sharedDuringBuild: true,
     configEnvironment(name) {
-      if (name === VITE_ENVIRONMENT_NAMES.client) {
-        return {
-          build: {
-            outDir: `${DIST_DIR}/client`,
-          },
-        };
-      }
       if (name === VITE_ENVIRONMENT_NAMES.server) {
         return {
           build: {
-            outDir: `${DIST_DIR}/server`,
             rolldownOptions: {
               output: {
                 entryFileNames: "[name].mjs",
@@ -170,7 +172,9 @@ function getRouteFilename({
 
 interface Options {
   userOptions: PrerenderOptions;
-  onStaticBuildDone: (params: { clientOutDir: string }) => void | Promise<void>;
+  onStaticBuildDone?: (params: {
+    clientOutDir: string;
+  }) => void | Promise<void>;
 }
 
 function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
@@ -332,7 +336,7 @@ function prerenderPlugin({ userOptions, onStaticBuildDone }: Options): Plugin {
         );
 
         if (userOptions.output === "static") {
-          await onStaticBuildDone({ clientOutDir });
+          await onStaticBuildDone?.({ clientOutDir });
           return;
         }
 
