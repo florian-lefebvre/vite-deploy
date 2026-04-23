@@ -7,33 +7,33 @@
 - [x] todos
 - [x] emit correct files
 - [ ] headers for static assets
-- [ ] examples (and utilities as needed)
-  - [ ] outputs
-  - [ ] cloudflare
-    - [ ] simple fetch
-    - [ ] hono
-    - [ ] express
-    - [ ] framework?
-  - [ ] netlify
-    - [ ] simple fetch
-    - [ ] hono
-    - [ ] express
-    - [ ] framework?
-  - [ ] vercel
-    - [ ] simple fetch
-    - [ ] hono
-    - [ ] express
-    - [ ] framework?
-  - [ ] node
-    - [ ] simple fetch
-    - [ ] node handler
-    - [ ] hono
-    - [ ] express
-    - [ ] output
-      - [ ] standalone
-      - [ ] middleware
-      - [ ] cluster
-    - [ ] framework?
+- [ ] examples
+  - [ ] cloudflare-static
+  - [ ] cloudflare-hybrid
+  - [ ] cloudflare-server
+  - [ ] cloudflare-hono
+  - [ ] cloudflare-express
+  - [ ] cloudflare-tanstack-start
+  - [ ] netlify-static
+  - [ ] netlify-hybrid
+  - [ ] netlify-server
+  - [ ] netlify-hono
+  - [ ] netlify-express
+  - [ ] netlify-tanstack-start
+  - [ ] vercel-static
+  - [ ] vercel-hybrid
+  - [ ] vercel-server
+  - [ ] vercel-hono
+  - [ ] vercel-express
+  - [ ] vercel-tanstack-start
+  - [ ] node-static
+  - [ ] node-hybrid
+  - [ ] node-server
+  - [ ] node-hono
+  - [ ] node-express
+  - [ ] node-tanstack-start
+  - [ ] node-handler
+  - [ ] node-cluster
 - [ ] docs
   - [ ] conversion utilities (using remix node package)
     - [ ] toNodeHandler()
@@ -50,7 +50,12 @@
     - [ ] astro
     - [ ] tanstack start
     - [ ] universal deploy
+    - [ ] cloudflare vite plugin
+    - [ ] vite plugin fullstack
 - [ ] publish
 - [ ] Check integration template
   - [ ] publishing/versioning
   - [ ] linting/formatting
+- [ ] tests
+  - [ ] unit
+  - [ ] integration
