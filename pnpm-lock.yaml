@@ -8,7 +8,56 @@ importers:
 
   .: {}
 
-  examples/cloudflare:
+  examples/cloudflare-hono:
+    dependencies:
+      hono:
+        specifier: ^4.12.14
+        version: 4.12.14
+    devDependencies:
+      '@typescript/native-preview':
+        specifier: ^7.0.0-dev.20260324.1
+        version: 7.0.0-dev.20260324.1
+      '@vite-deploy/cloudflare':
+        specifier: workspace:*
+        version: link:../../packages/cloudflare
+      vite:
+        specifier: ^8.0.2
+        version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
+      wrangler:
+        specifier: ^4.76.0
+        version: 4.76.0
+
+  examples/cloudflare-hybrid:
+    devDependencies:
+      '@typescript/native-preview':
+        specifier: ^7.0.0-dev.20260324.1
+        version: 7.0.0-dev.20260324.1
+      '@vite-deploy/cloudflare':
+        specifier: workspace:*
+        version: link:../../packages/cloudflare
+      vite:
+        specifier: ^8.0.2
+        version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
+      wrangler:
+        specifier: ^4.76.0
+        version: 4.76.0
+
+  examples/cloudflare-server:
+    devDependencies:
+      '@typescript/native-preview':
+        specifier: ^7.0.0-dev.20260324.1
+        version: 7.0.0-dev.20260324.1
+      '@vite-deploy/cloudflare':
+        specifier: workspace:*
+        version: link:../../packages/cloudflare
+      vite:
+        specifier: ^8.0.2
+        version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3)
+      wrangler:
+        specifier: ^4.76.0
+        version: 4.76.0
+
+  examples/cloudflare-static:
     devDependencies:
       '@typescript/native-preview':
         specifier: ^7.0.0-dev.20260324.1
@@ -1973,6 +2022,10 @@ packages:
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
+
+  hono@4.12.14:
+    resolution: {integrity: sha512-am5zfg3yu6sqn5yjKBNqhnTX7Cv+m00ox+7jbaKkrLMRJ4rAdldd1xPd/JzbBWspqaQv6RSTrgFN95EsfhC+7w==}
+    engines: {node: '>=16.9.0'}
 
   hosted-git-info@7.0.2:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
@@ -5288,6 +5341,8 @@ snapshots:
   hasown@2.0.2:
     dependencies:
       function-bind: 1.1.2
+
+  hono@4.12.14: {}
 
   hosted-git-info@7.0.2:
     dependencies:

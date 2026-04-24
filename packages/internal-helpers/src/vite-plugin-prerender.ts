@@ -264,6 +264,8 @@ export function createPrerenderPlugin({
             `${PRERENDER_INPUT}.mjs`,
           )
         );
+        // TODO: consider allow generators so that prerendering some routes
+        // can discover more routes
         const paths = normalizePaths(
           await getStaticPaths(prerenderEntrypointMod),
         );

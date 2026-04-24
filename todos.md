@@ -8,10 +8,10 @@
 - [x] emit correct files
 - [ ] headers for static assets
 - [ ] examples
-  - [ ] cloudflare-static
-  - [ ] cloudflare-hybrid
-  - [ ] cloudflare-server
-  - [ ] cloudflare-hono
+  - [x] cloudflare-static
+  - [x] cloudflare-hybrid
+  - [x] cloudflare-server
+  - [x] cloudflare-hono
   - [ ] cloudflare-express
   - [ ] cloudflare-tanstack-start
   - [ ] netlify-static
