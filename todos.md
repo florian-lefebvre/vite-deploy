@@ -12,7 +12,7 @@
   - [x] cloudflare-hybrid
   - [x] cloudflare-server
   - [x] cloudflare-hono
-  - [ ] cloudflare-express
+  - [x] cloudflare-express
   - [ ] cloudflare-tanstack-start
   - [ ] netlify-static
   - [ ] netlify-hybrid
