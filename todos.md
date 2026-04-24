@@ -13,7 +13,7 @@
   - [x] cloudflare-server
   - [x] cloudflare-hono
   - [x] cloudflare-express
-  - [ ] cloudflare-tanstack-start
+  - [x] cloudflare-tanstack-start
   - [ ] netlify-static
   - [ ] netlify-hybrid
   - [ ] netlify-server

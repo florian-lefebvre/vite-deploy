@@ -1,0 +1,8 @@
+:root {
+  --sl-font: var(--font-rubik);
+  --sl-font-mono: var(--font-jetbrains-mono);
+}
+
+.pagination-links > a {
+  box-shadow: none;
+}
