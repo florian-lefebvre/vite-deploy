@@ -1,6 +1,7 @@
 :root {
   --sl-font: var(--font-rubik);
   --sl-font-mono: var(--font-jetbrains-mono);
+  font-variant-ligatures: none;
 }
 
 .pagination-links > a {

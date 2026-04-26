@@ -17,15 +17,24 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: "Guides",
-          items: [
-            // Each item here is one entry in the navigation menu.
-            { label: "Example Guide", slug: "guides/example" },
-          ],
+          label: "Getting started",
+          items: ["quick-start", "philosophy", "how-it-works", "comparison"],
         },
         {
-          label: "Reference",
-          autogenerate: { directory: "reference" },
+          label: "Adapters",
+          autogenerate: { directory: "adapters" },
+        },
+        {
+          label: "Deployment guides",
+          autogenerate: { directory: "deploy" },
+        },
+        {
+          label: "How-to guides",
+          autogenerate: { directory: "how-to" },
+        },
+        {
+          label: "Integration guides",
+          autogenerate: { directory: "integrate-with" },
         },
       ],
       customCss: ["./src/styles/custom.css"],
