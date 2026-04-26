@@ -8,6 +8,8 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Vite Deploy",
+      description: "Deploy your Vite project anywhere",
+      // TODO: favicon
       social: [
         {
           icon: "github",
@@ -39,8 +41,15 @@ export default defineConfig({
       ],
       customCss: ["./src/styles/custom.css"],
       components: {
-        Head: "./src/components/overrides/Head.astro",
+        Head: "./src/components/starlight/Head.astro",
+        PageTitle: "./src/components/starlight/PageTitle.astro",
       },
+      credits: true,
+      editLink: {
+        baseUrl:
+          "https://github.com/florian-lefebvre/vite-deploy/tree/main/docs",
+      },
+      lastUpdated: true,
       plugins: [
         starlightCatppuccin({
           light: {

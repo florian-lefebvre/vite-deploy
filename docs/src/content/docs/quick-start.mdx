@@ -2,6 +2,26 @@
 title: Quick start
 ---
 
+import PackageManagerTabs from '../../components/PackageManagerTabs.astro'
+
 ## New project
+
+<PackageManagerTabs>
+  <Fragment slot="npm">
+    ```sh
+    npm install x -D
+    ```
+  </Fragment>
+  <Fragment slot="pnpm">
+    ```sh
+    pnpm add x -D
+    ```
+  </Fragment>
+  <Fragment slot="yarn">
+    ```sh
+    yarn add x -D
+    ```
+  </Fragment>
+</PackageManagerTabs>
 
 ## Existing project
