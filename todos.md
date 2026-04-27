@@ -35,7 +35,7 @@
   - [ ] node-handler
   - [ ] node-cluster
 - [ ] docs
-  - [ ] conversion utilities (using remix node package)
+  - [ ] conversion utilities (using srvx package)
     - [ ] toNodeHandler()
     - [ ] toWebHandler()
   - [ ] philosophy
@@ -59,3 +59,4 @@
 - [ ] tests
   - [ ] unit
   - [ ] integration
+- [ ] update examples not to use workspace protocol

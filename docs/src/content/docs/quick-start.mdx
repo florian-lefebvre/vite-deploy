@@ -2,26 +2,80 @@
 title: Quick start
 ---
 
-import PackageManagerTabs from '../../components/PackageManagerTabs.astro'
+import PackageManagerTabs from "../../components/PackageManagerTabs.astro"
+import { Steps, Tabs, TabItem } from "@astrojs/starlight/components"
 
 ## New project
 
-<PackageManagerTabs>
-  <Fragment slot="npm">
-    ```sh
-    npm install x -D
-    ```
-  </Fragment>
-  <Fragment slot="pnpm">
-    ```sh
-    pnpm add x -D
-    ```
-  </Fragment>
-  <Fragment slot="yarn">
-    ```sh
-    yarn add x -D
-    ```
-  </Fragment>
-</PackageManagerTabs>
+<Steps>
 
-## Existing project
+1. Download a basic template for your favorite host:
+
+    <Tabs>
+      <TabItem label="Cloudflare" icon="cloudflare">
+        ```sh
+        npx giget@latest gh:florian-lefebvre/vite-deploy/examples/cloudflare-server
+        ```
+      </TabItem>
+      <TabItem label="Netlify" icon="netlify">
+        ```sh
+        npx giget@latest gh:florian-lefebvre/vite-deploy/examples/netlify-server
+        ```
+      </TabItem>
+      <TabItem label="Node" icon="node">
+        ```sh
+        npx giget@latest gh:florian-lefebvre/vite-deploy/examples/node-server
+        ```
+      </TabItem>
+      <TabItem label="Vercel" icon="vercel">
+        ```sh
+        npx giget@latest gh:florian-lefebvre/vite-deploy/examples/vercel-server
+        ```
+      </TabItem>
+    </Tabs>
+
+2. Install dependencies:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm install
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm install
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn install
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+3. Start the development server:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm run dev
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+</Steps>
+
+## Existing Vite project
+
+TODO: link to guides (deployment or adapter?)

@@ -2,6 +2,7 @@
 import { defineConfig, fontProviders } from "astro/config";
 import starlight from "@astrojs/starlight";
 import starlightCatppuccin from "@catppuccin/starlight";
+import starlightLinksValidator from "starlight-links-validator";
 
 // https://astro.build/config
 export default defineConfig({
@@ -60,6 +61,7 @@ export default defineConfig({
             accent: "sky",
           },
         }),
+        starlightLinksValidator(),
       ],
     }),
   ],
