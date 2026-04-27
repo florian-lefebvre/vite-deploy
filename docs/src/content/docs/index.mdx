@@ -1,10 +1,10 @@
 ---
 title: Deploy your Vite project anywhere
-description: Get started building your docs site with Starlight.
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-# TODO: vite logo?
+  image:
+    light: ../../assets/vite-deploy-icon.svg
+    dark: ../../assets/vite-deploy-icon-dark.svg
   actions:
     - text: Get started
       link: /quick-start/
@@ -18,20 +18,19 @@ hero:
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Next steps
+## Features
 
 <CardGrid>
-  <Card title="Update content" icon="pencil">
-    Edit `src/content/docs/index.mdx` to see this page change.
+  <Card title="Deploy anywhere" icon="rocket">
+    Cloudflare, Netlify, Node and Vercel [adapters](#TODO:). [Guides](#TODO:) for popular hosting platforms.
   </Card>
-  <Card title="Change page layout" icon="document">
-    Delete `template: splash` in `src/content/docs/index.mdx` to display a
-    sidebar on this page.
+  <Card title="Prerendering" icon="document">
+    Supports [prerendering](#TODO:) (SSG), on-demand rendering (SSR) or both.
   </Card>
-  <Card title="Add new content" icon="add-document">
-    Add Markdown or MDX files to `src/content/docs` to create new pages.
+  <Card title="Integrate with other tools" icon="setting">
+    Built on web standards, easy to [integrate](#TODO:) with your stack.
   </Card>
-  <Card title="Configure your site" icon="setting">
-    Edit your `sidebar` and other config in `astro.config.mjs`.
+  <Card title="Open-Source" icon="github">
+    Want to help us? [Contribute on GitHub](https://github.com/florian-lefebvre/vite-deploy).
   </Card>
 </CardGrid>

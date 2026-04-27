@@ -10,7 +10,11 @@ export default defineConfig({
     starlight({
       title: "Vite Deploy",
       description: "Deploy your Vite project anywhere",
-      // TODO: favicon
+      logo: {
+        light: "./src/assets/vite-deploy.svg",
+        dark: "./src/assets/vite-deploy-dark.svg",
+        replacesTitle: true,
+      },
       social: [
         {
           icon: "github",

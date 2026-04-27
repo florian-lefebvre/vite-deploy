@@ -7,3 +7,7 @@
 .pagination-links > a {
   box-shadow: none;
 }
+
+.hero h1 {
+  --sl-line-height-headings: 1;
+}
