@@ -2,10 +2,85 @@
 title: Comparison
 ---
 
-- astro (adapters)
-- nitro
-- vike
-- universal-deploy
-- cloudflare vite plugin
-- netlify vite plugin
-- srvx
+Every tool has tradeoffs. This page will help you understand if Vite Deploy is a good fit for what you're building.
+
+While we aim to provide an accurate and fair comparison, please note that this page may not capture every nuance or recent update of each library. We recommend reviewing the official documentation and trying out each solution to make the most informed decision for your specific use case.
+
+## Astro
+
+[Astro](https://astro.build) is the web framework for building content-driven websites like blogs, marketing, and e-commerce. It is host agnostic and comes with official adapters for Cloudlare, Netlify, Node and Vercel.
+
+Key differences:
+
+- Vite Deploy is not comparable to Astro itself, but to its adapters.
+- An Astro adapter does more things than a Vite Deploy adapter, such as setting up an image service or a session driver.
+- Astro owns the prerendering process entirely.
+
+If you're using Astro **you won't use Vite Deploy directly**, but it could be used by Astro adapters under the hood.
+
+## Cloudflare Vite plugin
+
+The [Cloudflare Vite plugin](https://developers.cloudflare.com/workers/vite-plugin/) (`@cloudflare/vite-plugin`) is the official Cloudflare integration for Vite. It uses the Vite Environment API to run your Worker code inside `workerd` (the same runtime as production) during development.
+
+Key differences:
+
+- Vite Deploy's Cloudflare adapter uses the Vite plugin under the hood, and adds [prerendering](#TODO:) capabilities.
+
+**We recommend using Vite Deploy directly.**
+
+## Netlify Vite plugin
+
+The [Netlify Vite plugin](https://docs.netlify.com/build/frameworks/framework-setup-guides/vite/) (`@netlify/vite-plugin`) is the official Netlify integration for Vite. It emulates the full Netlify platform inside your Vite dev server, giving you access to serverless functions, edge functions, blobs, the Cache API, Image CDN, redirects, and more — all without needing the Netlify CLI.
+
+Key differences:
+
+- The Netlify plugin emulates Netlify-specific platform primitives in dev, while Vite Deploy focuses on the deployment layer.
+- It only supports building for [Tanstack Start](#TODO:).
+- Vite Deploy's Netlify adapter uses the Vite plugin under the hood, and adds [prerendering](#TODO:) capabilities as well as request handling with the Netlify context.
+
+We are looking into upstreaming improvements from Vite Deploy into the Netlify Vite plugin. **We recommend using Vite Deploy directly.**
+
+## Nitro
+
+[Nitro](https://nitro.build/) is a full-featured server toolkit that extends your Vite application with a production-ready server. It has its own file-system routing, built-in key-value storage, caching, a database layer, and plugins — and it can deploy to Node.js, Cloudflare Workers, Deno, Bun, AWS Lambda, Vercel, Netlify, and more.
+
+Key differences:
+
+- Nitro is a complete server framework with opinions about routing, storage, and caching. Vite Deploy is a minimal primitive that only handles deployment and prerendering.
+- Nitro manages its own server entry and routing conventions. Vite Deploy is transparent and lets you bring your own server handler.
+
+**Use Nitro if you want a batteries-included server framework** with built-in routing and storage abstractions. Use Vite Deploy if you want a focused, low-level primitive that stays out of the way of your existing stack.
+
+## SRVX
+
+[SRVX](https://srvx.h3.dev/) is a universal server runtime adapter. It lets you write a single Web-standard `fetch` handler and run it on Node.js, Deno, and Bun with a consistent API. It has zero dependencies and provides a CLI with a watcher, logger, and static file serving.
+
+Key differences:
+
+- SRVX is a runtime abstraction for running servers across JavaScript runtimes. Vite Deploy is a deployment abstraction for shipping Vite projects to hosting platforms.
+- SRVX doesn't build or bundle your project; it only handles how the server is started and how requests are handled at runtime.
+
+These tools have different scopes and can be used together. **Use SRVX if you need to convert between fetch-based and Node.js `http` handlers across runtimes.** Vite Deploy handles the deployment concerns on top of that.
+
+## Universal Deploy
+
+[Universal Deploy](https://github.com/universal-deploy/universal-deploy) is a low-level convention layer for the Vite ecosystem. It provides a shared store (`@universal-deploy/store`) where frameworks register their server entries and routing metadata, and a common format that deployment providers can read to automatically wire up deployments — solving the N×M glue-code problem between frameworks and hosting providers.
+
+Key differences:
+
+- Universal Deploy is infrastructure for framework and deployment provider authors, not an end-user tool. Vite Deploy is a user-facing adapter library.
+- Universal Deploy defines a convention; Vite Deploy is a concrete implementation of deployment adapters.
+- It is used as research for a Vite native solution.
+
+**Use Vite Deploy directly in your project.** Universal Deploy is intended to be adopted by frameworks and deployment providers behind the scenes.
+
+## Vike
+
+[Vike](https://vike.dev/) is a minimal-lock-in meta-framework for building SSR, SPA, and SSG applications on top of Vite. It handles page routing, data fetching, server-side rendering, layouts, and more.
+
+Key differences:
+
+- Vike is a full meta-framework. Vite Deploy is not comparable to Vike itself, but to its deployment mechanism.
+- Vike recently introduced built-in `+server.js` support powered by Universal Deploy, which handles deployment in a similar space to Vite Deploy.
+
+**Use Vike if you need a meta-framework** with SSR, routing, and a component model. Use Vite Deploy if you already have a server handler and just need a deployment layer.

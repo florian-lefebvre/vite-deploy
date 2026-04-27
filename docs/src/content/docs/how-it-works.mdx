@@ -2,11 +2,23 @@
 title: How it works
 ---
 
-- similar api/concepts for each adapter but each is different to account for host specific features
-- request handler (route requests through vite to the handler)
-    - dev
-    - ssg
-- ssr: entrypoint. can be the same or distinct server entrypoint
-- ssg: use prerender entrypoint to give you control
+Vite Deploy provides a unified set of concepts across all adapters, while still allowing each adapter to account for host-specific features and constraints.
 
-http ftw
+## Adapters
+
+Each adapter shares the same API and mental model, but its implementation differs to take advantage of the specifics of its deployment target. This means you can switch between adapters with minimal changes to your application code.
+
+## Request handler
+
+The request handler is the bridge between the deployment host and your application. It routes incoming HTTP requests:
+
+- Through Vite in development and during prerendering.
+- Directly to your handler in production.
+
+## On-demand rendering (SSR)
+
+For on-demand rendering, you provide a server entrypoint. Depending on the adapter, this can either be the same request handler as or a distinct server-only entrypoint.
+
+## Prerendering (SSG)
+
+For static site generation, you provide a [prerender entrypoint](#TODO:). This gives you explicit control over which routes are pre-rendered at build time, rather than relying on automatic route discovery.
