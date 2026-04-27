@@ -25,7 +25,13 @@ export default defineConfig({
       sidebar: [
         {
           label: "Getting started",
-          items: ["quick-start", "philosophy", "how-it-works", "comparison"],
+          items: [
+            "quick-start",
+            "philosophy",
+            "how-it-works",
+            "comparison",
+            "outputs",
+          ],
         },
         {
           label: "Adapters",
