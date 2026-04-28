@@ -38,12 +38,12 @@ export default defineConfig({
           autogenerate: { directory: "adapters" },
         },
         {
-          label: "Deployment guides",
-          autogenerate: { directory: "deploy" },
-        },
-        {
           label: "How-to guides",
           autogenerate: { directory: "how-to" },
+        },
+        {
+          label: "Deployment guides",
+          autogenerate: { directory: "deploy" },
         },
         {
           label: "Integration guides",

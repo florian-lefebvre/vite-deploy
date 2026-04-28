@@ -15,7 +15,7 @@ Cloudflare's [Developer Platform](https://developers.cloudflare.com/) lets you d
 
 ## Installation
 
-### Starter
+### Starter template
 
 <Steps>
 
@@ -100,9 +100,9 @@ The following steps assume you already have a Vite project.
     import { defineConfig } from "vite";
 
     export default defineConfig({
-        plugins: [cloudflare({
-            output: "server"
-        })]
+      plugins: [cloudflare({
+        output: "server"
+      })]
     });
     ```
 
@@ -110,10 +110,10 @@ The following steps assume you already have a Vite project.
 
     ```jsonc title="package.json" ins={4}
     {
-        "scripts": {
-            // ...
-            "cf-typegen": "wrangler types"
-        }
+      "scripts": {
+        // ...
+        "cf-typegen": "wrangler types"
+      }
     }
     ```
 
@@ -121,16 +121,16 @@ The following steps assume you already have a Vite project.
 
     ```jsonc title="tsconfig.json" ins={5,10}
     {
-        "compilerOptions": {
-            "types": [
-                "vite/client",
-                "@vite-deploy/cloudflare/types"
-            ]
-        },
-        "include": [
-            "src",
-            "worker-configuration.d.ts"
+      "compilerOptions": {
+        "types": [
+          "vite/client",
+          "@vite-deploy/cloudflare/types"
         ]
+      },
+      "include": [
+        "src",
+        "worker-configuration.d.ts"
+      ]
     }
     ```
 
@@ -138,11 +138,11 @@ The following steps assume you already have a Vite project.
 
     ```jsonc title="wrangler.jsonc"
     {
-        "$schema": "./node_modules/wrangler/config-schema.json",
-        "name": "your-site",
-        // Set this to today's date
-        "compatibility_date": "2026-03-17",
-        "main": "./src/worker.ts",
+      "$schema": "./node_modules/wrangler/config-schema.json",
+      "name": "your-site",
+      // Set this to today's date
+      "compatibility_date": "2026-03-17",
+      "main": "./src/worker.ts",
     }
     ```
 
@@ -150,10 +150,10 @@ The following steps assume you already have a Vite project.
 
     ```ts title="src/worker.ts"
     export default {
-        fetch(request) {
-            const url = new URL(request.url);
-            return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
-        },
+      fetch(request) {
+        const url = new URL(request.url);
+        return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+      },
     } satisfies ExportedHandler<Env>;
     ```
 
@@ -190,3 +190,17 @@ The Cloudflare adapter accepts [output related options](/outputs/). It also acce
 </p>
 
 Options forwarded to [`@cloudflare/vite-plugin`](https://developers.cloudflare.com/workers/vite-plugin/).
+
+```js title="vite.config.js" ins={7-9}
+import cloudflare from "@vite-deploy/cloudflare";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [cloudflare({
+    // ...
+    config: {
+      inspectorPort: 9230
+    }
+  })]
+});
+```
