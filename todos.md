@@ -60,3 +60,9 @@
   - [ ] unit
   - [ ] integration
 - [ ] update examples not to use workspace protocol
+- [ ] feedback on docs
+- [ ] deploy docs
+- [ ] move to org
+- [ ] update links to reflect move to org
+- [ ] needs basic web-runes website
+- [ ] todos
