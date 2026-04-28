@@ -3,12 +3,14 @@ import type { NetlifyPluginOptions } from "@netlify/vite-plugin";
 import type {
   PrerenderOptions,
   Entrypoint,
+  PublicHandlerOptions,
 } from "@vite-deploy/internal-helpers";
 
-export type Options = PrerenderOptions & {
-  config?: Omit<NetlifyPluginOptions, "middleware">;
-  handlerEntrypoint: Entrypoint;
-};
+export type Options = PrerenderOptions &
+  PublicHandlerOptions & {
+    config?: Omit<NetlifyPluginOptions, "middleware">;
+    handlerEntrypoint: Entrypoint;
+  };
 
 export interface ExportedHandler {
   fetch: (request: Request, context: Context) => Response | Promise<Response>;

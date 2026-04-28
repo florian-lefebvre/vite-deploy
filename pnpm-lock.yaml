@@ -237,6 +237,9 @@ importers:
 
   packages/internal-helpers:
     dependencies:
+      sirv:
+        specifier: ^3.0.2
+        version: 3.0.2
       vite:
         specifier: ^8.0.0
         version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.3)
@@ -262,9 +265,6 @@ importers:
       '@vite-deploy/internal-helpers':
         specifier: workspace:*
         version: link:../internal-helpers
-      sirv:
-        specifier: ^3.0.2
-        version: 3.0.2
       vite:
         specifier: ^8.0.0
         version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.3)
@@ -284,9 +284,6 @@ importers:
       '@vite-deploy/internal-helpers':
         specifier: workspace:*
         version: link:../internal-helpers
-      sirv:
-        specifier: ^3.0.2
-        version: 3.0.2
       vite:
         specifier: ^8.0.0
         version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.3)
@@ -306,9 +303,6 @@ importers:
       '@vite-deploy/internal-helpers':
         specifier: workspace:*
         version: link:../internal-helpers
-      sirv:
-        specifier: ^3.0.2
-        version: 3.0.2
       vite:
         specifier: ^8.0.0
         version: 8.0.2(@types/node@25.5.0)(esbuild@0.27.3)(jiti@2.6.1)(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.3)

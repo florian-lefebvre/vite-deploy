@@ -27,3 +27,7 @@ export interface PrerenderEntrypoint {
 }
 
 export type Entrypoint = string | URL;
+
+export interface PublicHandlerOptions {
+  requestLoggingLevel?: "silent" | "info";
+}

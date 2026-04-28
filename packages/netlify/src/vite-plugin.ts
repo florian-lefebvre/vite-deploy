@@ -2,19 +2,13 @@ import netlifyPlugin from "@netlify/vite-plugin";
 import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
   createBuildPlugin,
+  createHandlerPlugin,
   createPrerenderPlugin,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
-import { styleText } from "node:util";
-import sirv from "sirv";
-import {
-  isRunnableDevEnvironment,
-  type Connect,
-  type Plugin,
-  type ResolvedConfig,
-} from "vite";
+import { type Plugin } from "vite";
 import packageJson from "../package.json" with { type: "json" };
 import type { ExportedHandler, Options } from "./types.js";
 
@@ -25,12 +19,6 @@ const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-ha
 const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
   "\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
 
-function getTimeStat(buildTime: number): string {
-  return buildTime < 750
-    ? `${Math.round(buildTime)}ms`
-    : `${(buildTime / 1000).toFixed(2)}s`;
-}
-
 function validateMod(mod: Record<string, any>) {
   if (!("default" in mod && "fetch" in mod.default)) {
     throw new Error("Handler entrypoint returns an invalid shape");
@@ -40,130 +28,17 @@ function validateMod(mod: Record<string, any>) {
   };
 }
 
-function createMiddleware({
-  getMod,
-  onResponse,
-}: {
-  getMod: () => Promise<Record<string, any>>;
-  onResponse: ((response: Response, duration: number) => void) | undefined;
-}): Connect.NextHandleFunction {
-  return async function middleware(req, res, next) {
-    let request: Request | undefined;
-
+function parseBase64JSON<T = unknown>(header: any): T | undefined {
+  if (typeof header === "string") {
     try {
-      const now = performance.now();
-      // Built in vite middleware trims out the base path when passing in the request
-      // We can restore it by using the `originalUrl` property
-      // This makes sure the worker receives the correct url in both dev using vite and production
-      if (req.originalUrl) {
-        req.url = req.originalUrl;
-      }
-      request = createRequest(req, res);
-
-      const mod = validateMod(await getMod());
-
-      const isHttps = req.headers["x-forwarded-proto"] === "https";
-      const parseBase64JSON = <T = unknown>(header: string): T | undefined => {
-        if (typeof req.headers[header] === "string") {
-          try {
-            return JSON.parse(
-              Buffer.from(req.headers[header] as string, "base64").toString(
-                "utf8",
-              ),
-            );
-          } catch {}
-        }
-      };
-      const isRunningInNetlify = Boolean(
-        process.env.NETLIFY ||
-        process.env.NETLIFY_LOCAL ||
-        process.env.NETLIFY_DEV,
-      );
-
-      // TODO: implement missing
-      let response = await mod.default.fetch(request, {
-        get url() {
-          return new URL(request!.url);
-        },
-        // The dev server is a long running process, so promises will run even with a noop
-        waitUntil: () => {},
-        account: parseBase64JSON("x-nf-account-info") ?? {
-          id: "mock-netlify-account-id",
-        },
-        deploy: {
-          context: "dev",
-          id:
-            typeof req.headers["x-nf-deploy-id"] === "string"
-              ? req.headers["x-nf-deploy-id"]
-              : "mock-netlify-deploy-id",
-          published: false,
-        },
-        site: parseBase64JSON("x-nf-site-info") ?? {
-          id: "mock-netlify-site-id",
-          name: "mock-netlify-site.netlify.app",
-          // TODO: do not hardcode 4321
-          url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
-        },
-        geo: parseBase64JSON("x-nf-geo") ?? {
-          city: "Mock City",
-          country: { code: "mock", name: "Mock Country" },
-          subdivision: { code: "SD", name: "Mock Subdivision" },
-          timezone: "UTC",
-          longitude: 0,
-          latitude: 0,
-        },
-        ip:
-          typeof req.headers["x-nf-client-connection-ip"] === "string"
-            ? req.headers["x-nf-client-connection-ip"]
-            : (req.socket.remoteAddress ?? "127.0.0.1"),
-        server: {
-          region: "local-dev",
-        },
-        requestId:
-          typeof req.headers["x-nf-request-id"] === "string"
-            ? req.headers["x-nf-request-id"]
-            : "mock-netlify-request-id",
-        get cookies(): never {
-          throw new Error("Not implemented.");
-        },
-        json: (input) => Response.json(input),
-        log: console.info,
-        next() {
-          throw new Error("Not implemented.");
-        },
-        get params(): never {
-          throw new Error("Not implemented.");
-        },
-        rewrite() {
-          throw new Error("Not implemented.");
-        },
-      });
-
-      // Vite uses HTTP/2 when `server.https` or `preview.https` is enabled
-      if (req.httpVersionMajor === 2) {
-        // HTTP/2 disallows use of the `transfer-encoding` header
-        response.headers.delete("transfer-encoding");
-      }
-
-      onResponse?.(response, performance.now() - now);
-
-      await sendResponse(res, response);
-    } catch (error) {
-      if (request?.signal.aborted) {
-        // If the request was aborted, ignore the error
-        return;
-      }
-
-      next(error);
-    }
-  };
+      return JSON.parse(Buffer.from(header, "base64").toString("utf8"));
+    } catch {}
+  }
 }
 
-function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let config: ResolvedConfig;
-
+function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
   return {
-    name: `${PACKAGE_NAME}:handler`,
+    name: `${PACKAGE_NAME}:config`,
     sharedDuringBuild: true,
     applyToEnvironment(environment) {
       return environment.name === VITE_ENVIRONMENT_NAMES.server;
@@ -198,9 +73,6 @@ function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
         };
       }
     },
-    configResolved(_config) {
-      config = _config;
-    },
     resolveId: {
       filter: {
         id: new RegExp(
@@ -233,68 +105,13 @@ export const config = {
 `;
       },
     },
-    configureServer(server) {
-      return () => {
-        server.middlewares.use(
-          createMiddleware({
-            async getMod() {
-              const serverEnv =
-                server.environments[VITE_ENVIRONMENT_NAMES.server];
-              if (!isRunnableDevEnvironment(serverEnv)) {
-                throw new Error("Non runnable server env");
-              }
-              return await serverEnv.runner.import(
-                HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
-              );
-            },
-            onResponse: undefined,
-          }),
-        );
-      };
-    },
-    configurePreviewServer(server) {
-      server.middlewares.use(
-        sirv(
-          join(
-            config.root,
-            config.environments[VITE_ENVIRONMENT_NAMES.client]!.build.outDir,
-          ),
-          {
-            dev: true,
-          },
-        ),
-      );
-      server.middlewares.use(
-        createMiddleware({
-          async getMod() {
-            const mod = await import(
-              join(
-                config.root,
-                config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
-                  .outDir,
-                `${MAIN_INPUT}.mjs`,
-              )
-            );
-            return {
-              default: {
-                fetch: mod.default,
-              },
-            };
-          },
-          onResponse(response, duration) {
-            console.log(
-              `${styleText("bold", "GET")} ${response.url || "/"} ${styleText("bold", styleText("green", response.status.toString()))} ${response.ok ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
-            );
-          },
-        }),
-      );
-    },
   };
 }
 
 export function netlify({
   config,
   handlerEntrypoint,
+  requestLoggingLevel,
   ...userOptions
 }: Options): Array<Plugin> {
   return [
@@ -302,7 +119,103 @@ export function netlify({
       ...config,
       middleware: true,
     }),
+    configPlugin({ handlerEntrypoint }),
     createBuildPlugin(),
+    createHandlerPlugin({
+      requestLoggingLevel,
+      getDevMod: ({ serverEnvironment }) =>
+        serverEnvironment.runner.import(HANDLER_ENTRYPOINT_VIRTUAL_MODULE),
+      getPreviewMod: async ({ outputDir }) => {
+        const mod = await import(join(outputDir, `${MAIN_INPUT}.mjs`));
+        return {
+          default: {
+            fetch: mod.default,
+          },
+        };
+      },
+      onRequest: async ({ req, res, mod: unsafeMod }) => {
+        const mod = validateMod(unsafeMod);
+
+        let request: Request | undefined;
+
+        try {
+          request = createRequest(req, res);
+
+          const isHttps = req.headers["x-forwarded-proto"] === "https";
+          const isRunningInNetlify = Boolean(
+            process.env.NETLIFY ||
+            process.env.NETLIFY_LOCAL ||
+            process.env.NETLIFY_DEV,
+          );
+
+          // TODO: implement missing
+          const response = await mod.default.fetch(request, {
+            get url() {
+              return new URL(request!.url);
+            },
+            // The dev server is a long running process, so promises will run even with a noop
+            waitUntil: () => {},
+            account: parseBase64JSON("x-nf-account-info") ?? {
+              id: "mock-netlify-account-id",
+            },
+            deploy: {
+              context: "dev",
+              id:
+                typeof req.headers["x-nf-deploy-id"] === "string"
+                  ? req.headers["x-nf-deploy-id"]
+                  : "mock-netlify-deploy-id",
+              published: false,
+            },
+            site: parseBase64JSON("x-nf-site-info") ?? {
+              id: "mock-netlify-site-id",
+              name: "mock-netlify-site.netlify.app",
+              // TODO: do not hardcode 4321
+              url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
+            },
+            geo: parseBase64JSON("x-nf-geo") ?? {
+              city: "Mock City",
+              country: { code: "mock", name: "Mock Country" },
+              subdivision: { code: "SD", name: "Mock Subdivision" },
+              timezone: "UTC",
+              longitude: 0,
+              latitude: 0,
+            },
+            ip:
+              typeof req.headers["x-nf-client-connection-ip"] === "string"
+                ? req.headers["x-nf-client-connection-ip"]
+                : (req.socket.remoteAddress ?? "127.0.0.1"),
+            server: {
+              region: "local-dev",
+            },
+            requestId:
+              typeof req.headers["x-nf-request-id"] === "string"
+                ? req.headers["x-nf-request-id"]
+                : "mock-netlify-request-id",
+            get cookies(): never {
+              throw new Error("Not implemented.");
+            },
+            json: (input) => Response.json(input),
+            log: console.info,
+            next() {
+              throw new Error("Not implemented.");
+            },
+            get params(): never {
+              throw new Error("Not implemented.");
+            },
+            rewrite() {
+              throw new Error("Not implemented.");
+            },
+          });
+          await sendResponse(res, response);
+
+          return { type: "success" };
+        } catch (error) {
+          return request?.signal.aborted
+            ? { type: "error", aborted: true }
+            : { type: "error", aborted: false, error };
+        }
+      },
+    }),
     createPrerenderPlugin({
       userOptions,
       onBuildDone: async ({ output, serverEnvironment }) => {
@@ -320,6 +233,5 @@ export function netlify({
         );
       },
     }),
-    handlerPlugin({ handlerEntrypoint }),
   ];
 }

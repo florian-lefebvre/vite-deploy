@@ -1,11 +1,13 @@
 import type {
   PrerenderOptions,
   Entrypoint,
+  PublicHandlerOptions,
 } from "@vite-deploy/internal-helpers";
 
-export type Options = PrerenderOptions & {
-  handlerEntrypoint: Entrypoint;
-};
+export type Options = PrerenderOptions &
+  PublicHandlerOptions & {
+    handlerEntrypoint: Entrypoint;
+  };
 
 export interface ExportedHandler {
   fetch: (request: Request) => Response | Promise<Response>;
