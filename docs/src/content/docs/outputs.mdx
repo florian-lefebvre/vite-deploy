@@ -1,33 +1,225 @@
 ---
 title: Outputs
+tableOfContents:
+  maxHeadingLevel: 4
 ---
 
-intro
+Vite Deploy allows you to render your Vite project statically (SSG), on-demand (SSR) or both (hybrid).
 
-TODO:
+Below is a recap of requirements for each output:
 
-## Static (SSG)
+| Output               | Static | Hybrid | Server |
+| -------------------- | ------ | ------ | ------ |
+| Handler entrypoint   | Yes    | Yes    | Yes    |
+| Prerender entrypoint | Yes    | Yes    | No     |
+| Server entrypoint\*  | No     | Yes    | Yes    |
 
-Server output is cleaned
+\* Some adapters require an extra server entrypoint for on-demand rendering.
 
-### `output: "static"`
+## Outputs
+
+### Static (SSG)
+
+In development, the request handler is used for requests. During the build:
+
+1. The [prerender entrypoint](#prerenderentrypoint) is called to determine which routes should be rendered statically.
+2. Requests are sent for each route, handled by the request handler. The result is stored as static HTML.
+3. The server artifacts are removed, only leaving static assets.
+
+### Server (SSR)
+
+In development, the request handler is used for requests. During the build:
+
+1. A standard Vite build takes place
+2. Some adapters require a different server entrypoint for production.
+3. No artifacts are removed.
+
+### Hybrid
+
+In development, the request handler is used for requests. During the build:
+
+1. The [prerender entrypoint](#prerenderentrypoint) is called to determine which routes should be rendered statically.
+2. Requests are sent for each route, handled by the request handler. The result is stored as static HTML.
+3. Some adapters require a different server entrypoint for production.
+4. No artifacts are removed.
+
+## Configuration reference
+
+### `output`
+
+<p>**Type:** `"static" | "server" | "hybrid"`</p>
+
+Specifies the output target for builds:
+
+```js title="vite.config.js" {7}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        output: "hybrid"
+    })]
+});
+```
 
 ### `prerender`
 
-#### `entrypoint`
+<p>
+**Type:** `PrerenderOptions | undefined`<br/>
+**Default:** `undefined`
+</p>
 
-#### `headers`
+Specifies options related to prerendering. Required if [`output`](#output) is set to `"static"` or `"hybrid"`:
 
-#### `format`
+```js title="vite.config.js" {7-8}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
 
-## Server (SSR)
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        output: "static",
+        prerender: { /* ... */ }
+    })]
+});
+```
 
-Server and client assets are kept
+#### `prerender.entrypoint`
 
-### `output: "static"`
+<p>**Type:** `string | URL`</p>
 
-server entrypoint depends on adapter
+Specifies what module should be used. It accepts:
 
-## Hybrid
+- Paths relative to Vite's root: `./src/prerender.ts`.
+- Absolute paths: `/foo/prerender.ts`.
+- Package specifiers: `@my-pkg/prerender`.
+- URLs: `new URL("./src/prerender.ts", import.meta.url)`.
 
-Same as SSG but server output is not cleaned
+```js title="vite.config.js" {9}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        output: "static",
+        prerender: {
+            entrypoint: "./src/prerender.ts"
+        }
+    })]
+});
+```
+
+The server entrypoint must return a `PrerenderEntrypoint`, which lists URLs to prerender. It is processed by Vite:
+
+```ts title="src/prerender.ts"
+import type { PrerenderEntrypoint } from "@vite-deploy/netlify";
+
+export default {
+    getStaticPaths() {
+        return ["/"];
+    },
+} satisfies PrerenderEntrypoint;
+```
+
+`getStaticPaths()` can also be asynchronous.
+
+#### `prerender.headers`
+
+<p>
+**Type:** `Headers | undefined`<br/>
+**Default:** `undefined`
+</p>
+
+Specifies headers to use during prerendering:
+
+```js title="vite.config.js" {10}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        output: "static",
+        prerender: {
+            // ...
+            headers: new Headers([["x-foo", "bar"]])
+        }
+    })]
+});
+```
+
+These headers can then be retrieved during the request:
+
+```ts title="src/handler.ts"
+import type { ExportedHandler } from "@vite-deploy/netlify";
+
+export default {
+    fetch(request) {
+        if (request.headers.has("x-foo")) {
+            // ...
+        }
+        // ...
+    },
+} satisfies ExportedHandler;
+
+```
+
+#### `prerender.format`
+
+<p>
+**Type:** `"directory" | "file"`<br/>
+**Default:** `"file"`
+</p>
+
+Specifies the output file format of each page:
+
+- `"file"`: Vite Deploy will generate an HTML file named for each page route. (e.g. `/foo` and `/foo.html` both build the file `/foo.html`).
+- `"directory"`: Vite Deploy will generate a directory with a nested `index.html` file for each page. (e.g. `/foo` and `/foo.html` both build the file `/foo/index.html`).
+
+```js title="vite.config.js" {10}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        output: "static",
+        prerender: {
+            // ...
+            output: "directory"
+        }
+    })]
+});
+```
+
+## `import.meta.env.PRERENDER`
+
+In addition to [built-in Vite environment variables](https://vite.dev/guide/env-and-mode.html), Vite Deploy exposes `import.meta.env.PRERENDER`.
+
+It's a boolean statically replaced which lets you know if the file is running during prerendering or not.
+
+This is useful, for example, to expose some routes for prerendering only in [hybrid builds](#hybrid):
+
+```ts title="src/handler.ts" {6-8}
+import type { ExportedHandler } from "@vite-deploy/netlify";
+import { Hono } from "hono";
+
+const app = new Hono();
+
+if (import.meta.env.PRERENDER) {
+  app.get("/", (c) => c.html("<div>foo</div>"));
+}
+
+app.get(
+  "*",
+  (c) =>
+    new Response(
+      `Running ${new URL(c.req.url).pathname} in ${navigator.userAgent}!`,
+    ),
+);
+
+export default app satisfies ExportedHandler;
+
+```
