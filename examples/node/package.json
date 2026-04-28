@@ -11,9 +11,9 @@
   },
   "devDependencies": {
     "@remix-run/node-fetch-server": "^0.13.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260324.1",
+    "@typescript/native-preview": "7.0.0-dev.20260428.1",
     "@vite-deploy/node": "workspace:*",
     "sirv": "^3.0.2",
-    "vite": "^8.0.2"
+    "vite": "^8.0.10"
   }
 }

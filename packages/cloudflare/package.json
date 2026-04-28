@@ -18,11 +18,11 @@
     "wrangler": "^4.76.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260324.1"
+    "@types/node": "^25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260428.1"
   },
   "dependencies": {
-    "@cloudflare/vite-plugin": "^1.30.0",
+    "@cloudflare/vite-plugin": "^1.34.0",
     "@vite-deploy/internal-helpers": "workspace:*"
   }
 }

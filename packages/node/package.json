@@ -17,8 +17,8 @@
     "vite": "^8.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260324.1"
+    "@types/node": "^25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260428.1"
   },
   "dependencies": {
     "@remix-run/node-fetch-server": "^0.13.0",

@@ -14,9 +14,9 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "@typescript/native-preview": "^7.0.0-dev.20260324.1",
+    "@typescript/native-preview": "7.0.0-dev.20260428.1",
     "@vite-deploy/cloudflare": "workspace:*",
-    "vite": "^8.0.2",
-    "wrangler": "^4.76.0"
+    "vite": "^8.0.10",
+    "wrangler": "^4.86.0"
   }
 }
