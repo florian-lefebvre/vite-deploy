@@ -34,7 +34,7 @@ export default defineConfig({
           ],
         },
         {
-          label: "Adapters",
+          label: "Adapters reference",
           autogenerate: { directory: "adapters" },
         },
         {
