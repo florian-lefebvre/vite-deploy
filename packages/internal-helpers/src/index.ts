@@ -10,4 +10,3 @@ export type {
   HybridOptions,
 } from "./types.js";
 export { VITE_ENVIRONMENT_NAMES } from "./constants.js";
-export { normalizeEntrypoint } from "./utils.js";

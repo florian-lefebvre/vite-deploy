@@ -2,7 +2,6 @@ import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
   createBuildPlugin,
   createPrerenderPlugin,
-  normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { rename, rm } from "node:fs/promises";
@@ -90,8 +89,6 @@ function createMiddleware({
 }
 
 function handlerPlugin(options: Options): Plugin {
-  let resolvedHandlerEntrypoint: string;
-  let resolvedServerEntrypoint: string | undefined;
   let config: ResolvedConfig;
 
   return {
@@ -135,16 +132,6 @@ function handlerPlugin(options: Options): Plugin {
     },
     configResolved(_config) {
       config = _config;
-      resolvedHandlerEntrypoint = normalizeEntrypoint(
-        _config.root,
-        options.handlerEntrypoint,
-      );
-      if (options.output !== "static") {
-        resolvedServerEntrypoint = normalizeEntrypoint(
-          _config.root,
-          options.serverEntrypoint,
-        );
-      }
     },
     resolveId: {
       filter: {
@@ -152,11 +139,13 @@ function handlerPlugin(options: Options): Plugin {
           `^(${MAIN_ENTRYPOINT_VIRTUAL_MODULE}|${HANDLER_ENTRYPOINT_VIRTUAL_MODULE})$`,
         ),
       },
-      handler(id) {
+      handler(id, ...args) {
         if (id === MAIN_ENTRYPOINT_VIRTUAL_MODULE) {
-          return resolvedServerEntrypoint;
+          return options.output === "static"
+            ? undefined
+            : this.resolve(options.serverEntrypoint.toString(), ...args);
         }
-        return resolvedHandlerEntrypoint;
+        return this.resolve(options.handlerEntrypoint.toString(), ...args);
       },
     },
     configureServer(server) {
@@ -169,7 +158,9 @@ function handlerPlugin(options: Options): Plugin {
               if (!isRunnableDevEnvironment(serverEnv)) {
                 throw new Error("Non runnable server env");
               }
-              return await serverEnv.runner.import(resolvedHandlerEntrypoint);
+              return await serverEnv.runner.import(
+                HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
+              );
             },
             onResponse: undefined,
           }),

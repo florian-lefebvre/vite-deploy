@@ -15,7 +15,7 @@ app.get("/*splat", (req, res) =>
   res.end(`Running ${req.url} in ${navigator.userAgent}!`),
 );
 
-toFetchHandler(app);
+// TODO: remove example after copying to eg. netlify
 
 export default {
   // https://github.com/h3js/srvx/issues/201

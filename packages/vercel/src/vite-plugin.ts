@@ -2,7 +2,6 @@ import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
   createBuildPlugin,
   createPrerenderPlugin,
-  normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { rm, writeFile } from "node:fs/promises";
@@ -83,7 +82,6 @@ function createMiddleware({
 }
 
 function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let resolvedEntrypoint: string;
   let config: ResolvedConfig;
 
   return {
@@ -121,17 +119,13 @@ function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
     },
     configResolved(_config) {
       config = _config;
-      resolvedEntrypoint = normalizeEntrypoint(
-        _config.root,
-        options.handlerEntrypoint,
-      );
     },
     resolveId: {
       filter: {
         id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
       },
-      handler() {
-        return resolvedEntrypoint;
+      handler(_id, ...args) {
+        return this.resolve(options.handlerEntrypoint.toString(), ...args)
       },
     },
     configureServer(server) {
@@ -144,7 +138,7 @@ function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
               if (!isRunnableDevEnvironment(serverEnv)) {
                 throw new Error("Non runnable server env");
               }
-              return await serverEnv.runner.import(resolvedEntrypoint);
+              return await serverEnv.runner.import(ENTRYPOINT_VIRTUAL_MODULE);
             },
             onResponse: undefined,
           }),

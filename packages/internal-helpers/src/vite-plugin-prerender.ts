@@ -10,7 +10,6 @@ import {
 import type { Format, PrerenderOptions } from "./types.js";
 import { styleText } from "node:util";
 import { VITE_ENVIRONMENT_NAMES } from "./constants.js";
-import { normalizeEntrypoint } from "./utils.js";
 import packageJson from "../package.json" with { type: "json" };
 
 const PACKAGE_NAME = packageJson.name;
@@ -141,7 +140,6 @@ export function createPrerenderPlugin({
 }: Options): Plugin {
   // In server mode, it's always false and not updated later
   let prerender = userOptions.output !== "server";
-  let resolvedEntrypoint: string | undefined;
   let cleaned = false;
   let config: ResolvedConfig;
 
@@ -190,19 +188,15 @@ export function createPrerenderPlugin({
     },
     configResolved(_config) {
       config = _config;
-      if (userOptions.output !== "server") {
-        resolvedEntrypoint = normalizeEntrypoint(
-          _config.root,
-          userOptions.prerender.entrypoint,
-        );
-      }
     },
     resolveId: {
       filter: {
         id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
       },
-      handler() {
-        return resolvedEntrypoint;
+      handler(_id, ...args) {
+        return userOptions.output === "server"
+          ? undefined
+          : this.resolve(userOptions.prerender.entrypoint.toString(), ...args);
       },
     },
     transform: {

@@ -3,7 +3,6 @@ import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
   createBuildPlugin,
   createPrerenderPlugin,
-  normalizeEntrypoint,
   VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { rm } from "node:fs/promises";
@@ -21,6 +20,7 @@ import type { ExportedHandler, Options } from "./types.js";
 
 const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
+const HANDLER_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/handler-entrypoint`;
 const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-handler`;
 const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
   "\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
@@ -160,7 +160,6 @@ function createMiddleware({
 }
 
 function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
-  let resolvedEntrypoint: string;
   let config: ResolvedConfig;
 
   return {
@@ -201,16 +200,17 @@ function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
     },
     configResolved(_config) {
       config = _config;
-      resolvedEntrypoint = normalizeEntrypoint(
-        _config.root,
-        options.handlerEntrypoint,
-      );
     },
     resolveId: {
       filter: {
-        id: new RegExp(`^(${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
+        id: new RegExp(
+          `^(${HANDLER_ENTRYPOINT_VIRTUAL_MODULE}|${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`,
+        ),
       },
-      handler() {
+      handler(id, ...args) {
+        if (id === HANDLER_ENTRYPOINT_VIRTUAL_MODULE) {
+          return this.resolve(options.handlerEntrypoint.toString(), ...args);
+        }
         return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
       },
     },
@@ -220,7 +220,7 @@ function handlerPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
       },
       handler() {
         return `
-import handlerEntrypoint from "${resolvedEntrypoint}";
+import handlerEntrypoint from "${HANDLER_ENTRYPOINT_VIRTUAL_MODULE}";
 
 export default handlerEntrypoint.fetch;
 
@@ -243,7 +243,9 @@ export const config = {
               if (!isRunnableDevEnvironment(serverEnv)) {
                 throw new Error("Non runnable server env");
               }
-              return await serverEnv.runner.import(resolvedEntrypoint);
+              return await serverEnv.runner.import(
+                HANDLER_ENTRYPOINT_VIRTUAL_MODULE,
+              );
             },
             onResponse: undefined,
           }),
