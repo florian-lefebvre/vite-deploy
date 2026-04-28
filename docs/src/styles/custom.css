@@ -28,3 +28,11 @@
   border-inline-start: var(--border-width) solid var(--sl-color-text-accent);
   padding-inline-start: calc(var(--sl-sidebar-item-padding-inline) - var(--border-width));
 }
+
+starlight-menu-button button {
+  background-color: transparent;
+  color: var(--sl-color-text);
+  font-size: var(--sl-text-2xl);
+  box-shadow: none;
+  padding: 0.25rem;
+}
