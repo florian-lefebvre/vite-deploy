@@ -1,3 +1,39 @@
 ---
 title: Deno
 ---
+
+import { Steps } from "@astrojs/starlight/components"
+
+[Deno](https://deno.com/) is the open-source JavaScript runtime for the modern web.
+
+<Steps>
+
+1. Follow the [Node adapter guide](/adapters/node/#installation)
+
+2. Implement the [`serverEntrypoint`](/adapters/node/#serverentrypoint) using Deno APIs:
+
+    ```ts title="src/server.ts"
+    import mod from "./handler";
+    import * as http from "node:http";
+    import sirv from "sirv";
+    import { toFetchHandler } from "srvx/node"
+    import { fileURLToPath } from "node:url";
+    
+    const server = Deno.serve({
+        port: 3000,
+        handler(request) {
+            const response = toFetchHandler(sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true }))(request);
+            if (response.status !== 404) {
+                return response;
+            }
+            return mod.fetch(request);
+        },
+    });
+    
+    console.log("Ready at http://localhost:3000");
+    ```
+
+3. After the build, run the server with `deno run --allow-read --allow-net ./dist/server/index.mjs`
+
+
+</Steps>
