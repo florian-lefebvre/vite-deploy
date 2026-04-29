@@ -5,3 +5,234 @@ githubURL: https://github.com/florian-lefebvre/vite-deploy/tree/main/packages/ne
 sidebar:
     label: Netlify
 ---
+
+import PackageManagerTabs from "../../../components/PackageManagerTabs.astro"
+import { Steps } from "@astrojs/starlight/components"
+
+This adapter allows you to deploy your Vite project to [Netlfy](https://www.netlify.com/). Learn how in our [Netlify deployment guide](/deploy/netlify/).
+
+Netlify is a deployment platform that allows you to host your site by connecting directly to your GitHub repository. This adapter builds your Vite project for deployment through Netlify.
+
+## Installation
+
+### Starter template
+
+<Steps>
+
+1. Download a basic template for your favorite host:
+
+    ```sh
+    npx giget@latest gh:florian-lefebvre/vite-deploy/examples/netlify-server
+    ```
+
+2. Install dependencies:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm install
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm install
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn install
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+3. Start the development server:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm run dev
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+</Steps>
+
+### Manual install
+
+<Steps>
+
+1. Add `@vite-deploy/netlify` to your project's dependencies using your preferred package manager:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm install @vite-deploy/netlify
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm add @vite-deploy/netlify
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn add @vite-deploy/netlify
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+2. Add the plugin to your Vite config file:
+
+    ```js title="vite.config.js" ins={1,5-8}
+    import netlify from "@vite-deploy/netlify";
+    import { defineConfig } from "vite";
+
+    export default defineConfig({
+      plugins: [netlify({
+        output: "server",
+        handlerEntrypoint: "./src/handler.ts",
+      })]
+    });
+    ```
+
+3. Update your TypeScript config file to include necessary types:
+
+    ```jsonc title="tsconfig.json" ins={5}
+    {
+      "compilerOptions": {
+        "types": [
+          "vite/client",
+          "@vite-deploy/netlify/types"
+        ]
+      },
+    }
+    ```
+
+4. Create the handler entrypoint:
+
+    ```ts title="src/handler.ts"
+    import type { ExportedHandler } from "@vite-deploy/netlify";
+
+    export default {
+      fetch(request) {
+        const url = new URL(request.url);
+        return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+      },
+    } satisfies ExportedHandler;
+    ```
+
+5. Start the development server:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm run dev
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+</Steps>
+
+## Options
+
+The Netlify adapter accepts [output related options](/outputs/). It also accepts the following:
+
+### `handlerEntrypoint`
+
+<p>**Type:** `string | URL`</p>
+
+Specifies what module should be used. It accepts:
+
+- Paths relative to Vite's root: `./src/handler.ts`.
+- Absolute paths: `/foo/handler.ts`.
+- Package specifiers: `@my-pkg/handler`.
+- URLs: `new URL("./src/handler.ts", import.meta.url)`.
+
+```js title="vite.config.js" {7}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [netlify({
+        // ...
+        handlerEntrypoint: "./src/handler.ts",
+    })]
+});
+```
+
+The module must return a `ExportedHandler`, which handles requests:
+
+```ts title="src/handler.ts"
+import type { ExportedHandler } from "@vite-deploy/netlify";
+
+export default {
+  fetch(request, context) {
+    const url = new URL(request.url);
+    return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+  },
+} satisfies ExportedHandler;
+```
+
+### `config`
+
+<p>
+**Type:** `NetlifyPluginOptions | undefined`<br />
+**Default:** `undefined`
+</p>
+
+Options forwarded to [`@netlify/vite-plugin`](https://www.npmjs.com/package/@netlify/vite-plugin), except `middleware` and `build`:
+
+```js title="vite.config.js" {7-9}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [netlify({
+    // ...
+    config: {
+      blobs: { enabled: true },
+    }
+  })]
+});
+```
+
+### `requestLoggingLevel`
+
+<p>
+**Type:** `"silent" | "info" | undefined`<br />
+**Default:** `"info"`
+</p>
+
+Specifies if requests are logged in the terminal. It can be disabled you already handle logging at runtime:
+
+```js title="vite.config.js" {7}
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [netlify({
+    // ...
+    requestLoggingLevel: "silent"
+  })]
+});
+```

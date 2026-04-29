@@ -146,7 +146,7 @@ The following steps assume you already have a Vite project.
     }
     ```
 
-6. Create a worker entrypoint:
+6. Create the worker entrypoint:
 
     ```ts title="src/worker.ts"
     export default {
@@ -215,12 +215,13 @@ The Cloudflare adapter accepts [output related options](/outputs/). It also acce
 ### `config`
 
 <p>
-**Type:** `PluginConfig | undefined`
+**Type:** `PluginConfig | undefined`<br />
+**Default:** `undefined`
 </p>
 
-Options forwarded to [`@cloudflare/vite-plugin`](https://developers.cloudflare.com/workers/vite-plugin/).
+Options forwarded to [`@cloudflare/vite-plugin`](https://developers.cloudflare.com/workers/vite-plugin/), except `viteEnvironment`:
 
-```js title="vite.config.js" ins={7-9}
+```js title="vite.config.js" {7-9}
 import cloudflare from "@vite-deploy/cloudflare";
 import { defineConfig } from "vite";
 

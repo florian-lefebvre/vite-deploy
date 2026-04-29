@@ -111,7 +111,7 @@ export default defineConfig({
 });
 ```
 
-The server entrypoint must return a `PrerenderEntrypoint`, which lists URLs to prerender. It is processed by Vite:
+The module must return a `PrerenderEntrypoint`, which lists URLs to prerender. It is processed by Vite:
 
 ```ts title="src/prerender.ts"
 import type { PrerenderEntrypoint } from "@vite-deploy/netlify";

@@ -8,7 +8,7 @@ import type {
 
 export type Options = PrerenderOptions &
   PublicHandlerOptions & {
-    config?: Omit<NetlifyPluginOptions, "middleware">;
+    config?: Omit<NetlifyPluginOptions, "middleware" | "build">;
     handlerEntrypoint: Entrypoint;
   };
 
