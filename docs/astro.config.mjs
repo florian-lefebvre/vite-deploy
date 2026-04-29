@@ -26,7 +26,7 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/florian-lefebvre/vite-deploy",
+          href: "https://github.com/web-runes/vite-deploy",
         },
       ],
       sidebar: [
@@ -58,8 +58,7 @@ export default defineConfig({
       },
       credits: true,
       editLink: {
-        baseUrl:
-          "https://github.com/florian-lefebvre/vite-deploy/tree/main/docs",
+        baseUrl: "https://github.com/web-runes/vite-deploy/tree/main/docs",
       },
       lastUpdated: true,
       plugins: [
