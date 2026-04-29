@@ -1,0 +1,16 @@
+{
+  "name": "@example/netlify-hybrid",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsgo && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260428.1",
+    "@vite-deploy/netlify": "workspace:*",
+    "vite": "^8.0.10"
+  }
+}

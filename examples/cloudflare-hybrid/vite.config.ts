@@ -7,7 +7,6 @@ export default defineConfig({
       output: "hybrid",
       prerender: {
         entrypoint: "./src/prerender.ts",
-        format: "directory",
       },
     }),
   ],

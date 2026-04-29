@@ -208,7 +208,7 @@ import { Hono } from "hono";
 
 const app = new Hono();
 
-if (import.meta.env.PRERENDER) {
+if (import.meta.env.DEV || import.meta.env.PRERENDER) {
   app.get("/", (c) => c.html("<div>foo</div>"));
 }
 
