@@ -179,6 +179,35 @@ The following steps assume you already have a Vite project.
 
 </Steps>
 
+## Worker entrypoint
+
+To handle requests, you need a worker. The `main` field in your wrangler config file specifies what module should be used. It accepts:
+
+- Paths relative to Vite's root: `./src/prerender.ts`.
+- Absolute paths: `/foo/prerender.ts`.
+- Package specifiers: `@my-pkg/prerender`.
+
+```jsonc title="wrangler.jsonc" {6}
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "your-site",
+  // Set this to today's date
+  "compatibility_date": "2026-03-17",
+  "main": "./src/worker.ts",
+}
+```
+
+You then need to implement the worker:
+
+```ts title="src/worker.ts"
+export default {
+  fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+  },
+} satisfies ExportedHandler<Env>;
+```
+
 ## Options
 
 The Cloudflare adapter accepts [output related options](/outputs/). It also accepts the following:
