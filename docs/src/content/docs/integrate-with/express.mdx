@@ -2,4 +2,44 @@
 title: Express
 ---
 
-https://github.com/cloudflare/workerd/issues/6673
+[Express](https://expressjs.com/) is a fast, unopinionated, minimalist web framework for Node.js.
+
+## Fetch handler
+
+If you want to use Express with a `fetch` handler (like on Cloudflare, Netlify or Vercel), you will need to convert the Node handler to a `fetch` handler. We recommend [`srvx`](https://srvx.h3.dev/):
+
+```ts title="src/handler.ts" {3, 10}
+import type { ExportedHandler } from "@vite-deploy/netlify";
+import express from "express";
+import { toFetchHandler } from "srvx/node";
+
+const app = express();
+
+// ...
+
+export default {
+  fetch: toFetchHandler(app),
+} satisfies ExportedHandler;
+```
+
+:::caution[Cloudflare support]
+Some Node APIs are [missing in `workerd`](https://github.com/cloudflare/workerd/issues/6673), preventing the use of of this technique. If you know a way, let us know!
+:::
+
+## Node handler
+
+Express is compatible out of the box with Node handlers:
+
+```ts title="src/handler.ts" {9}
+import type { ExportedHandler } from "@vite-deploy/node";
+import express from "express";
+
+const app = express();
+
+// ...
+
+export default {
+  handler: app,
+} satisfies ExportedHandler;
+
+```

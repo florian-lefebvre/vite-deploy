@@ -31,10 +31,10 @@ export default defineConfig({
           label: "Adapters reference",
           autogenerate: { directory: "adapters" },
         },
-        {
-          label: "How-to guides",
-          autogenerate: { directory: "how-to" },
-        },
+        // {
+        //   label: "How-to guides",
+        //   autogenerate: { directory: "how-to" },
+        // },
         {
           label: "Deployment guides",
           autogenerate: { directory: "deploy" },
