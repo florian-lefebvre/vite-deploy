@@ -1,4 +1,4 @@
-import type { ExportedHandler } from "@vite-deploy/netlify";
+import type { ExportedHandler } from "@vite-deploy/vercel";
 
 export default {
   fetch(request) {

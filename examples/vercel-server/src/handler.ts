@@ -1,4 +1,4 @@
-import type { ExportedHandler } from "@vite-deploy/netlify";
+import type { ExportedHandler } from "@vite-deploy/vercel";
 
 export default {
   fetch(request) {
@@ -11,6 +11,6 @@ export default {
         },
       });
     }
-    return new Response(null, { status: 404 });
+    return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
   },
 } satisfies ExportedHandler;

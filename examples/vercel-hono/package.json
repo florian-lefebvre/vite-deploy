@@ -1,0 +1,19 @@
+{
+  "name": "@example/vercel-hono",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsgo && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "hono": "^4.12.15"
+  },
+  "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260428.1",
+    "@vite-deploy/vercel": "workspace:*",
+    "vite": "^8.0.10"
+  }
+}
