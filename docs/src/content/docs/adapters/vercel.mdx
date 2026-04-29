@@ -186,7 +186,7 @@ The module must return a `ExportedHandler`, which handles requests:
 import type { ExportedHandler } from "@vite-deploy/vercel";
 
 export default {
-  fetch(request, context) {
+  fetch(request) {
     const url = new URL(request.url);
     return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
   },

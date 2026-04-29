@@ -5,3 +5,274 @@ githubURL: https://github.com/florian-lefebvre/vite-deploy/tree/main/packages/no
 sidebar:
     label: Node
 ---
+
+import PackageManagerTabs from "../../../components/PackageManagerTabs.astro"
+import { Steps } from "@astrojs/starlight/components"
+
+This adapter allows you to deploy your Vite project to hosts which support [Node.js](https://nodejs.org/en/) (and more), as well as prerender your project to get pure static files. Learn how in our [Node deployment guide](/deploy/node/).
+
+Node.js is a JavaScript runtime for server-side code. This adapter can be used to produce a standalone server, middleware for other HTTP servers, or anything you want.
+
+## Installation
+
+### Starter template
+
+<Steps>
+
+1. Download a basic template for your favorite host:
+
+    ```sh
+    npx giget@latest gh:florian-lefebvre/vite-deploy/examples/node-server
+    ```
+
+2. Install dependencies:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm install
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm install
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn install
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+3. Start the development server:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm run dev
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+</Steps>
+
+### Manual install
+
+<Steps>
+
+1. Add `@vite-deploy/node` to your project's dependencies using your preferred package manager:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm install @vite-deploy/node
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm add @vite-deploy/node
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn add @vite-deploy/node
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+2. Add the plugin to your Vite config file:
+
+    ```js title="vite.config.js" ins={1,5-8}
+    import node from "@vite-deploy/node";
+    import { defineConfig } from "vite";
+
+    export default defineConfig({
+      plugins: [node({
+        output: "static",
+        handlerEntrypoint: "./src/handler.ts",
+      })]
+    });
+    ```
+
+3. Update your TypeScript config file to include necessary types:
+
+    ```jsonc title="tsconfig.json" ins={5}
+    {
+      "compilerOptions": {
+        "types": [
+          "vite/client",
+          "@vite-deploy/node/types"
+        ]
+      },
+    }
+    ```
+
+4. Create the handler entrypoint:
+
+    ```ts title="src/handler.ts"
+    import type { ExportedHandler } from "@vite-deploy/node";
+
+    export default {
+      fetch(request) {
+        const url = new URL(request.url);
+        return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+      },
+    } satisfies ExportedHandler;
+    ```
+
+5. Start the development server:
+
+    <PackageManagerTabs>
+      <Fragment slot="npm">
+        ```sh
+        npm run dev
+        ```
+      </Fragment>
+      <Fragment slot="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Fragment>
+      <Fragment slot="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Fragment>
+    </PackageManagerTabs>
+
+</Steps>
+
+## Options
+
+The Node adapter accepts [output related options](/outputs/). It also accepts the following:
+
+### `handlerEntrypoint`
+
+<p>**Type:** `string | URL`</p>
+
+Specifies what module should be used. It accepts:
+
+- Paths relative to Vite's root: `./src/handler.ts`.
+- Absolute paths: `/foo/handler.ts`.
+- Package specifiers: `@my-pkg/handler`.
+- URLs: `new URL("./src/handler.ts", import.meta.url)`.
+
+```js title="vite.config.js" {7}
+import node from "@vite-deploy/node";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [node({
+        // ...
+        handlerEntrypoint: "./src/handler.ts",
+    })]
+});
+```
+
+The module must return a `ExportedHandler`, which handles requests:
+
+```ts title="src/handler.ts"
+import type { ExportedHandler } from "@vite-deploy/node";
+
+export default {
+  fetch(request, context) {
+    const url = new URL(request.url);
+    return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+  },
+} satisfies ExportedHandler;
+```
+
+Alternatively, you can export a Node request handler:
+
+```ts title="src/handler.ts"
+import type { ExportedHandler } from "@vite-deploy/node";
+
+export default {
+  handler(req, res) {
+    res.end(`Running ${req.url} in ${navigator.userAgent}!`);
+  },
+} satisfies ExportedHandler;
+```
+
+### `serverEntrypoint`
+
+<p>
+**Type:** `string | URL | undefined`<br />
+**Default:** `undefined`
+</p>
+
+Required if [`output`](/outputs/#output) is set to `"server"` or `"hybrid"`. Specifies what module should be used. It accepts:
+
+- Paths relative to Vite's root: `./src/server.ts`.
+- Absolute paths: `/foo/server.ts`.
+- Package specifiers: `@my-pkg/server`.
+- URLs: `new URL("./src/server.ts", import.meta.url)`.
+
+```js title="vite.config.js" {7}
+import node from "@vite-deploy/node";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+    plugins: [node({
+        // ...
+        serverEntrypoint: "./src/server.ts",
+    })]
+});
+```
+
+The module can contain anything. You need to implement what you'll need for your production server needs, including serving static assets. For example using a simple Node server:
+
+```ts title="src/server.ts
+import mod from "./handler";
+import * as http from "node:http";
+import sirv from "sirv";
+import { fileURLToPath } from "node:url";
+
+const server = http.createServer((req, res) =>
+  sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
+    req,
+    res,
+    () => {
+      mod.handler(req, res);
+    },
+  ),
+);
+
+server.listen(3000, () => {
+  console.log("Ready at http://localhost:3000");
+});
+```
+
+Once built, you can then run `node ./dist/server/index.mjs`.
+
+### `requestLoggingLevel`
+
+<p>
+**Type:** `"silent" | "info" | undefined`<br />
+**Default:** `"info"`
+</p>
+
+Specifies if requests are logged in the terminal. It can be disabled you already handle logging at runtime:
+
+```js title="vite.config.js" {7}
+import node from "@vite-deploy/node";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [node({
+    // ...
+    requestLoggingLevel: "silent"
+  })]
+});
+```
