@@ -234,3 +234,23 @@ export default defineConfig({
   })]
 });
 ```
+
+## Node.js compatibility
+
+Cloudflare Workers support most Node.js runtime APIs through the `nodejs_compat` compatibility flag. This includes commonly used modules like `node:buffer`, `node:crypto`, `node:path`, and many others. See the [full list of supported Node.js APIs](https://developers.cloudflare.com/workers/runtime-apis/nodejs) in Cloudflare's documentation.
+
+To enable Node.js compatibility, add the `nodejs_compat` flag to your Wrangler configuration:
+
+```jsonc title="wrangler.jsonc"
+{
+  "compatibility_flags": ["nodejs_compat"],
+}
+```
+
+Then use the `node:*` import syntax in your server-side code:
+
+```js
+import { Buffer } from 'node:buffer';
+```
+
+For Node.js APIs not yet supported in the Workers runtime, Wrangler can inject polyfills (requires `nodejs_compat` and a compatibility date of 2024-09-23 or later).
