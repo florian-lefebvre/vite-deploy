@@ -12,6 +12,7 @@ import { join } from "node:path";
 import sirv from "sirv";
 import { styleText } from "node:util";
 import type { PublicHandlerOptions } from "./types.js";
+import { getTimeStat } from "./utils.js";
 
 const PACKAGE_NAME = packageJson.name;
 
@@ -91,12 +92,6 @@ function createMiddleware({
       next(error);
     }
   };
-}
-
-function getTimeStat(buildTime: number): string {
-  return buildTime < 750
-    ? `${Math.round(buildTime)}ms`
-    : `${(buildTime / 1000).toFixed(2)}s`;
 }
 
 /**
