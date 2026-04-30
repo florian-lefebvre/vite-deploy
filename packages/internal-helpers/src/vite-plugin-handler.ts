@@ -17,9 +17,15 @@ const PACKAGE_NAME = packageJson.name;
 
 interface Options
   extends PublicHandlerOptions, Pick<MiddlewareOptions, "onRequest"> {
+  /**
+   * Retrieves the handler module in development.
+   */
   getDevMod: (params: {
     serverEnvironment: RunnableDevEnvironment;
   }) => Promise<Record<string, any>>;
+  /**
+   * Retrieves the handler module in preview (and prerendering).
+   */
   getPreviewMod: (params: {
     outputDir: string;
   }) => Promise<Record<string, any>>;
@@ -27,7 +33,9 @@ interface Options
 
 interface MiddlewareOptions {
   getMod: () => Promise<Record<string, any>>;
-
+  /**
+   * Handle request handling, such as converting to a standard web Request.
+   */
   onRequest: (params: {
     req: IncomingMessage;
     res: ServerResponse;

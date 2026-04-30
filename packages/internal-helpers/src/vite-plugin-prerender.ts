@@ -126,7 +126,13 @@ function getRouteFilename({
 }
 
 interface Options {
+  /**
+   * Prerender related options, from the user.
+   */
   userOptions: PrerenderOptions;
+  /**
+   * A hook that fires when a build is done.
+   */
   onBuildDone?: (params: {
     output: PrerenderOptions["output"];
     clientEnvironment: BuildEnvironment;
