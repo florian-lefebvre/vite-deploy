@@ -143,13 +143,6 @@ export function netlify({
         try {
           request = createRequest(req, res);
 
-          const isHttps = req.headers["x-forwarded-proto"] === "https";
-          const isRunningInNetlify = Boolean(
-            process.env.NETLIFY ||
-            process.env.NETLIFY_LOCAL ||
-            process.env.NETLIFY_DEV,
-          );
-
           // TODO: implement missing
           const response = await mod.default.fetch(request, {
             get url() {
@@ -171,8 +164,7 @@ export function netlify({
             site: parseBase64JSON("x-nf-site-info") ?? {
               id: "mock-netlify-site-id",
               name: "mock-netlify-site.netlify.app",
-              // TODO: do not hardcode 4321
-              url: `${isHttps ? "https" : "http"}://localhost:${isRunningInNetlify ? 8888 : 4321}`,
+              url: new URL(request.url).origin,
             },
             geo: parseBase64JSON("x-nf-geo") ?? {
               city: "Mock City",
