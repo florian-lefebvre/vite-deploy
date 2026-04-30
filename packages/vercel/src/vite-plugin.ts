@@ -116,6 +116,7 @@ export function vercel({
         );
 
         if (output === "static") {
+          // Clear server bundle
           await rm(serverOutDir, {
             force: true,
             recursive: true,
@@ -124,6 +125,8 @@ export function vercel({
         }
 
         await Promise.all([
+          // TODO: investigate if needed, taken from Astro
+          // Force ESM?
           writeFile(
             join(serverOutDir, "package.json"),
             JSON.stringify({ type: "module" }),

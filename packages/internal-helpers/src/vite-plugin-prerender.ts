@@ -1,3 +1,5 @@
+// Source: https://github.com/TanStack/router/blob/7fa0f39cabf4407aa1cb99e369566e8ea85554a2/packages/start-plugin-core/src/vite/prerender.ts
+
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import {
@@ -16,6 +18,7 @@ const PACKAGE_NAME = packageJson.name;
 const PRERENDER_INPUT = "prerender";
 const ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/entrypoint`;
 
+// TODO: extract
 async function getStaticPaths(
   mod: Record<string, any>,
 ): Promise<Array<string>> {
@@ -31,6 +34,7 @@ async function getStaticPaths(
   return paths;
 }
 
+// TODO: extract
 function normalizePaths(input: Array<string>): Array<string> {
   return [
     ...new Set(
@@ -44,6 +48,7 @@ function normalizePaths(input: Array<string>): Array<string> {
   ];
 }
 
+// TODO: extract and reuse with handler plugin
 function getTimeStat(timeStart: number, timeEnd: number): string {
   const buildTime = timeEnd - timeStart;
   return buildTime < 750
@@ -51,10 +56,12 @@ function getTimeStat(timeStart: number, timeEnd: number): string {
     : `${(buildTime / 1000).toFixed(2)}s`;
 }
 
+// TODO: extract
 function isRedirectResponse(res: Response): boolean {
   return res.status >= 300 && res.status < 400 && res.headers.has("location");
 }
 
+// TODO: extract
 async function localFetch({
   path,
   baseUrl,
@@ -91,6 +98,7 @@ async function localFetch({
   return response;
 }
 
+// TODO: extract
 function getRouteFilename({
   path,
   htmlContentType,
@@ -140,6 +148,9 @@ interface Options {
   }) => void | Promise<void>;
 }
 
+/**
+ * A Vite plugin which handles prerendering.
+ */
 export function createPrerenderPlugin({
   userOptions,
   onBuildDone,
@@ -163,6 +174,7 @@ export function createPrerenderPlugin({
             config.build.rolldownOptions.output,
           ];
         }
+        // Emit mjs files to force interpreting as ESM
         config.build.rolldownOptions.output.push({
           entryFileNames: "[name].mjs",
         });
@@ -207,6 +219,7 @@ export function createPrerenderPlugin({
           : undefined;
       },
     },
+    // We can't use define for some reason
     transform: {
       order: "pre",
       filter: {
@@ -226,6 +239,9 @@ export function createPrerenderPlugin({
     async buildStart() {
       if (cleaned) return;
 
+      // We can't just use build.emptyOutDir because it wouldn't necessarily run
+      // when changing the output mode. Instead we try clearing the parent folder
+      // if it's not the project root (eg. /dist/client => /dist/)
       for (const environment of Object.values(config.environments)) {
         const candidate = dirname(join(config.root, environment.build.outDir));
         if (candidate === config.root) {
@@ -240,6 +256,7 @@ export function createPrerenderPlugin({
       cleaned = true;
     },
     buildApp: {
+      // Ensures environments are built by now
       order: "post",
       async handler(builder) {
         const serverEnvironment =

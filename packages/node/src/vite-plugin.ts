@@ -137,6 +137,7 @@ export function node({
       onBuildDone: async ({ output, serverEnvironment, clientEnvironment }) => {
         if (output !== "static") return;
 
+        // Clear server bundle
         await rm(
           join(
             serverEnvironment.config.root,
@@ -148,6 +149,7 @@ export function node({
           },
         );
 
+        // Move from dist/client/ to dist/
         const clientOutDir = join(
           clientEnvironment.config.root,
           clientEnvironment.config.build.outDir,

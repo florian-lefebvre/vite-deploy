@@ -23,6 +23,8 @@ export function cloudflare({ config, ...userOptions }: Options): Array<Plugin> {
       onBuildDone: async ({ output, serverEnvironment }) => {
         if (output !== "static") return;
 
+        // Clear server bundle but keep the wrangler config. Needs removing the main field
+        // to indicate as an assets-only worker
         const serverOutDir = join(
           serverEnvironment.config.root,
           serverEnvironment.config.build.outDir,

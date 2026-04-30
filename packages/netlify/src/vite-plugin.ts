@@ -86,6 +86,7 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
         return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
       },
     },
+    // The shape of the handler and the expected Netlify function handler slightly differs
     load: {
       filter: {
         id: new RegExp(`^(${RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE})$`),
@@ -126,6 +127,7 @@ export function netlify({
       getDevMod: ({ serverEnvironment }) =>
         serverEnvironment.runner.import(HANDLER_ENTRYPOINT_VIRTUAL_MODULE),
       getPreviewMod: async ({ outputDir }) => {
+        // The production handler exports a default function instead of a `Fetchable`, normalize
         const mod = await import(join(outputDir, `${MAIN_INPUT}.mjs`));
         return {
           default: {
@@ -221,6 +223,7 @@ export function netlify({
       onBuildDone: async ({ output, serverEnvironment }) => {
         if (output !== "static") return;
 
+        // Clear server bundle
         await rm(
           join(
             serverEnvironment.config.root,

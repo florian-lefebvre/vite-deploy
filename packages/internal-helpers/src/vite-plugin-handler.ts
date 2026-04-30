@@ -53,6 +53,7 @@ interface MiddlewareOptions {
     | undefined;
 }
 
+// Source: https://github.com/cloudflare/workers-sdk/blob/4d4d2c25e3a7b677ef1b9aa430e058cad9285558/packages/vite-plugin-cloudflare/src/utils.ts#L63
 function createMiddleware({
   getMod,
   onRequest,
@@ -98,6 +99,10 @@ function getTimeStat(buildTime: number): string {
     : `${(buildTime / 1000).toFixed(2)}s`;
 }
 
+/**
+ * A Vite plugin which forwards requests to the user handler in development
+ * and preview.
+ */
 export function createHandlerPlugin(options: Options): Plugin {
   let config: ResolvedConfig;
   const onResponse: MiddlewareOptions["onResponse"] =

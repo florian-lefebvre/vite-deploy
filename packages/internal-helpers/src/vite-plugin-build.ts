@@ -1,3 +1,5 @@
+// Source: https://github.com/cloudflare/workers-sdk/blob/4d4d2c25e3a7b677ef1b9aa430e058cad9285558/packages/vite-plugin-cloudflare/src/build.ts
+
 import { VITE_ENVIRONMENT_NAMES } from "@vite-deploy/internal-helpers";
 import { existsSync, readdirSync, readFileSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
@@ -10,6 +12,10 @@ const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE =
   "\0" + CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
 const CLIENT_FALLBACK_ENTRY_NAME = "__client_fallback_entry__";
 
+/**
+ * A Vite plugin which coordinates the environments build and allows
+ * building a Vite project without client assets.
+ */
 export function createBuildPlugin(): Plugin {
   return {
     name: `${PACKAGE_NAME}:build`,
@@ -29,6 +35,8 @@ export function createBuildPlugin(): Plugin {
       filter: {
         id: new RegExp(`^(${RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE})$`),
       },
+      // If there are no client assets, use empty this virtual module as entry. It will be
+      // removed after the client environment is built.
       handler() {
         return "";
       },
