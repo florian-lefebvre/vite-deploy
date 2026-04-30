@@ -23,7 +23,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "@vite-deploy/netlify": "workspace:*",
+    "@vite-deploy/netlify": "^0.0.0",
     "@vitejs/plugin-react": "^6.0.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",

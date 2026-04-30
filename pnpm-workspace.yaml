@@ -2,3 +2,7 @@ packages:
   - docs
   - examples/*
   - packages/*
+linkWorkspacePackages: true
+preferWorkspacePackages: true
+# This prevents the examples to have the `workspace:` prefix
+saveWorkspaceProtocol: false

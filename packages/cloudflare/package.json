@@ -23,6 +23,6 @@
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.34.0",
-    "@vite-deploy/internal-helpers": "workspace:*"
+    "@vite-deploy/internal-helpers": "^0.0.0"
   }
 }
