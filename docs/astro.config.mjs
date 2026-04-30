@@ -5,13 +5,15 @@ import starlightCatppuccin from "@catppuccin/starlight";
 import starlightLinksValidator from "starlight-links-validator";
 
 /* https://docs.netlify.com/configure-builds/environment-variables/#read-only-variables */
-const NETLIFY_PREVIEW_SITE = process.env.CONTEXT !== 'production' && process.env.DEPLOY_PRIME_URL;
+const NETLIFY_PREVIEW_SITE =
+  process.env.CONTEXT !== "production" && process.env.DEPLOY_PRIME_URL;
 
 const site = NETLIFY_PREVIEW_SITE || "https://vite-deploy.web-runes.dev/";
 
 // https://astro.build/config
 export default defineConfig({
   site,
+  trailingSlash: "always",
   integrations: [
     starlight({
       title: "Vite Deploy",
