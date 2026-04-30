@@ -33,7 +33,7 @@ export default defineConfig({
       sidebar: [
         {
           label: "Getting started",
-          items: ["quick-start", "philosophy", "comparison", "outputs"],
+          items: ["quick-start", "philosophy", "comparison", "outputs", "framework-authors"],
         },
         {
           label: "Adapters reference",

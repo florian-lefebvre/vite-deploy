@@ -233,7 +233,7 @@ export default defineConfig({
 
 The module can contain anything. You need to implement what you'll need for your production server needs, including serving static assets. For example using a simple Node server:
 
-```ts title="src/server.ts
+```ts title="src/server.ts"
 import mod from "./handler";
 import * as http from "node:http";
 import sirv from "sirv";
@@ -263,7 +263,7 @@ Once built, you can then run `node ./dist/server/index.mjs`.
 **Default:** `"info"`
 </p>
 
-Specifies if requests are logged in the terminal. It can be disabled you already handle logging at runtime:
+Specifies if requests are logged in the terminal. It can be disabled if you already handle logging at runtime:
 
 ```js title="vite.config.js" {7}
 import node from "@vite-deploy/node";

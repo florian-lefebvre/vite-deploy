@@ -183,9 +183,9 @@ The following steps assume you already have a Vite project.
 
 To handle requests, you need a worker. The `main` field in your wrangler config file specifies what module should be used. It accepts:
 
-- Paths relative to Vite's root: `./src/prerender.ts`.
-- Absolute paths: `/foo/prerender.ts`.
-- Package specifiers: `@my-pkg/prerender`.
+- Paths relative to Vite's root: `./src/worker.ts`.
+- Absolute paths: `/foo/worker.ts`.
+- Package specifiers: `@my-pkg/worker`.
 
 ```jsonc title="wrangler.jsonc" {6}
 {

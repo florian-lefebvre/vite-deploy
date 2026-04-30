@@ -6,15 +6,23 @@ tableOfContents:
 
 Vite Deploy allows you to render your Vite project statically (SSG), on-demand (SSR) or both (hybrid).
 
-Below is a recap of requirements for each output:
+## Entrypoints
 
-| Output               | Static | Hybrid | Server |
+A Vite Deploy project is wired together through up to three entrypoints. Each one is a regular module that Vite builds — you can write it yourself, import it from a package, or have a framework provide it.
+
+- **Handler entrypoint** — answers HTTP requests. This is your application: a `fetch` handler (or, for the Node adapter, optionally a Node style handler). It runs in dev, during prerendering, and at runtime in production.
+- **Prerender entrypoint** — lists which routes to render to static HTML at build time. Required only when prerendering is involved.
+- **Server entrypoint** — boots the production server (e.g. `http.createServer`, `Deno.serve`, `Bun.serve`). Only some adapters need one — most platforms (Cloudflare, Netlify, Vercel) provide their own runtime, so you don't write a server entrypoint there.
+
+Below is a recap of which entrypoints each output requires:
+
+| Output               | Static | Server | Hybrid |
 | -------------------- | ------ | ------ | ------ |
 | Handler entrypoint   | Yes    | Yes    | Yes    |
-| Prerender entrypoint | Yes    | Yes    | No     |
+| Prerender entrypoint | Yes    | No     | Yes    |
 | Server entrypoint\*  | No     | Yes    | Yes    |
 
-\* Some adapters require an extra server entrypoint for on-demand rendering.
+\* Only required by adapters that produce a standalone server (currently the [Node adapter](/adapters/node/)).
 
 ## Outputs
 
@@ -188,7 +196,7 @@ export default defineConfig({
         output: "static",
         prerender: {
             // ...
-            output: "directory"
+            format: "directory"
         }
     })]
 });

@@ -1,0 +1,52 @@
+---
+title: Framework authors
+---
+
+Vite Deploy is designed to be a framework-agnostic provider plugin: a framework can hand its server entry to any Vite Deploy adapter, and end users get cross-host deployment without writing per-platform glue code.
+
+This page describes the integration contract for framework authors. If you're shipping a framework that runs on Vite, this is how you make it deploy anywhere Vite Deploy supports.
+
+## The mechanism
+
+Adapters accept a [`handlerEntrypoint`](/outputs/) option that takes a package specifier. Export your framework's server entry from your package, and users can wire it directly into any adapter:
+
+```js title="vite.config.js"
+import netlify from "@vite-deploy/netlify";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [netlify({
+    handlerEntrypoint: "@my-framework/server-entry",
+  })],
+});
+```
+
+The same module is used in dev, during prerendering (when applicable), and at runtime in production. As long as it default-exports a `Fetchable`-shaped value, the framework works on every host Vite Deploy targets.
+
+[TanStack Start](/integrate-with/tanstack-start/) is a worked example — it exports `@tanstack/react-start/server-entry` and that's all an end user needs to deploy to Cloudflare, Netlify, Vercel or Node.
+
+## The handler contract
+
+The default export of the entry module must satisfy the `Fetchable` type. The shape is:
+
+```ts
+export default {
+  fetch(request: Request): Response | Promise<Response> {
+    // ...
+  },
+};
+```
+
+`fetch` is the portable choice and works on all adapters. Use it unless you have a reason not to.
+
+## Static generation hooks
+
+If your framework supports static generation, you can optionally expose an PI to hook into the [`prerenderEntrypoint`](/outputs/#prerender). It must default-export an object with a `getStaticPaths()` method that returns the URLs to render. The handler is then invoked once per URL at build time, and the response is written to disk.
+
+Inside any module Vite builds, `import.meta.env.PRERENDER` is statically replaced with `true` during prerendering and `false` otherwise. Use it to skip server-only work that doesn't make sense at build time, or to expose prerender-only routes in [hybrid output](/outputs/#hybrid).
+
+## What Vite Deploy is not
+
+Vite Deploy intentionally stays out of routing, data loading, RSC, and other framework concerns. It only owns the deployment layer: bundling, optionally prerendering, and producing platform-specific output. Anything beyond that — including static redirects, response headers, image optimization, version skew protection — belongs in your framework or in adapter-specific configuration.
+
+This scope mirrors the boundary discussed in the [Vite ecosystem RFC](https://github.com/vitejs/ecosystem/issues/3) on framework-agnostic provider plugins.
