@@ -12,12 +12,12 @@ interface _PrerenderOptions {
 
 export interface StaticOptions {
   output: "static";
-  prerender: _PrerenderOptions;
+  prerender?: _PrerenderOptions;
 }
 
 export interface HybridOptions {
   output: "hybrid";
-  prerender: _PrerenderOptions;
+  prerender?: _PrerenderOptions;
 }
 
 export type PrerenderOptions = ServerOptions | StaticOptions | HybridOptions;

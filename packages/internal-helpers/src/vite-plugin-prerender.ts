@@ -181,8 +181,10 @@ export function createPrerenderPlugin({
           }
 
           config.build.rolldownOptions.input ??= {};
-          config.build.rolldownOptions.input[PRERENDER_INPUT] =
-            ENTRYPOINT_VIRTUAL_MODULE;
+          if (userOptions.prerender) {
+            config.build.rolldownOptions.input[PRERENDER_INPUT] =
+              ENTRYPOINT_VIRTUAL_MODULE;
+          }
         }
       }
     },
@@ -194,9 +196,9 @@ export function createPrerenderPlugin({
         id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
       },
       handler(_id, ...args) {
-        return userOptions.output === "server"
-          ? undefined
-          : this.resolve(userOptions.prerender.entrypoint.toString(), ...args);
+        return userOptions.output !== "server" && userOptions.prerender
+          ? this.resolve(userOptions.prerender.entrypoint.toString(), ...args)
+          : undefined;
       },
     },
     transform: {
@@ -251,87 +253,89 @@ export function createPrerenderPlugin({
           return;
         }
 
-        const prerenderEntrypointMod = await import(
-          join(
-            serverEnvironment.config.root,
-            serverEnvironment.config.build.outDir,
-            `${PRERENDER_INPUT}.mjs`,
-          )
-        );
-        // TODO: consider allow generators so that prerendering some routes
-        // can discover more routes. or a context based API like ctx.enqueue(...urls)
-        const paths = normalizePaths(
-          await getStaticPaths(prerenderEntrypointMod),
-        );
-
-        serverEnvironment.logger.info(
-          `\nprerendering (${paths.length} route${paths.length === 1 ? "" : "s"})...\n`,
-        );
-        const now = performance.now();
-
-        const previewServer = await preview({
-          configFile: serverEnvironment.config.configFile,
-          preview: {
-            port: 0,
-            open: false,
-          },
-        });
-        const localUrl = previewServer.resolvedUrls?.local.at(0);
-        if (!localUrl) {
-          throw new Error("Could not find url");
-        }
-        const baseUrl = new URL(localUrl);
-
-        for (const path of paths) {
-          const res = await localFetch({
-            path,
-            baseUrl,
-            logger: serverEnvironment.logger,
-            options: {
-              headers: userOptions.prerender.headers,
-            },
-          });
-
-          if (!res.ok) {
-            if (isRedirectResponse(res)) {
-              serverEnvironment.logger.warn(
-                `Max redirects reached for ${path}`,
-              );
-            }
-            throw new Error(`Failed to fetch ${path}: ${res.statusText}`, {
-              cause: res,
-            });
-          }
-
-          const cleanPagePath = path.split(/[?#]/)[0]!;
-
-          const filename = getRouteFilename({
-            path: cleanPagePath,
-            format: userOptions.prerender.format ?? "file",
-            htmlContentType: !!res.headers
-              .get("content-type")
-              ?.includes("html"),
-          });
-
-          const html = await res.text();
-
-          const filepath = join(
-            clientEnvironment.config.root,
-            clientEnvironment.config.build.outDir,
-            filename,
+        if (userOptions.prerender) {
+          const prerenderEntrypointMod = await import(
+            join(
+              serverEnvironment.config.root,
+              serverEnvironment.config.build.outDir,
+              `${PRERENDER_INPUT}.mjs`,
+            )
+          );
+          // TODO: consider allow generators so that prerendering some routes
+          // can discover more routes. or a context based API like ctx.enqueue(...urls)
+          const paths = normalizePaths(
+            await getStaticPaths(prerenderEntrypointMod),
           );
 
-          await mkdir(dirname(filepath), { recursive: true });
-          await writeFile(filepath, html);
-        }
+          serverEnvironment.logger.info(
+            `\nprerendering (${paths.length} route${paths.length === 1 ? "" : "s"})...\n`,
+          );
+          const now = performance.now();
 
-        await previewServer.close();
-        serverEnvironment.logger.info(
-          styleText(
-            "green",
-            `\n✓ prerendered in ${getTimeStat(now, performance.now())}${userOptions.output === "static" ? "" : "\n"}`,
-          ),
-        );
+          const previewServer = await preview({
+            configFile: serverEnvironment.config.configFile,
+            preview: {
+              port: 0,
+              open: false,
+            },
+          });
+          const localUrl = previewServer.resolvedUrls?.local.at(0);
+          if (!localUrl) {
+            throw new Error("Could not find url");
+          }
+          const baseUrl = new URL(localUrl);
+
+          for (const path of paths) {
+            const res = await localFetch({
+              path,
+              baseUrl,
+              logger: serverEnvironment.logger,
+              options: {
+                headers: userOptions.prerender.headers,
+              },
+            });
+
+            if (!res.ok) {
+              if (isRedirectResponse(res)) {
+                serverEnvironment.logger.warn(
+                  `Max redirects reached for ${path}`,
+                );
+              }
+              throw new Error(`Failed to fetch ${path}: ${res.statusText}`, {
+                cause: res,
+              });
+            }
+
+            const cleanPagePath = path.split(/[?#]/)[0]!;
+
+            const filename = getRouteFilename({
+              path: cleanPagePath,
+              format: userOptions.prerender.format ?? "file",
+              htmlContentType: !!res.headers
+                .get("content-type")
+                ?.includes("html"),
+            });
+
+            const html = await res.text();
+
+            const filepath = join(
+              clientEnvironment.config.root,
+              clientEnvironment.config.build.outDir,
+              filename,
+            );
+
+            await mkdir(dirname(filepath), { recursive: true });
+            await writeFile(filepath, html);
+          }
+
+          await previewServer.close();
+          serverEnvironment.logger.info(
+            styleText(
+              "green",
+              `\n✓ prerendered in ${getTimeStat(now, performance.now())}${userOptions.output === "static" ? "" : "\n"}`,
+            ),
+          );
+        }
 
         if (userOptions.output === "static") {
           await onBuildDone?.({
