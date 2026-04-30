@@ -5,6 +5,8 @@ title: Quick start
 import PackageManagerTabs from "../../components/PackageManagerTabs.astro"
 import { Steps, Tabs, TabItem } from "@astrojs/starlight/components"
 
+This guide gets you from zero to a running Vite Deploy dev server. Pick [New project](#new-project) to scaffold a starter for your host, or [Existing project](#existing-project) if you already have a Vite app.
+
 ## New project
 
 <Steps>
@@ -78,12 +80,20 @@ import { Steps, Tabs, TabItem } from "@astrojs/starlight/components"
 
 ## Existing project
 
-Check the manual install guide for your favorite adapter:
+Already have a Vite project? Each adapter ships a manual install guide that walks through adding it to an existing config:
 
 - [Cloudflare](/adapters/cloudflare/#manual-install)
 - [Netlify](/adapters/netlify/#manual-install)
 - [Node](/adapters/node/#manual-install)
 - [Vercel](/adapters/vercel/#manual-install)
+
+## Next steps
+
+Once your dev server is running:
+
+- Pick an [output mode](/outputs/) (static, server, or hybrid) depending on whether you want SSG, SSR, or both.
+- Follow the [deployment guide](/deploy/) for your host to ship to production.
+- Browse the [integration guides](/integrate-with/) to wire Vite Deploy up with Hono, Express, or TanStack Start.
 
 ## Examples
 

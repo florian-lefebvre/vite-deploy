@@ -18,6 +18,6 @@ Here are 3 core design principles to help explain why we built Vite Deploy, the 
 
 Vite Deploy is...
 
-1. **Transparent**: Vite Deploy abstracts as little as possible. Rather than a black box that's hard to debug and contribute to, it exposes a handful of simple APIs you can build upon.
-2. **Focused**: You only download what you need. Instead of a single package that handles every platform, you pick the one built for yours: smaller footprint, fewer abstractions.
-3. **Easy to use and integrate**: You don't need to be an expert to ship with Vite Deploy. The small API surface keeps things easy to reason about, and because it's built on web standards, it integrates cleanly with other tools.
+1. **Transparent**: no codegen, no hidden CLI, no private state. Each adapter is a Vite plugin and your handler is just a module Vite builds: easy to debug and easy to contribute to.
+2. **Focused**: one package per host. You install `@vite-deploy/cloudflare` or `@vite-deploy/netlify`, not a megapackage that ships every platform's code. Smaller footprint, fewer abstractions, and the option set stays specific to the platform you actually target.
+3. **Easy to use and integrate**: the handler is a standard `fetch` function (or a Node-style handler for the Node adapter). No Vite Deploy-specific runtime to learn, no framework lock-in: it works with Hono, Express, TanStack Start and more.

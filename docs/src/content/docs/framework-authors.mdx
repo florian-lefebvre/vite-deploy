@@ -23,7 +23,7 @@ export default defineConfig({
 
 The same module is used in dev, during prerendering (when applicable), and at runtime in production. As long as it default-exports a `Fetchable`-shaped value, the framework works on every host Vite Deploy targets.
 
-[TanStack Start](/integrate-with/tanstack-start/) is a worked example — it exports `@tanstack/react-start/server-entry` and that's all an end user needs to deploy to Cloudflare, Netlify, Vercel or Node.
+[TanStack Start](/integrate-with/tanstack-start/) is a worked example: it exports `@tanstack/react-start/server-entry` and that's all an end user needs to deploy to Cloudflare, Netlify, Vercel or Node.
 
 ## The handler contract
 
@@ -47,6 +47,6 @@ Inside any module Vite builds, `import.meta.env.PRERENDER` is statically replace
 
 ## What Vite Deploy is not
 
-Vite Deploy intentionally stays out of routing, data loading, RSC, and other framework concerns. It only owns the deployment layer: bundling, optionally prerendering, and producing platform-specific output. Anything beyond that — including static redirects, response headers, image optimization, version skew protection — belongs in your framework or in adapter-specific configuration.
+Vite Deploy intentionally stays out of routing, data loading, RSC, and other framework concerns. It only owns the deployment layer: bundling, optionally prerendering, and producing platform-specific output. Anything beyond that (including static redirects, response headers, image optimization, version skew protection) belongs in your framework or in adapter-specific configuration.
 
 This scope mirrors the boundary discussed in the [Vite ecosystem RFC](https://github.com/vitejs/ecosystem/issues/3) on framework-agnostic provider plugins.

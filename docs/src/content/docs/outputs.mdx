@@ -8,11 +8,11 @@ Vite Deploy allows you to render your Vite project statically (SSG), on-demand (
 
 ## Entrypoints
 
-A Vite Deploy project is wired together through up to three entrypoints. Each one is a regular module that Vite builds — you can write it yourself, import it from a package, or have a framework provide it.
+A Vite Deploy project is wired together through up to three entrypoints. Each one is a regular module that Vite builds: you can write it yourself, import it from a package, or have a framework provide it.
 
-- **Handler entrypoint** — answers HTTP requests. This is your application: a `fetch` handler (or, for the Node adapter, optionally a Node style handler). It runs in dev, during prerendering, and at runtime in production.
-- **Prerender entrypoint** — lists which routes to render to static HTML at build time. Required only when prerendering is involved.
-- **Server entrypoint** — boots the production server (e.g. `http.createServer`, `Deno.serve`, `Bun.serve`). Only some adapters need one — most platforms (Cloudflare, Netlify, Vercel) provide their own runtime, so you don't write a server entrypoint there.
+- **Handler entrypoint:** answers HTTP requests. This is your application: a `fetch` handler (or, for the Node adapter, optionally a Node style handler). It runs in dev, during prerendering, and at runtime in production.
+- **Prerender entrypoint:** lists which routes to render to static HTML at build time. Required only when prerendering is involved.
+- **Server entrypoint:** boots the production server (e.g. `http.createServer`, `Deno.serve`, `Bun.serve`). Only some adapters need one, most platforms (Cloudflare, Netlify, Vercel) provide their own runtime so you don't write a server entrypoint there.
 
 Below is a recap of which entrypoints each output requires:
 
@@ -24,32 +24,27 @@ Below is a recap of which entrypoints each output requires:
 
 \* Only required by adapters that produce a standalone server (currently the [Node adapter](/adapters/node/)).
 
-## Outputs
+## How each output works
+
+In development, every output uses the request handler to answer requests. They differ only in what the build produces.
 
 ### Static (SSG)
 
-In development, the request handler is used for requests. During the build:
-
 1. The [prerender entrypoint](#prerenderentrypoint) is called to determine which routes should be rendered statically.
-2. Requests are sent for each route, handled by the request handler. The result is stored as static HTML.
-3. The server artifacts are removed, only leaving static assets.
+2. A request is sent for each route, handled by the request handler, and the result is stored as static HTML.
+3. The server bundle is discarded — only static files remain.
 
 ### Server (SSR)
 
-In development, the request handler is used for requests. During the build:
-
-1. A standard Vite build takes place
-2. Some adapters require a different server entrypoint for production.
-3. No artifacts are removed.
+1. Some adapters require a separate [server entrypoint](/adapters/node/#serverentrypoint) for production; if so, it's bundled.
+2. The build keeps both client and server bundles. Nothing is prerendered.
 
 ### Hybrid
 
-In development, the request handler is used for requests. During the build:
-
 1. The [prerender entrypoint](#prerenderentrypoint) is called to determine which routes should be rendered statically.
-2. Requests are sent for each route, handled by the request handler. The result is stored as static HTML.
-3. Some adapters require a different server entrypoint for production.
-4. No artifacts are removed.
+2. A request is sent for each route, handled by the request handler, and the result is stored as static HTML.
+3. Some adapters require a separate [server entrypoint](/adapters/node/#serverentrypoint) for production; if so, it's bundled.
+4. The server bundle is kept so on-demand routes still work at runtime.
 
 ## Configuration reference
 
@@ -97,7 +92,7 @@ export default defineConfig({
 
 <p>**Type:** `string | URL`</p>
 
-Specifies what module should be used. It accepts:
+Specifies the module that lists the routes to prerender. It accepts:
 
 - Paths relative to Vite's root: `./src/prerender.ts`.
 - Absolute paths: `/foo/prerender.ts`.
@@ -140,7 +135,7 @@ export default {
 **Default:** `undefined`
 </p>
 
-Specifies headers to use during prerendering:
+Specifies headers attached to each request the build sends to your handler during prerendering. Useful for flagging prerender requests so the handler can branch on them, or for supplying credentials your handler expects:
 
 ```js title="vite.config.js" {10}
 import netlify from "@vite-deploy/netlify";
@@ -206,7 +201,7 @@ export default defineConfig({
 
 In addition to [built-in Vite environment variables](https://vite.dev/guide/env-and-mode.html), Vite Deploy exposes `import.meta.env.PRERENDER`.
 
-It's a boolean statically replaced which lets you know if the file is running during prerendering or not.
+It's a boolean indicating whether the file is running during prerendering. Vite replaces it with `true` or `false` at build time, so the unused branch is dead-code-eliminated and never ships.
 
 This is useful, for example, to expose some routes for prerendering only in [hybrid builds](#hybrid):
 

@@ -2,6 +2,7 @@
 title: Deploy your Vite project anywhere
 template: splash
 hero:
+  tagline: The minimal primitive for shipping Vite apps to Cloudflare, Netlify, Vercel, Node servers and more. Statically, on-demand, or both.
   image:
     light: ../../assets/vite-deploy-icon.svg
     dark: ../../assets/vite-deploy-icon-dark.svg
@@ -21,16 +22,16 @@ import { Card, CardGrid } from "@astrojs/starlight/components";
 ## Features
 
 <CardGrid>
-  <Card title="Deploy anywhere" icon="rocket">
-    Cloudflare, Netlify, Node and Vercel [adapters](/adapters/). [Guides](/deploy/) for popular hosting platforms.
+  <Card title="Every major host" icon="rocket">
+    Dedicated [adapters](/adapters/) for Cloudflare, Netlify, and Vercel. The [Node adapter](/adapters/node/) covers Node, [Deno](/deploy/deno/), and [Bun](/deploy/bun/).
   </Card>
-  <Card title="Prerendering" icon="document">
-    Supports [prerendering](/outputs/) (SSG), on-demand rendering (SSR) or both.
+  <Card title="Static, server, or hybrid" icon="document">
+    Prerender at build time, render on-demand at request time, or [mix both](/outputs/) in the same project.
   </Card>
-  <Card title="Integrate with other tools" icon="setting">
-    Built on web standards, easy to [integrate](/integrate-with/) with your stack.
+  <Card title="Built on web standards" icon="setting">
+    Write a `fetch` handler once, run it everywhere. Works with [Hono](/integrate-with/hono/), [Express](/integrate-with/express/), [TanStack Start](/integrate-with/tanstack-start/) and more.
   </Card>
-  <Card title="Open-Source" icon="github">
-    Want to help us? [Contribute on GitHub](https://github.com/web-runes/vite-deploy).
+  <Card title="Open source" icon="github">
+    MIT-licensed and community-driven. [Star us, file issues, send PRs](https://github.com/web-runes/vite-deploy).
   </Card>
 </CardGrid>
