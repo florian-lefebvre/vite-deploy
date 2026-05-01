@@ -1,5 +1,14 @@
 # @vite-deploy/node
 
+## 0.0.2
+
+### Patch Changes
+
+- [`fed7bfc`](https://github.com/web-runes/vite-deploy/commit/fed7bfc9dbc59fd464312acf15e121ba3d03261a) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Test release
+
+- Updated dependencies [[`fed7bfc`](https://github.com/web-runes/vite-deploy/commit/fed7bfc9dbc59fd464312acf15e121ba3d03261a)]:
+  - @vite-deploy/internal-helpers@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@vite-deploy/netlify",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Deploy your Vite project to Netlify.",
 	"type": "module",
 	"sideEffects": false,
@@ -45,6 +45,6 @@
 		"@netlify/functions": "^5.2.0",
 		"@netlify/vite-plugin": "^2.12.1",
 		"@remix-run/node-fetch-server": "^0.13.0",
-		"@vite-deploy/internal-helpers": "^0.0.1"
+		"@vite-deploy/internal-helpers": "^0.0.2"
 	}
 }
