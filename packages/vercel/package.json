@@ -39,10 +39,10 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.6.0",
-		"@typescript/native-preview": "7.0.0-dev.20260428.1"
+		"@typescript/native-preview": "7.0.0-dev.20260501.1"
 	},
 	"dependencies": {
-		"@remix-run/node-fetch-server": "^0.13.0",
+		"@remix-run/node-fetch-server": "^0.13.1",
 		"@vite-deploy/internal-helpers": "^0.0.2"
 	}
 }
