@@ -1,6 +1,6 @@
 {
 	"name": "@vite-deploy/node",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Deploy your Vite project to hosts which support Node.js.",
 	"type": "module",
 	"sideEffects": false,
@@ -43,6 +43,6 @@
 	},
 	"dependencies": {
 		"@remix-run/node-fetch-server": "^0.13.0",
-		"@vite-deploy/internal-helpers": "^0.0.0"
+		"@vite-deploy/internal-helpers": "^0.0.1"
 	}
 }

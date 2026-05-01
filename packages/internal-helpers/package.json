@@ -1,6 +1,6 @@
 {
 	"name": "@vite-deploy/internal-helpers",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Internal helpers used by Vite Deploy packages.",
 	"type": "module",
 	"sideEffects": false,

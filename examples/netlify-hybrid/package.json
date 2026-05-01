@@ -10,7 +10,7 @@
 	},
 	"devDependencies": {
 		"@typescript/native-preview": "7.0.0-dev.20260428.1",
-		"@vite-deploy/netlify": "^0.0.0",
+		"@vite-deploy/netlify": "^0.0.1",
 		"vite": "^8.0.10"
 	}
 }
