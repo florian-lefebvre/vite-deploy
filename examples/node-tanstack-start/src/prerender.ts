@@ -1,7 +1,7 @@
 import type { PrerenderEntrypoint } from "@vite-deploy/cloudflare";
 
 export default {
-  getStaticPaths() {
-    return ["/"];
-  },
+	getStaticPaths() {
+		return ["/"];
+	},
 } satisfies PrerenderEntrypoint;

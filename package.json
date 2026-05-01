@@ -1,20 +1,20 @@
 {
-    "name": "root",
-    "private": true,
-    "type": "module",
-    "packageManager": "pnpm@10.33.0",
-    	"engines": {
+	"name": "root",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@10.33.0",
+	"engines": {
 		"node": ">=22.12.0"
 	},
-    "scripts": {
-        "packages": "pnpm --filter '@vite-deploy/*' --parallel --stream",
-        "changeset": "changeset",
-        		"lint": "biome check --write",
+	"scripts": {
+		"packages": "pnpm --filter '@vite-deploy/*' --parallel --stream",
+		"changeset": "changeset",
+		"lint": "biome check --write",
 		"format": "biome format --write",
-        		"ci-version": "changeset version && pnpm install --no-frozen-lockfile",
+		"ci-version": "changeset version && pnpm install --no-frozen-lockfile",
 		"ci-publish": "changeset publish"
-    },
-    	"devDependencies": {
+	},
+	"devDependencies": {
 		"@biomejs/biome": "2.4.13",
 		"@changesets/cli": "2.31.0",
 		"@changesets/changelog-github": "0.6.0"

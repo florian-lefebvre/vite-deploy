@@ -1,7 +1,7 @@
 ---
 import { Icon } from "@astrojs/starlight/components";
-import { Icons } from "../../../node_modules/@astrojs/starlight/components-internals/Icons";
 import Default from "@astrojs/starlight/components/PageTitle.astro";
+import { Icons } from "../../../node_modules/@astrojs/starlight/components-internals/Icons";
 import Version from "../Version.astro";
 
 const { data } = Astro.locals.starlightRoute.entry;
@@ -9,12 +9,11 @@ const { data } = Astro.locals.starlightRoute.entry;
 const packageName = data.title.replace("@vite-deploy/", "");
 
 function isValidIcon(name: string): name is keyof typeof Icons {
-  return Object.keys(Icons).includes(name);
+	return Object.keys(Icons).includes(name);
 }
 ---
 
-{
-  data.type === "package" ? (
+{data.type === "package" ? (
     <div class="wrapper">
       <h1 id="_top">
         <>
@@ -49,49 +48,48 @@ function isValidIcon(name: string): name is keyof typeof Icons {
     <Default>
       <slot />
     </Default>
-  )
-}
+  )}
 
 <style>
-  .wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  h1 {
-    display: flex;
-    flex-wrap: wrap;
-    color: var(--sl-color-white);
-    font-size: var(--sl-text-h1);
-    font-weight: 600;
-    line-height: var(--sl-line-height-headings);
-    align-items: center;
-  }
-  h1 svg {
-    margin-right: 1rem;
-  }
-  .scope {
-    color: var(--sl-color-gray-3);
-    font-weight: 400;
-  }
-  .package-metadata {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1rem;
-    font-size: var(--sl-text-xs);
-  }
-  .package-metadata a {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    text-decoration: none;
-    color: var(--sl-color-text-accent);
-  }
-  .package-metadata a:hover {
-    color: var(--sl-color-white);
-  }
-  .package-metadata svg {
-    width: 1.5rem;
-  }
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+h1 {
+	display: flex;
+	flex-wrap: wrap;
+	color: var(--sl-color-white);
+	font-size: var(--sl-text-h1);
+	font-weight: 600;
+	line-height: var(--sl-line-height-headings);
+	align-items: center;
+}
+h1 svg {
+	margin-right: 1rem;
+}
+.scope {
+	color: var(--sl-color-gray-3);
+	font-weight: 400;
+}
+.package-metadata {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem 1rem;
+	font-size: var(--sl-text-xs);
+}
+.package-metadata a {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	text-decoration: none;
+	color: var(--sl-color-text-accent);
+}
+.package-metadata a:hover {
+	color: var(--sl-color-white);
+}
+.package-metadata svg {
+	width: 1.5rem;
+}
 </style>

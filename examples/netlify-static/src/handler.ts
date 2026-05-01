@@ -1,16 +1,16 @@
 import type { ExportedHandler } from "@vite-deploy/netlify";
 
 export default {
-  fetch(request) {
-    const url = new URL(request.url);
-    if (url.pathname === "/") {
-      return new Response("<div>foo</div>", {
-        status: 200,
-        headers: {
-          "Content-Type": "text/html",
-        },
-      });
-    }
-    return new Response(null, { status: 404 });
-  },
+	fetch(request) {
+		const url = new URL(request.url);
+		if (url.pathname === "/") {
+			return new Response("<div>foo</div>", {
+				status: 200,
+				headers: {
+					"Content-Type": "text/html",
+				},
+			});
+		}
+		return new Response(null, { status: 404 });
+	},
 } satisfies ExportedHandler;

@@ -1,17 +1,17 @@
 {
-  "name": "@example/cloudflare-hybrid",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler types && vite",
-    "build": "wrangler types && tsgo && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@typescript/native-preview": "7.0.0-dev.20260428.1",
-    "@vite-deploy/cloudflare": "^0.0.0",
-    "vite": "^8.0.10",
-    "wrangler": "^4.86.0"
-  }
+	"name": "@example/cloudflare-hybrid",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler types && vite",
+		"build": "wrangler types && tsgo && vite build",
+		"preview": "vite preview"
+	},
+	"devDependencies": {
+		"@typescript/native-preview": "7.0.0-dev.20260428.1",
+		"@vite-deploy/cloudflare": "^0.0.0",
+		"vite": "^8.0.10",
+		"wrangler": "^4.86.0"
+	}
 }

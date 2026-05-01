@@ -2,28 +2,26 @@
 import { getCollection } from "astro:content";
 
 interface Props {
-  directory: string;
+	directory: string;
 }
 
 const { directory } = Astro.props;
 
 const entries = await getCollection("docs", (entry) =>
-  entry.id.startsWith(`${directory}/`),
+	entry.id.startsWith(`${directory}/`),
 );
 
 if (entries.length === 0) {
-  throw new Error(`No entries found for directory: ${directory}`);
+	throw new Error(`No entries found for directory: ${directory}`);
 }
 ---
 
 <ul>
-  {
-    entries.map((entry) => (
+	{entries.map((entry) => (
       <li>
         <a href={`/${entry.id}/`}>
           {entry.data.sidebar.label ?? entry.data.title}
         </a>
       </li>
-    ))
-  }
+    ))}
 </ul>

@@ -1,7 +1,7 @@
 import type { PrerenderEntrypoint } from "@vite-deploy/netlify";
 
 export default {
-  getStaticPaths() {
-    return ["/"];
-  },
+	getStaticPaths() {
+		return ["/"];
+	},
 } satisfies PrerenderEntrypoint;

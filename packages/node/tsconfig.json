@@ -1,24 +1,24 @@
 {
-  "compilerOptions": {
-    "module": "nodenext",
-    "target": "esnext",
-    "types": ["node"],
-    "sourceMap": false,
-    "declaration": true,
-    "declarationMap": false,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "erasableSyntaxOnly": true,
-    "skipLibCheck": true,
-    "isolatedDeclarations": true,
-    "outDir": "./dist",
-    "rootDir": "src",
-    "tsBuildInfoFile": "node_modules/.tmp/tsconfig.tsbuildinfo",
-    "verbatimModuleSyntax": true
-  }
+	"compilerOptions": {
+		"module": "nodenext",
+		"target": "esnext",
+		"types": ["node"],
+		"sourceMap": false,
+		"declaration": true,
+		"declarationMap": false,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"strict": true,
+		"isolatedModules": true,
+		"noUncheckedSideEffectImports": true,
+		"erasableSyntaxOnly": true,
+		"skipLibCheck": true,
+		"isolatedDeclarations": true,
+		"outDir": "./dist",
+		"rootDir": "src",
+		"tsBuildInfoFile": "node_modules/.tmp/tsconfig.tsbuildinfo",
+		"verbatimModuleSyntax": true
+	}
 }

@@ -1,38 +1,41 @@
 :root {
-  --sl-font: var(--font-rubik);
-  --sl-font-mono: var(--font-jetbrains-mono);
-  font-variant-ligatures: none;
+	--sl-font: var(--font-rubik);
+	--sl-font-mono: var(--font-jetbrains-mono);
+	font-variant-ligatures: none;
 }
 
 .pagination-links > a {
-  box-shadow: none;
+	box-shadow: none;
 }
 
 .hero h1 {
-  --sl-line-height-headings: 1;
+	--sl-line-height-headings: 1;
 }
 
 .sidebar-content summary .large {
-  text-transform: uppercase;
-  font-family: var(--__sl-font-mono);
-  font-size: var(--sl-text-sm);
+	text-transform: uppercase;
+	font-family: var(--__sl-font-mono);
+	font-size: var(--sl-text-sm);
 }
 
 .sidebar-content li a[aria-current="page"] {
-  background-color: transparent;
-  color: var(--sl-color-text-accent);
+	background-color: transparent;
+	color: var(--sl-color-text-accent);
 }
 
 .sidebar-content li:has(> a[aria-current="page"]) {
-  --border-width: 3px;
-  border-inline-start: var(--border-width) solid var(--sl-color-text-accent);
-  padding-inline-start: calc(var(--sl-sidebar-item-padding-inline) - var(--border-width));
+	--border-width: 3px;
+	border-inline-start: var(--border-width) solid var(--sl-color-text-accent);
+	padding-inline-start: calc(
+		var(--sl-sidebar-item-padding-inline) -
+		var(--border-width)
+	);
 }
 
 starlight-menu-button button {
-  background-color: transparent;
-  color: var(--sl-color-text);
-  font-size: var(--sl-text-2xl);
-  box-shadow: none;
-  padding: 0.25rem;
+	background-color: transparent;
+	color: var(--sl-color-text);
+	font-size: var(--sl-text-2xl);
+	box-shadow: none;
+	padding: 0.25rem;
 }

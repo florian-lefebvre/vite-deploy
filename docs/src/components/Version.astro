@@ -2,7 +2,7 @@
 import { getLatestNPMVersion } from "../utils/get-latest-npm-version";
 
 export interface Props {
-  pkgName: string;
+	pkgName: string;
 }
 
 const version = await getLatestNPMVersion(Astro.props.pkgName);

@@ -1,7 +1,7 @@
 interface ImportMetaEnv {
-  readonly PRERENDER: boolean;
+	readonly PRERENDER: boolean;
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+	readonly env: ImportMetaEnv;
 }
