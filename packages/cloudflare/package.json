@@ -17,8 +17,7 @@
 	],
 	"scripts": {
 		"dev": "tsgo --watch",
-		"build": "tsgo --build",
-		"prepublishOnly": "pnpm build"
+		"build": "tsgo --build"
 	},
 	"keywords": [
 		"vite",

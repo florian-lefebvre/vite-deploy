@@ -26,6 +26,7 @@ jobs:
           node-version: 24.10.0
           cache: 'pnpm'
       - run: pnpm install
+      - run: pnpm ci:build
       - name: Create Release Pull Request
         uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
         with:
