@@ -34,12 +34,10 @@ export const collections = {
 				"@vite-deploy/node",
 				"@vite-deploy/vercel",
 			];
-			// TODO:
 			// See https://github.com/antfu/fast-npm-meta
-			// const url = `https://npm.antfu.dev/${encodeURIComponent(packages.join("+"))}`;
-			// const data = await fetch(url).then((res) => res.json());
-			// return data.map((pkg: any) => ({ id: pkg.name, version: pkg.version }));
-			return packages.map((pkg) => ({ id: pkg, version: "0.0.0" }));
+			const url = `https://npm.antfu.dev/${encodeURIComponent(packages.join("+"))}`;
+			const data = await fetch(url).then((res) => res.json());
+			return data.map((pkg: any) => ({ id: pkg.name, version: pkg.version }));
 		},
 		schema: z.object({ version: z.string() }),
 	}),
