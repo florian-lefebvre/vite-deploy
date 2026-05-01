@@ -35,5 +35,5 @@ jobs:
           node-version: 24.10.0
           cache: pnpm
       - run: pnpm install
-      - run: pnpm packages build
+      - run: pnpm ci:build
       # TODO: run tests

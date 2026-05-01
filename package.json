@@ -11,8 +11,9 @@
 		"changeset": "changeset",
 		"lint": "biome check --write",
 		"format": "biome format --write",
-		"ci-version": "changeset version && pnpm install --no-frozen-lockfile",
-		"ci-publish": "changeset publish"
+		"ci:build": "pnpm --filter @vite-deploy/internal-helpers build && pnpm packages build",
+		"ci:version": "changeset version && pnpm install --no-frozen-lockfile",
+		"ci:publish": "changeset publish"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.13",
