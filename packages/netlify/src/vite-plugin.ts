@@ -16,8 +16,7 @@ const PACKAGE_NAME = packageJson.name;
 const MAIN_INPUT = "index";
 const HANDLER_ENTRYPOINT_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/handler-entrypoint`;
 const PRODUCTION_HANDLER_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/production-handler`;
-const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE =
-	"\0" + PRODUCTION_HANDLER_VIRTUAL_MODULE;
+const RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE = `\0${PRODUCTION_HANDLER_VIRTUAL_MODULE}`;
 
 function validateMod(mod: Record<string, any>) {
 	if (!("default" in mod && "fetch" in mod.default)) {
@@ -146,6 +145,7 @@ export function netlify({
 					// TODO: implement missing
 					const response = await mod.default.fetch(request, {
 						get url() {
+							// biome-ignore lint/style/noNonNullAssertion: request is defined at this stage
 							return new URL(request!.url);
 						},
 						// The dev server is a long running process, so promises will run even with a noop

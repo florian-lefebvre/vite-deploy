@@ -20,7 +20,7 @@ export function normalizePaths(input: Array<string>): Array<string> {
 		...new Set(
 			input.map((path) => {
 				if (path[0] !== "/") {
-					path = "/" + path;
+					path = `/${path}`;
 				}
 				return path;
 			}),
@@ -58,7 +58,7 @@ export async function localFetch({
 	const response = await fetch(request);
 
 	if (isRedirectResponse(response) && maxRedirects > 0) {
-		const location = response.headers.get("location")!;
+		const location = response.headers.get("location") ?? "";
 		if (location.startsWith("http://localhost") || location.startsWith("/")) {
 			const newUrl = location.replace("http://localhost", "");
 			return localFetch({
@@ -92,21 +92,21 @@ export function getRouteFilename({
 	}
 
 	if (path.endsWith("/")) {
-		return path + "index.html";
+		return `${path}index.html`;
 	}
 
 	if (format === "file") {
 		if (path.endsWith(".html")) {
 			return path;
 		}
-		return path + ".html";
+		return `${path}.html`;
 	}
 
 	if (path.endsWith("/index.html")) {
 		return path;
 	}
 	if (path.endsWith(".html")) {
-		return path.slice(0, -5) + "/index.html";
+		return `${path.slice(0, -5)}/index.html`;
 	}
-	return path + "/index.html";
+	return `${path}/index.html`;
 }

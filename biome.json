@@ -26,6 +26,9 @@
 			"recommended": true,
 			"style": {
 				"useImportType": "on"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
 			}
 		}
 	},

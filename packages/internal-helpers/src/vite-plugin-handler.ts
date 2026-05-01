@@ -139,7 +139,7 @@ export function createHandlerPlugin(options: Options): Plugin {
 				sirv(
 					join(
 						config.root,
-						config.environments[VITE_ENVIRONMENT_NAMES.client]!.build.outDir,
+						config.environments[VITE_ENVIRONMENT_NAMES.client].build.outDir,
 					),
 					{
 						dev: true,
@@ -159,8 +159,7 @@ export function createHandlerPlugin(options: Options): Plugin {
 						options.getPreviewMod({
 							outputDir: join(
 								config.root,
-								config.environments[VITE_ENVIRONMENT_NAMES.server]!.build
-									.outDir,
+								config.environments[VITE_ENVIRONMENT_NAMES.server].build.outDir,
 							),
 						}),
 					onRequest: options.onRequest,

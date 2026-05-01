@@ -8,8 +8,7 @@ import packageJson from "../package.json" with { type: "json" };
 
 const PACKAGE_NAME = packageJson.name;
 const CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE = `virtual:${PACKAGE_NAME}/client-fallback-entry`;
-const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE =
-	"\0" + CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE;
+const RESOLVED_CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE = `\0${CLIENT_FALLBACK_ENTRY_VIRTUAL_MODULE}`;
 const CLIENT_FALLBACK_ENTRY_NAME = "__client_fallback_entry__";
 
 /**

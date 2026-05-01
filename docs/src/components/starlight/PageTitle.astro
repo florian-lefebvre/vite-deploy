@@ -16,18 +16,16 @@ function isValidIcon(name: string): name is keyof typeof Icons {
 {data.type === "package" ? (
     <div class="wrapper">
       <h1 id="_top">
-        <>
-          {isValidIcon(packageName) && <Icon name={packageName} />}
-          <span class="scope">@vite-deploy/</span>
-          <span>{packageName}</span>
-        </>
+        {isValidIcon(packageName) && <Icon name={packageName} />}
+        <span class="scope">@vite-deploy/</span>
+        <span>{packageName}</span>
       </h1>
       <div class="package-metadata">
         <Version pkgName={data.title} />
         <a href={data.githubURL}>
           <Icon size="1rem" name="github" /> GitHub
         </a>
-        <a href={"https://npmx.dev/package/" + data.title}>
+        <a href={`https://npmx.dev/package/${data.title}`}>
           <svg
             width="16"
             height="16"
@@ -39,7 +37,7 @@ function isValidIcon(name: string): name is keyof typeof Icons {
           </svg>
           npm
         </a>
-        <a href={data.githubURL + "CHANGELOG.md"}>
+        <a href={`${data.githubURL}CHANGELOG.md`}>
           <Icon size="1rem" name="list-format" /> Changelog
         </a>
       </div>

@@ -222,7 +222,7 @@ export function createPrerenderPlugin({
 							});
 						}
 
-						const cleanPagePath = path.split(/[?#]/)[0]!;
+						const cleanPagePath = path.split(/[?#]/)[0];
 
 						const filename = getRouteFilename({
 							path: cleanPagePath,
