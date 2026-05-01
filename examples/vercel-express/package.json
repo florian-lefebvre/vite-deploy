@@ -15,7 +15,7 @@
 	"devDependencies": {
 		"@types/express": "^5.0.6",
 		"@typescript/native-preview": "7.0.0-dev.20260428.1",
-		"@vite-deploy/vercel": "^0.0.0",
+		"@vite-deploy/vercel": "^0.0.1",
 		"vite": "^8.0.10"
 	}
 }
