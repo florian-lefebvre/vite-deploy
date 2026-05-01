@@ -1,26 +1,46 @@
 {
-  "name": "@vite-deploy/internal-helpers",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js"
-    },
-    "./types": "./types.d.ts"
-  },
-  "scripts": {
-    "dev": "tsgo --watch",
-    "build": "tsgo --build"
-  },
-  "peerDependencies": {
-    "vite": "^8.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20260428.1"
-  },
-  "dependencies": {
-    "sirv": "^3.0.2"
-  }
+	"name": "@vite-deploy/internal-helpers",
+	"version": "0.0.0",
+	"description": "Internal helpers used by Vite Deploy packages.",
+	"type": "module",
+	"sideEffects": false,
+	"main": "./dist/index.js",
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		},
+		"./types": "./types.d.ts"
+	},
+	"files": [
+		"dist",
+		"types.d.ts"
+	],
+	"scripts": {
+		"dev": "tsgo --watch",
+		"build": "tsgo --build",
+		"prepublishOnly": "pnpm build"
+	},
+	"keywords": [
+		"vite",
+		"vite-plugin"
+	],
+	"author": "contact@florian-lefebvre.dev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/web-runes/vite-deploy.git",
+		"directory": "packages/internal-helpers"
+	},
+	"bugs": "https://github.com/web-runes/vite-deploy/issues",
+	"homepage": "https://vite-deploy.web-runes.dev",
+	"license": "MIT",
+	"peerDependencies": {
+		"vite": "^8.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^25.6.0",
+		"@typescript/native-preview": "7.0.0-dev.20260428.1"
+	},
+	"dependencies": {
+		"sirv": "^3.0.2"
+	}
 }

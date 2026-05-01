@@ -1,28 +1,50 @@
 {
-  "name": "@vite-deploy/cloudflare",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "exports": {
-    ".": {
-      "default": "./dist/index.js"
-    },
-    "./types": "./types.d.ts"
-  },
-  "scripts": {
-    "dev": "tsgo --watch",
-    "build": "tsgo --build"
-  },
-  "peerDependencies": {
-    "vite": "^8.0.0",
-    "wrangler": "^4.76.0"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20260428.1"
-  },
-  "dependencies": {
-    "@cloudflare/vite-plugin": "^1.34.0",
-    "@vite-deploy/internal-helpers": "^0.0.0"
-  }
+	"name": "@vite-deploy/cloudflare",
+	"version": "0.0.0",
+	"description": "Deploy your Vite project to Cloudflare.",
+	"type": "module",
+	"sideEffects": false,
+	"main": "./dist/index.js",
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		},
+		"./types": "./types.d.ts"
+	},
+	"files": [
+		"dist",
+		"types.d.ts"
+	],
+	"scripts": {
+		"dev": "tsgo --watch",
+		"build": "tsgo --build",
+		"prepublishOnly": "pnpm build"
+	},
+	"keywords": [
+		"vite",
+		"vite-plugin",
+		"adapter",
+		"cloudflare"
+	],
+	"author": "contact@florian-lefebvre.dev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/web-runes/vite-deploy.git",
+		"directory": "packages/cloudflare"
+	},
+	"bugs": "https://github.com/web-runes/vite-deploy/issues",
+	"homepage": "https://vite-deploy.web-runes.dev",
+	"license": "MIT",
+	"peerDependencies": {
+		"vite": "^8.0.0",
+		"wrangler": "^4.76.0"
+	},
+	"devDependencies": {
+		"@types/node": "^25.6.0",
+		"@typescript/native-preview": "7.0.0-dev.20260428.1"
+	},
+	"dependencies": {
+		"@cloudflare/vite-plugin": "^1.34.0",
+		"@vite-deploy/internal-helpers": "^0.0.0"
+	}
 }
