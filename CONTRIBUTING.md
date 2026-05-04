@@ -25,7 +25,7 @@ Vite DEploy uses pnpm workspaces, so you should **always run `pnpm install` from
 ```shell
 git clone && cd ...
 pnpm install
-pnpm ci:build
+pnpm build
 ```
 
 ### Development
@@ -34,7 +34,7 @@ pnpm ci:build
 # starts a file-watching, live-reloading dev script for active development
 pnpm packages dev
 # build the entire project, one time.
-pnpm ci:build
+pnpm build
 ```
 
 **How can I test my changes while contributing to the repository?**

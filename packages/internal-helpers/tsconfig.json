@@ -16,9 +16,11 @@
 		"erasableSyntaxOnly": true,
 		"skipLibCheck": true,
 		"isolatedDeclarations": true,
-		"outDir": "./dist",
-		"rootDir": "src",
-		"tsBuildInfoFile": "node_modules/.tmp/tsconfig.tsbuildinfo",
 		"verbatimModuleSyntax": true
-	}
+	},
+	"files": [],
+	"references": [
+		{ "path": "./tsconfig.src.json" },
+		{ "path": "./tsconfig.test.json" }
+	]
 }

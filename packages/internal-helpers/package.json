@@ -17,7 +17,8 @@
 	],
 	"scripts": {
 		"dev": "tsgo --watch",
-		"build": "tsgo --build"
+		"build": "tsgo --build",
+		"test": "node --test --test-reporter=spec \"test/**/*.test.ts\""
 	},
 	"keywords": [
 		"vite",
