@@ -11,7 +11,8 @@
 		"changeset": "changeset",
 		"lint": "biome check --write",
 		"format": "biome format --write",
-		"ci:build": "pnpm --filter @vite-deploy/internal-helpers build && pnpm packages build",
+		"test": "pnpm --filter '@vite-deploy/*' test --if-present",
+		"build": "pnpm --filter @vite-deploy/internal-helpers build && pnpm packages build",
 		"ci:version": "changeset version && pnpm install --no-frozen-lockfile",
 		"ci:publish": "changeset publish"
 	},
