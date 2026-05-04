@@ -45,14 +45,14 @@ We are looking into upstreaming improvements from Vite Deploy into the Netlify V
 
 ## Nitro
 
-**[Nitro](https://nitro.build/) is a server framework.** It's an opinionated toolkit that turns your Vite project into a production server with its own routing, key-value storage, caching, and database conventions. It can deploy that server to Node.js, Cloudflare Workers, Deno, Bun, AWS Lambda, Vercel, Netlify, and more.
+**[Nitro](https://nitro.build/) is a server framework.** It turns your Vite project into a production server and can deploy it to Node.js, Cloudflare Workers, Deno, Bun, AWS Lambda, Vercel, Netlify, and more. The minimum contract is the same as Vite Deploy: `export default` a `fetch` handler.
 
 Key differences:
 
-- Nitro is opinionated: it owns routing, storage, and caching. Vite Deploy is the opposite: it deploys whatever `fetch` handler you give it and stays out of the rest.
-- Nitro decides what your server entry looks like; Vite Deploy lets you write your own.
+- Nitro v3 made routing, storage, and caching opt-in (behind flags or util imports), so it's no longer opinionated by default on those. But it still contains code for every host it supports and for features like storage and tasks even if you only want the deploy aspect.
+- Nitro covers more ground than Vite Deploy (storage, tasks, caching primitives) and you pay for that surface area in terms of download size. Vite Deploy only does the deployment.
 
-**Use Nitro if you want a batteries-included server framework.** Use Vite Deploy if you already have a handler (or a framework) and just want a deployment layer.
+**Use Nitro if you want its broader server toolkit.** Use Vite Deploy if you already have a handler (or a framework) and just want a deployment layer.
 
 ## SRVX
 
