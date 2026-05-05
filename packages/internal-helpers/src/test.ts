@@ -26,7 +26,6 @@ export async function startServer(opts: {
 	const config: InlineConfig = {
 		root: opts.cwd,
 		configFile: join(opts.cwd, "vite.config.ts"),
-		server: { strictPort: true },
 		logLevel: "silent",
 	};
 	const server = await (opts.mode === "dev"
