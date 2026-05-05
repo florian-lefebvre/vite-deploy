@@ -1,5 +1,16 @@
 # @vite-deploy/node
 
+## 0.0.3
+
+### Patch Changes
+
+- [#15](https://github.com/web-runes/vite-deploy/pull/15) [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Fixes a case where `vite preview` would fail when using `output: "static"`
+
+- [#15](https://github.com/web-runes/vite-deploy/pull/15) [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Fixes a case where entrypoints would not be resolved
+
+- Updated dependencies [[`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2)]:
+  - @vite-deploy/internal-helpers@0.1.0
+
 ## 0.0.2
 
 ### Patch Changes

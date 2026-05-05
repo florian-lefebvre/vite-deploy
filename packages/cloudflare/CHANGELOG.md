@@ -1,5 +1,12 @@
 # @vite-deploy/cloudflare
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2), [`4bbb3c7`](https://github.com/web-runes/vite-deploy/commit/4bbb3c79fe1b615be9d96b117af732e81ab931f2)]:
+  - @vite-deploy/internal-helpers@0.1.0
+
 ## 0.0.2
 
 ### Patch Changes
