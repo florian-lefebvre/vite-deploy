@@ -15,6 +15,10 @@ export default defineConfig({
 		tailwindcss(),
 		tanstackStart({
 			srcDirectory: "src",
+			router: {
+				quoteStyle: "double",
+				semicolons: true,
+			},
 		}),
 		viteReact(),
 		netlify({

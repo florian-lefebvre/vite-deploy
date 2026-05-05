@@ -17,7 +17,7 @@ describe("cloudflare-server", () => {
 		before(async () => {
 			server = await startServer({ cwd, mode: "dev" });
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("renders / as HTML", async () => {
 			const res = await fetch(`${server.url}/`);
@@ -55,7 +55,7 @@ describe("cloudflare-server", () => {
 				mode: "preview",
 			});
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("renders / as HTML", async () => {
 			const res = await fetch(`${server.url}/`);

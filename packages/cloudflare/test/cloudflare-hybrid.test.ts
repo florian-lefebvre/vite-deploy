@@ -17,7 +17,7 @@ describe("cloudflare-hybrid", () => {
 		before(async () => {
 			server = await startServer({ cwd, mode: "dev" });
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("renders / from worker (DEV branch)", async () => {
 			const res = await fetch(`${server.url}/`);
@@ -57,7 +57,7 @@ describe("cloudflare-hybrid", () => {
 				mode: "preview",
 			});
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("serves prerendered /", async () => {
 			const res = await fetch(`${server.url}/`);

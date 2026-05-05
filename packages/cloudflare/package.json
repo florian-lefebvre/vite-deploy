@@ -18,7 +18,7 @@
 	"scripts": {
 		"dev": "tsgo --build --force --watch",
 		"build": "tsgo --build --force",
-		"test": "node --test --test-reporter=spec --test-concurrency=1 \"test/**/*.test.ts\""
+		"test": "node --test --test-reporter=spec --test-concurrency=1 --test-force-exit \"test/**/*.test.ts\""
 	},
 	"keywords": [
 		"vite",

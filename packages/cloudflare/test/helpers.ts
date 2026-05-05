@@ -26,6 +26,9 @@ export async function startServer(opts: {
 	cwd: string;
 	mode: "dev" | "preview";
 }): Promise<ServerHandle> {
+	// `@cloudflare/vite-plugin` / miniflare resolve some paths from `process.cwd()`
+	// rather than vite's `root`, so chdir into the example to match the CLI behavior.
+	process.chdir(opts.cwd);
 	let server: ViteDevServer | PreviewServer;
 	if (opts.mode === "dev") {
 		server = await createServer({
@@ -58,6 +61,7 @@ function pickUrl(urls: ReadonlyArray<string> | undefined): string {
 }
 
 export async function runBuild(cwd: string): Promise<void> {
+	process.chdir(cwd);
 	await rm(join(cwd, "dist"), { recursive: true, force: true });
 	const builder = await createBuilder(
 		{

@@ -21,7 +21,7 @@ describe("cloudflare-tanstack-start", () => {
 				mode: "dev",
 			});
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("renders SSR home page", async () => {
 			const res = await fetch(`${server.url}/`);
@@ -65,7 +65,7 @@ describe("cloudflare-tanstack-start", () => {
 				mode: "preview",
 			});
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("serves prerendered /", async () => {
 			const res = await fetch(`${server.url}/`);

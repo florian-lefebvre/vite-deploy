@@ -17,7 +17,7 @@ describe("cloudflare-static", () => {
 		before(async () => {
 			server = await startServer({ cwd, mode: "dev" });
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("renders / from worker", async () => {
 			const res = await fetch(`${server.url}/`);
@@ -60,7 +60,7 @@ describe("cloudflare-static", () => {
 				mode: "preview",
 			});
 		});
-		after(async () => server?.stop());
+		after(async () => server.stop());
 
 		it("serves prerendered /", async () => {
 			const res = await fetch(`${server.url}/`);
