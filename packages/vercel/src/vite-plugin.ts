@@ -62,8 +62,8 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 			filter: {
 				id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
 			},
-			handler(_id, ...args) {
-				return this.resolve(options.handlerEntrypoint.toString(), ...args);
+			handler() {
+				return this.resolve(options.handlerEntrypoint.toString());
 			},
 		},
 	};

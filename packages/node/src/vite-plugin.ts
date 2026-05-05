@@ -74,13 +74,13 @@ function configPlugin(options: Options): Plugin {
 					`^(${MAIN_ENTRYPOINT_VIRTUAL_MODULE}|${HANDLER_ENTRYPOINT_VIRTUAL_MODULE})$`,
 				),
 			},
-			handler(id, ...args) {
+			handler(id) {
 				if (id === MAIN_ENTRYPOINT_VIRTUAL_MODULE) {
 					return options.output === "static"
 						? undefined
-						: this.resolve(options.serverEntrypoint.toString(), ...args);
+						: this.resolve(options.serverEntrypoint.toString());
 				}
-				return this.resolve(options.handlerEntrypoint.toString(), ...args);
+				return this.resolve(options.handlerEntrypoint.toString());
 			},
 		},
 	};

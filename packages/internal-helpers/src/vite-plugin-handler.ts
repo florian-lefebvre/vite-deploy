@@ -95,20 +95,27 @@ function createMiddleware({
 	};
 }
 
+function createOnResponse(
+	options: Pick<Options, "requestLoggingLevel"> &
+		Pick<ResolvedConfig, "logLevel">,
+): MiddlewareOptions["onResponse"] {
+	const logLevel = options.requestLoggingLevel ?? options.logLevel ?? "info";
+	if (logLevel === "silent") {
+		return;
+	}
+	return ({ duration, status, url }) => {
+		console.log(
+			`${styleText("bold", "GET")} ${url || "/"} ${styleText("bold", styleText("green", status.toString()))} ${status >= 200 && status < 300 ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
+		);
+	};
+}
+
 /**
  * A Vite plugin which forwards requests to the user handler in development
  * and preview.
  */
 export function createHandlerPlugin(options: Options): Plugin {
 	let config: ResolvedConfig;
-	const onResponse: MiddlewareOptions["onResponse"] =
-		(options.requestLoggingLevel ?? "info") === "silent"
-			? undefined
-			: ({ duration, status, url }) => {
-					console.log(
-						`${styleText("bold", "GET")} ${url || "/"} ${styleText("bold", styleText("green", status.toString()))} ${status >= 200 && status < 300 ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
-					);
-				};
 
 	return {
 		name: `${PACKAGE_NAME}:handler`,
@@ -117,6 +124,10 @@ export function createHandlerPlugin(options: Options): Plugin {
 			config = _config;
 		},
 		configureServer(server) {
+			const onResponse = createOnResponse({
+				requestLoggingLevel: options.requestLoggingLevel,
+				logLevel: server.config.logLevel,
+			});
 			return () => {
 				server.middlewares.use(
 					createMiddleware({
@@ -135,6 +146,10 @@ export function createHandlerPlugin(options: Options): Plugin {
 			};
 		},
 		configurePreviewServer(server) {
+			const onResponse = createOnResponse({
+				requestLoggingLevel: options.requestLoggingLevel,
+				logLevel: server.config.logLevel,
+			});
 			server.middlewares.use((req, res, next) => {
 				sirv(
 					join(

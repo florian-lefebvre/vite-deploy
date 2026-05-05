@@ -105,9 +105,9 @@ export function createPrerenderPlugin({
 			filter: {
 				id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
 			},
-			handler(_id, ...args) {
+			handler() {
 				return userOptions.output !== "server" && userOptions.prerender
-					? this.resolve(userOptions.prerender.entrypoint.toString(), ...args)
+					? this.resolve(userOptions.prerender.entrypoint.toString())
 					: undefined;
 			},
 		},
