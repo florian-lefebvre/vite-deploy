@@ -1,5 +1,5 @@
-import { rename, rm } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { rm } from "node:fs/promises";
+import { join } from "node:path";
 import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
 	createBuildPlugin,
@@ -46,14 +46,15 @@ function configPlugin(options: Options): Plugin {
 			if (name === VITE_ENVIRONMENT_NAMES.client) {
 				return {
 					build: {
-						outDir: "dist/client",
+						outDir: options.output === "static" ? "dist" : "dist/client",
 					},
 				};
 			}
 			if (name === VITE_ENVIRONMENT_NAMES.server) {
 				return {
 					build: {
-						outDir: "dist/server",
+						outDir:
+							options.output === "static" ? ".server" : "dist/server",
 						rolldownOptions: {
 							input: {
 								...(options.output === "static"
@@ -134,7 +135,7 @@ export function node({
 		}),
 		createPrerenderPlugin({
 			userOptions,
-			onBuildDone: async ({ output, serverEnvironment, clientEnvironment }) => {
+			onBuildDone: async ({ output, serverEnvironment }) => {
 				if (output !== "static") return;
 
 				// Clear server bundle
@@ -148,17 +149,6 @@ export function node({
 						recursive: true,
 					},
 				);
-
-				// Move from dist/client/ to dist/
-				const clientOutDir = join(
-					clientEnvironment.config.root,
-					clientEnvironment.config.build.outDir,
-				);
-				const distDir = dirname(clientOutDir);
-				const tempDir = `${distDir}_tmp`;
-				await rename(clientOutDir, tempDir);
-				await rm(distDir, { force: true, recursive: true });
-				await rename(tempDir, distDir);
 			},
 		}),
 	];
