@@ -120,6 +120,8 @@ export function createHandlerPlugin(options: Options): Plugin {
 	return {
 		name: `${PACKAGE_NAME}:handler`,
 		sharedDuringBuild: true,
+		// Needs to run before other plugins, like Tanstack Start
+		enforce: "pre",
 		configResolved(_config) {
 			config = _config;
 		},

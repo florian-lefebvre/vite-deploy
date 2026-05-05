@@ -28,6 +28,9 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 	return {
 		name: `${PACKAGE_NAME}:config`,
 		sharedDuringBuild: true,
+		applyToEnvironment(environment) {
+			return environment.name === VITE_ENVIRONMENT_NAMES.server;
+		},
 		config() {
 			return {
 				environments: {
