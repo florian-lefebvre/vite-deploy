@@ -7,7 +7,7 @@ import {
 	runBuild,
 	type ServerHandle,
 	startServer,
-} from "./helpers.ts";
+} from "@vite-deploy/internal-helpers/test";
 
 const cwd = exampleDir("cloudflare-hono");
 

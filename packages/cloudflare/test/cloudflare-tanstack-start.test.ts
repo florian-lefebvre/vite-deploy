@@ -7,7 +7,7 @@ import {
 	runBuild,
 	type ServerHandle,
 	startServer,
-} from "./helpers.ts";
+} from "@vite-deploy/internal-helpers/test";
 
 // Folder name has the upstream typo ("clouflare-"); package name is correct.
 const cwd = exampleDir("clouflare-tanstack-start");
