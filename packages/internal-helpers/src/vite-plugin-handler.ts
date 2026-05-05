@@ -147,11 +147,23 @@ export function createHandlerPlugin(options: Options): Plugin {
 				);
 			};
 		},
-		configurePreviewServer(server) {
+		async configurePreviewServer(server) {
 			const onResponse = createOnResponse({
 				requestLoggingLevel: options.requestLoggingLevel,
 				logLevel: server.config.logLevel,
 			});
+			let mod: Record<string, any> | undefined;
+			try {
+				mod = await options.getPreviewMod({
+					outputDir: join(
+						config.root,
+						config.environments[VITE_ENVIRONMENT_NAMES.server].build.outDir,
+					),
+				});
+				// When running vite preview on static builds, the module isn't there anymore.
+				// In this case, we return 404
+			} catch {}
+
 			server.middlewares.use((req, res, next) => {
 				sirv(
 					join(
@@ -170,18 +182,18 @@ export function createHandlerPlugin(options: Options): Plugin {
 					});
 				}
 			});
+
 			server.middlewares.use(
-				createMiddleware({
-					getMod: () =>
-						options.getPreviewMod({
-							outputDir: join(
-								config.root,
-								config.environments[VITE_ENVIRONMENT_NAMES.server].build.outDir,
-							),
-						}),
-					onRequest: options.onRequest,
-					onResponse,
-				}),
+				mod
+					? createMiddleware({
+							getMod: async () => mod,
+							onRequest: options.onRequest,
+							onResponse,
+						})
+					: (_req, res) => {
+							res.statusCode = 404;
+							res.end();
+						},
 			);
 		},
 	};
