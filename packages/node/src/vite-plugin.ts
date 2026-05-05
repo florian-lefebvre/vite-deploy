@@ -53,8 +53,7 @@ function configPlugin(options: Options): Plugin {
 			if (name === VITE_ENVIRONMENT_NAMES.server) {
 				return {
 					build: {
-						outDir:
-							options.output === "static" ? ".server" : "dist/server",
+						outDir: options.output === "static" ? ".server" : "dist/server",
 						rolldownOptions: {
 							input: {
 								...(options.output === "static"
