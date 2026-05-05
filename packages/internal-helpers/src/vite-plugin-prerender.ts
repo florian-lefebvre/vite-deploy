@@ -35,7 +35,6 @@ interface Options {
 	 */
 	onBuildDone?: (params: {
 		output: PrerenderOptions["output"];
-		clientEnvironment: BuildEnvironment;
 		serverEnvironment: BuildEnvironment;
 	}) => void | Promise<void>;
 }
@@ -105,9 +104,9 @@ export function createPrerenderPlugin({
 			filter: {
 				id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
 			},
-			handler(_id, ...args) {
+			handler() {
 				return userOptions.output !== "server" && userOptions.prerender
-					? this.resolve(userOptions.prerender.entrypoint.toString(), ...args)
+					? this.resolve(userOptions.prerender.entrypoint.toString())
 					: undefined;
 			},
 		},
@@ -162,11 +161,13 @@ export function createPrerenderPlugin({
 				if (userOptions.output === "server") {
 					await onBuildDone?.({
 						output: "server",
-						clientEnvironment,
 						serverEnvironment,
 					});
 					return;
 				}
+
+				// TODO: when userOptions.prerender, we can skip some things like the
+				// extra build
 
 				if (userOptions.prerender) {
 					const prerenderEntrypointMod = await import(
@@ -188,11 +189,13 @@ export function createPrerenderPlugin({
 					const now = performance.now();
 
 					const previewServer = await preview({
+						root: serverEnvironment.config.root,
 						configFile: serverEnvironment.config.configFile,
 						preview: {
 							port: 0,
 							open: false,
 						},
+						logLevel: serverEnvironment.config.logLevel,
 					});
 					const localUrl = previewServer.resolvedUrls?.local.at(0);
 					if (!localUrl) {
@@ -256,7 +259,6 @@ export function createPrerenderPlugin({
 				if (userOptions.output === "static") {
 					await onBuildDone?.({
 						output: "static",
-						clientEnvironment,
 						serverEnvironment,
 					});
 					return;
@@ -271,11 +273,20 @@ export function createPrerenderPlugin({
 				).prerender;
 				prerender = false;
 
+				await rm(
+					join(
+						serverEnvironment.config.root,
+						serverEnvironment.config.build.outDir,
+					),
+					{
+						force: true,
+						recursive: true,
+					},
+				);
 				await builder.build(serverEnvironment);
 
 				await onBuildDone?.({
 					output: "hybrid",
-					clientEnvironment,
 					serverEnvironment,
 				});
 			},

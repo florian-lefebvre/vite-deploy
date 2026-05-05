@@ -14,6 +14,6 @@ export default {
 				},
 			});
 		}
-		return new Response(`Running ${url.pathname} in ${navigator.userAgent}!`);
+		return new Response(null, { status: 404 });
 	},
 } satisfies ExportedHandler;

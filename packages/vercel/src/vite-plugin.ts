@@ -28,6 +28,9 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 	return {
 		name: `${PACKAGE_NAME}:config`,
 		sharedDuringBuild: true,
+		applyToEnvironment(environment) {
+			return environment.name === VITE_ENVIRONMENT_NAMES.server;
+		},
 		config() {
 			return {
 				environments: {
@@ -62,8 +65,8 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 			filter: {
 				id: new RegExp(`^(${ENTRYPOINT_VIRTUAL_MODULE})$`),
 			},
-			handler(_id, ...args) {
-				return this.resolve(options.handlerEntrypoint.toString(), ...args);
+			handler() {
+				return this.resolve(options.handlerEntrypoint.toString());
 			},
 		},
 	};

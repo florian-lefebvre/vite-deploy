@@ -9,6 +9,9 @@
 		".": {
 			"default": "./dist/index.js"
 		},
+		"./test": {
+			"default": "./dist/test/index.js"
+		},
 		"./types": "./types.d.ts"
 	},
 	"files": [
@@ -16,8 +19,8 @@
 		"types.d.ts"
 	],
 	"scripts": {
-		"dev": "tsgo --watch",
-		"build": "tsgo --build",
+		"dev": "tsgo --build --force --watch",
+		"build": "tsgo --build --force",
 		"test": "node --test --test-reporter=spec \"test/**/*.test.ts\""
 	},
 	"keywords": [

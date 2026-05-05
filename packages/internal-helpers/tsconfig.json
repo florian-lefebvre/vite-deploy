@@ -1,24 +1,5 @@
 {
-	"compilerOptions": {
-		"module": "nodenext",
-		"target": "esnext",
-		"types": ["node"],
-		"sourceMap": false,
-		"declaration": true,
-		"declarationMap": false,
-		"noUncheckedIndexedAccess": false,
-		"noImplicitOverride": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"strict": true,
-		"isolatedModules": true,
-		"noUncheckedSideEffectImports": true,
-		"erasableSyntaxOnly": true,
-		"skipLibCheck": true,
-		"isolatedDeclarations": true,
-		"verbatimModuleSyntax": true
-	},
-	"files": [],
+	"extends": "../../tsconfig.base.json",
 	"references": [
 		{ "path": "./tsconfig.src.json" },
 		{ "path": "./tsconfig.test.json" }

@@ -95,28 +95,41 @@ function createMiddleware({
 	};
 }
 
+function createOnResponse(
+	options: Pick<Options, "requestLoggingLevel"> &
+		Pick<ResolvedConfig, "logLevel">,
+): MiddlewareOptions["onResponse"] {
+	const logLevel = options.requestLoggingLevel ?? options.logLevel ?? "info";
+	if (logLevel === "silent") {
+		return;
+	}
+	return ({ duration, status, url }) => {
+		console.log(
+			`${styleText("bold", "GET")} ${url || "/"} ${styleText("bold", styleText("green", status.toString()))} ${status >= 200 && status < 300 ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
+		);
+	};
+}
+
 /**
  * A Vite plugin which forwards requests to the user handler in development
  * and preview.
  */
 export function createHandlerPlugin(options: Options): Plugin {
 	let config: ResolvedConfig;
-	const onResponse: MiddlewareOptions["onResponse"] =
-		(options.requestLoggingLevel ?? "info") === "silent"
-			? undefined
-			: ({ duration, status, url }) => {
-					console.log(
-						`${styleText("bold", "GET")} ${url || "/"} ${styleText("bold", styleText("green", status.toString()))} ${status >= 200 && status < 300 ? styleText("green", "OK") : styleText("red", "NOT OK")} (${getTimeStat(duration)})`,
-					);
-				};
 
 	return {
 		name: `${PACKAGE_NAME}:handler`,
 		sharedDuringBuild: true,
+		// Needs to run before other plugins, like Tanstack Start
+		enforce: "pre",
 		configResolved(_config) {
 			config = _config;
 		},
 		configureServer(server) {
+			const onResponse = createOnResponse({
+				requestLoggingLevel: options.requestLoggingLevel,
+				logLevel: server.config.logLevel,
+			});
 			return () => {
 				server.middlewares.use(
 					createMiddleware({
@@ -134,7 +147,23 @@ export function createHandlerPlugin(options: Options): Plugin {
 				);
 			};
 		},
-		configurePreviewServer(server) {
+		async configurePreviewServer(server) {
+			const onResponse = createOnResponse({
+				requestLoggingLevel: options.requestLoggingLevel,
+				logLevel: server.config.logLevel,
+			});
+			let mod: Record<string, any> | undefined;
+			try {
+				mod = await options.getPreviewMod({
+					outputDir: join(
+						config.root,
+						config.environments[VITE_ENVIRONMENT_NAMES.server].build.outDir,
+					),
+				});
+				// When running vite preview on static builds, the module isn't there anymore.
+				// In this case, we return 404
+			} catch {}
+
 			server.middlewares.use((req, res, next) => {
 				sirv(
 					join(
@@ -153,18 +182,18 @@ export function createHandlerPlugin(options: Options): Plugin {
 					});
 				}
 			});
+
 			server.middlewares.use(
-				createMiddleware({
-					getMod: () =>
-						options.getPreviewMod({
-							outputDir: join(
-								config.root,
-								config.environments[VITE_ENVIRONMENT_NAMES.server].build.outDir,
-							),
-						}),
-					onRequest: options.onRequest,
-					onResponse,
-				}),
+				mod
+					? createMiddleware({
+							getMod: async () => mod,
+							onRequest: options.onRequest,
+							onResponse,
+						})
+					: (_req, res) => {
+							res.statusCode = 404;
+							res.end();
+						},
 			);
 		},
 	};

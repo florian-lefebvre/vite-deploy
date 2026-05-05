@@ -78,9 +78,9 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 					`^(${HANDLER_ENTRYPOINT_VIRTUAL_MODULE}|${PRODUCTION_HANDLER_VIRTUAL_MODULE})$`,
 				),
 			},
-			handler(id, ...args) {
+			handler(id) {
 				if (id === HANDLER_ENTRYPOINT_VIRTUAL_MODULE) {
-					return this.resolve(options.handlerEntrypoint.toString(), ...args);
+					return this.resolve(options.handlerEntrypoint.toString());
 				}
 				return RESOLVED_PRODUCTION_HANDLER_VIRTUAL_MODULE;
 			},
