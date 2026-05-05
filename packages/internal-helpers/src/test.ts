@@ -1,13 +1,7 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-	createBuilder,
-	createServer,
-	type PreviewServer,
-	preview,
-	type ViteDevServer,
-} from "vite";
+import { createBuilder, createServer, type InlineConfig, preview } from "vite";
 
 const examplesRoot = fileURLToPath(
 	new URL("../../../examples/", import.meta.url),
@@ -29,23 +23,15 @@ export async function startServer(opts: {
 	// `@cloudflare/vite-plugin` / miniflare resolve some paths from `process.cwd()`
 	// rather than vite's `root`, so chdir into the example to match the CLI behavior.
 	process.chdir(opts.cwd);
-	let server: ViteDevServer | PreviewServer;
-	if (opts.mode === "dev") {
-		server = await createServer({
-			root: opts.cwd,
-			configFile: join(opts.cwd, "vite.config.ts"),
-			server: { strictPort: true },
-			logLevel: "silent",
-		});
-		await server.listen();
-	} else {
-		server = await preview({
-			root: opts.cwd,
-			configFile: join(opts.cwd, "vite.config.ts"),
-			preview: { strictPort: true },
-			logLevel: "silent",
-		});
-	}
+	const config: InlineConfig = {
+		root: opts.cwd,
+		configFile: join(opts.cwd, "vite.config.ts"),
+		server: { strictPort: true },
+		logLevel: "silent",
+	};
+	const server = await (opts.mode === "dev"
+		? createServer(config).then((s) => s.listen())
+		: preview(config));
 
 	const url = pickUrl(server.resolvedUrls?.local);
 	return {

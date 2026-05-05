@@ -168,6 +168,9 @@ export function createPrerenderPlugin({
 					return;
 				}
 
+				// TODO: when userOptions.prerender, we can skip some things like the
+				// extra build
+
 				if (userOptions.prerender) {
 					const prerenderEntrypointMod = await import(
 						join(
