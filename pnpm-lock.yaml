@@ -101,7 +101,7 @@ importers:
         specifier: ^4.86.0
         version: 4.87.0
 
-  examples/clouflare-tanstack-start:
+  examples/cloudflare-tanstack-start:
     dependencies:
       '@tanstack/react-router':
         specifier: ^1.168.23

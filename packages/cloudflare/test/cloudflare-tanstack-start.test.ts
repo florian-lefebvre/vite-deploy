@@ -9,8 +9,7 @@ import {
 	startServer,
 } from "@vite-deploy/internal-helpers/test";
 
-// Folder name has the upstream typo ("clouflare-"); package name is correct.
-const cwd = exampleDir("clouflare-tanstack-start");
+const cwd = exampleDir("cloudflare-tanstack-start");
 
 describe("cloudflare-tanstack-start", () => {
 	describe("dev", () => {
