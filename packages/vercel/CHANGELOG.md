@@ -1,5 +1,11 @@
 # @vite-deploy/vercel
 
+## 0.0.4
+
+### Patch Changes
+
+- [#20](https://github.com/web-runes/vite-deploy/pull/20) [`18731fe`](https://github.com/web-runes/vite-deploy/commit/18731feaa6e52cf0789b1ecf5ef60d811641a080) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Fixes the build output to properly deploy on Vercel
+
 ## 0.0.3
 
 ### Patch Changes
