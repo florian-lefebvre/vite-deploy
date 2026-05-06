@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@vite-deploy/vercel@0.0.3':
-    hash: 82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f
+    hash: 6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972
     path: patches/@vite-deploy__vercel@0.0.3.patch
 
 importers:
@@ -512,7 +512,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -528,7 +528,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -540,7 +540,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -552,7 +552,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -564,7 +564,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -607,7 +607,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: 0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -8671,7 +8671,7 @@ snapshots:
       '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@vite-deploy/vercel@0.0.3(patch_hash=82133c73feb501dc11fb72e2ed485cd5cf37d60eab14d783fb1937b4122e316f)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@vite-deploy/vercel@0.0.3(patch_hash=6b5439d0e47d9d1c232cd4a9a3c522d4b367654e3570ede51026818f67c50972)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@remix-run/node-fetch-server': 0.13.1
       '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))

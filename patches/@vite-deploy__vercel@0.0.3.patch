@@ -1,8 +1,16 @@
 diff --git a/dist/vite-plugin.js b/dist/vite-plugin.js
-index c1c2b06e3c36bd1a35dee0e77bfad0c8ca4fed0d..399e24b0b4d65377fb4e331ecc755714cbefba23 100644
+index c1c2b06e3c36bd1a35dee0e77bfad0c8ca4fed0d..dfab9fc7363a7d7326a86387c6547388817423ac 100644
 --- a/dist/vite-plugin.js
 +++ b/dist/vite-plugin.js
-@@ -37,7 +37,7 @@ function configPlugin(options) {
+@@ -30,14 +30,14 @@ function configPlugin(options) {
+             if (name === VITE_ENVIRONMENT_NAMES.client) {
+                 return {
+                     build: {
+-                        outDir: ".vercel/output/static",
++                        outDir: "dist",
+                     },
+                 };
+             }
              if (name === VITE_ENVIRONMENT_NAMES.server) {
                  return {
                      build: {
