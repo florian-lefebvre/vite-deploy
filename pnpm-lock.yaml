@@ -48,7 +48,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/cloudflare':
         specifier: ^0.0.3
-        version: link:../../packages/cloudflare
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -63,7 +63,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/cloudflare':
         specifier: ^0.0.3
-        version: link:../../packages/cloudflare
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -78,7 +78,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/cloudflare':
         specifier: ^0.0.3
-        version: link:../../packages/cloudflare
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -93,7 +93,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/cloudflare':
         specifier: ^0.0.3
-        version: link:../../packages/cloudflare
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -139,7 +139,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/cloudflare':
         specifier: ^0.0.3
-        version: link:../../packages/cloudflare
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -173,7 +173,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -189,7 +189,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -201,7 +201,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -213,7 +213,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -225,7 +225,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -268,7 +268,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/netlify':
         specifier: ^0.0.3
-        version: link:../../packages/netlify
+        version: 0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -299,7 +299,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -324,7 +324,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -343,7 +343,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -368,7 +368,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -390,7 +390,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -412,7 +412,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -427,7 +427,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -476,7 +476,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/node':
         specifier: ^0.0.3
-        version: link:../../packages/node
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -507,7 +507,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -523,7 +523,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -535,7 +535,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -547,7 +547,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -559,7 +559,7 @@ importers:
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.10
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -602,7 +602,7 @@ importers:
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/vercel':
         specifier: ^0.0.3
-        version: link:../../packages/vercel
+        version: 0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -623,7 +623,7 @@ importers:
         version: 1.35.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.0
-        version: link:../internal-helpers
+        version: 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.0
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -667,7 +667,7 @@ importers:
         version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.0
-        version: link:../internal-helpers
+        version: 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.0
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -686,7 +686,7 @@ importers:
         version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.0
-        version: link:../internal-helpers
+        version: 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.0
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -705,7 +705,7 @@ importers:
         version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.0
-        version: link:../internal-helpers
+        version: 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.0
         version: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -2762,11 +2762,38 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@vercel/nft@0.29.4':
     resolution: {integrity: sha512-6lLqMNX3TuycBPABycx7A9F1bHQR7kiQln6abjFbPrf5C/05qHM9M5E4PeTE59c7z8g6vHnx1Ioihb2AQl7BTA==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@vite-deploy/cloudflare@0.0.3':
+    resolution: {integrity: sha512-JdMLQ+u4v5YVjDem6MXCEl10+rNseGcnqL8OYCuNbCC37HIO0tZMWm7asyI8eE9MDoe1bOkWict8M+0rlkvJYw==}
+    peerDependencies:
+      vite: ^8.0.0
+      wrangler: ^4.76.0
+
+  '@vite-deploy/internal-helpers@0.1.0':
+    resolution: {integrity: sha512-T5oJsLvA8p8oDl/yZDad1YpULhQevD58BSBnBzVbVdeTtFTaufHXhzvj73nnPWmuV48E19JjlKATfhkErBs9lQ==}
+    peerDependencies:
+      vite: ^8.0.0
+
+  '@vite-deploy/netlify@0.0.3':
+    resolution: {integrity: sha512-HOJ3pXHKyBw3g2EDdIPqob96kOa+VZns85frp5ellFqWZclv9aJSF830SoATxIlPwRvRaPslg3YX1DlaIcj1tA==}
+    peerDependencies:
+      vite: ^8.0.0
+
+  '@vite-deploy/node@0.0.3':
+    resolution: {integrity: sha512-wgj3WcQ+PCkIgLtgHY2Y5ohvDp2SrvkEE4SHZA/6b9XrnFWT6unGXB5Fujri/yHosKFFb3yFqvTMDM6K3eIANQ==}
+    peerDependencies:
+      vite: ^8.0.0
+
+  '@vite-deploy/vercel@0.0.3':
+    resolution: {integrity: sha512-qAg/G8/a3MKvVR9EYkAq3U3QeRkq2I+DaRcBaKhSIDbntX+EftopKceMrJZeVbhxxIRCUu1+mNGL507k4TZCXg==}
+    peerDependencies:
+      vite: ^8.0.0
 
   '@vitejs/plugin-react@6.0.1':
     resolution: {integrity: sha512-l9X/E3cDb+xY3SWzlG1MOGt2usfEHGMNIaegaUGFsLkb3RCn/k8/TOXBcab+OndDI4TBtktT8/9BwwW8Vi9KUQ==}
@@ -8581,6 +8608,69 @@ snapshots:
       - encoding
       - rollup
       - supports-color
+
+  '@vite-deploy/cloudflare@0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)':
+    dependencies:
+      '@cloudflare/vite-plugin': 1.35.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260430.1)(wrangler@4.87.0)
+      '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+      wrangler: 4.87.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - workerd
+
+  '@vite-deploy/internal-helpers@0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+    dependencies:
+      sirv: 3.0.2
+      vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+
+  '@vite-deploy/netlify@0.0.3(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+    dependencies:
+      '@netlify/functions': 5.2.0
+      '@netlify/vite-plugin': 2.12.1(rollup@4.60.2)(srvx@0.11.15)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      '@remix-run/node-fetch-server': 0.13.1
+      '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@planetscale/database'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - aws4fetch
+      - babel-plugin-macros
+      - bare-abort-controller
+      - bare-buffer
+      - db0
+      - encoding
+      - idb-keyval
+      - ioredis
+      - react-native-b4a
+      - rollup
+      - srvx
+      - supports-color
+      - uploadthing
+
+  '@vite-deploy/node@0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+    dependencies:
+      '@remix-run/node-fetch-server': 0.13.1
+      '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
+
+  '@vite-deploy/vercel@0.0.3(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
+    dependencies:
+      '@remix-run/node-fetch-server': 0.13.1
+      '@vite-deploy/internal-helpers': 0.1.0(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)
 
   '@vitejs/plugin-react@6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:

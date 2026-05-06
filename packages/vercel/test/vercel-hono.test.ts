@@ -37,7 +37,7 @@ describe("vercel-hono", () => {
 		before(async () => runBuild(cwd));
 
 		it("emits client output", () => {
-			assert.ok(existsSync(join(cwd, "dist/favicon.svg")));
+			assert.ok(existsSync(join(cwd, ".vercel/output/static/favicon.svg")));
 		});
 
 		it("emits server function", () => {

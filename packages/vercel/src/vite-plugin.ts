@@ -42,7 +42,7 @@ function configPlugin(options: Pick<Options, "handlerEntrypoint">): Plugin {
 			if (name === VITE_ENVIRONMENT_NAMES.client) {
 				return {
 					build: {
-						outDir: "dist",
+						outDir: ".vercel/output/static",
 					},
 				};
 			}

@@ -37,7 +37,7 @@ describe("vercel-hybrid", () => {
 		before(async () => runBuild(cwd));
 
 		it("prerenders / to client output", () => {
-			const indexPath = join(cwd, "dist/index.html");
+			const indexPath = join(cwd, ".vercel/output/static/index.html");
 			assert.ok(existsSync(indexPath));
 			assert.match(readFileSync(indexPath, "utf8"), /<div>foo<\/div>/);
 		});
