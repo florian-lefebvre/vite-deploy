@@ -46,8 +46,14 @@ export function createPrerenderPlugin({
 	userOptions,
 	onBuildDone,
 }: Options): Plugin {
-	// In server mode, it's always false and not updated later
-	let prerender = userOptions.output !== "server";
+	// In server mode, it's always set to false
+	let prerender =
+		// If static, there's only one build so can directly set it to true
+		userOptions.output === "static" ||
+		// If hybrid, there's only a 2nd build if the options wants prerendering.
+		// In that case, we start at true and it will changed to false for the
+		// server build. If that's not the case, we directly set it to true
+		(userOptions.output === "hybrid" && userOptions.prerender);
 	let cleaned = false;
 	let config: ResolvedConfig;
 
@@ -166,9 +172,6 @@ export function createPrerenderPlugin({
 					return;
 				}
 
-				// TODO: when userOptions.prerender, we can skip some things like the
-				// extra build
-
 				if (userOptions.prerender) {
 					const prerenderEntrypointMod = await import(
 						join(
@@ -264,26 +267,29 @@ export function createPrerenderPlugin({
 					return;
 				}
 
-				// It is normalized by now
-				delete (
-					serverEnvironment.config.build.rolldownOptions.input as Record<
-						string,
-						string
-					>
-				).prerender;
-				prerender = false;
+				// We only run another build if prerendering was run
+				if (userOptions.prerender) {
+					// It is normalized by now
+					delete (
+						serverEnvironment.config.build.rolldownOptions.input as Record<
+							string,
+							string
+						>
+					).prerender;
+					prerender = false;
 
-				await rm(
-					join(
-						serverEnvironment.config.root,
-						serverEnvironment.config.build.outDir,
-					),
-					{
-						force: true,
-						recursive: true,
-					},
-				);
-				await builder.build(serverEnvironment);
+					await rm(
+						join(
+							serverEnvironment.config.root,
+							serverEnvironment.config.build.outDir,
+						),
+						{
+							force: true,
+							recursive: true,
+						},
+					);
+					await builder.build(serverEnvironment);
+				}
 
 				await onBuildDone?.({
 					output: "hybrid",
