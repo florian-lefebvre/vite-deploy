@@ -1,5 +1,11 @@
 # @vite-deploy/internal-helpers
 
+## 0.1.1
+
+### Patch Changes
+
+- [#24](https://github.com/web-runes/vite-deploy/pull/24) [`d920946`](https://github.com/web-runes/vite-deploy/commit/d92094603f49d343704451cad09b19fbf3e12f88) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Improves build speed by skipping a useless build with `output: "hybrid"` when `prerender` is not provided
+
 ## 0.1.0
 
 ### Minor Changes
