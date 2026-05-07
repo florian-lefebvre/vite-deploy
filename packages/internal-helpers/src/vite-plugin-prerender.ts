@@ -48,11 +48,11 @@ export function createPrerenderPlugin({
 }: Options): Plugin {
 	// In server mode, it's always set to false
 	let prerender =
-		// If static, there's only one build so can directly set it to true
+		// If static, there's only one build it can directly be set to true
 		userOptions.output === "static" ||
-		// If hybrid, there's only a 2nd build if the options wants prerendering.
-		// In that case, we start at true and it will changed to false for the
-		// server build. If that's not the case, we directly set it to true
+		// If hybrid, there's only a 2nd build if the user wants prerendering.
+		// In that case, it starts at true and it will change to false for the
+		// server build. If that's not the case, it is directly set to true
 		(userOptions.output === "hybrid" && userOptions.prerender);
 	let cleaned = false;
 	let config: ResolvedConfig;
