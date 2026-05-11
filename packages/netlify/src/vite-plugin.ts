@@ -1,7 +1,6 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
 import netlifyPlugin from "@netlify/vite-plugin";
-import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
 	createBuildPlugin,
 	createHandlerPlugin,
@@ -9,6 +8,7 @@ import {
 	VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
 import { parseCookie, parseSetCookie, serializeCookie } from "cookie-es";
+import { NodeRequest, sendNodeResponse } from "srvx/node";
 import type { Plugin } from "vite";
 import packageJson from "../package.json" with { type: "json" };
 import type { ExportedHandler, Options } from "./types.js";
@@ -141,7 +141,7 @@ export function netlify({
 				let request: Request | undefined;
 
 				try {
-					request = createRequest(req, res);
+					request = new NodeRequest({ req, res });
 
 					const response = await mod.default.fetch(request, {
 						get url() {
@@ -255,7 +255,7 @@ export function netlify({
 							);
 						},
 					});
-					await sendResponse(res, response);
+					await sendNodeResponse(res, response);
 
 					return { type: "success" };
 				} catch (error) {

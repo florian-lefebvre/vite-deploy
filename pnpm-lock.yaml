@@ -291,9 +291,6 @@ importers:
         specifier: ^0.11.15
         version: 0.11.15
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -313,9 +310,6 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -335,9 +329,6 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -360,9 +351,6 @@ importers:
         specifier: ^0.11.15
         version: 0.11.15
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -382,9 +370,6 @@ importers:
         specifier: ^0.11.15
         version: 0.11.15
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -404,9 +389,6 @@ importers:
         specifier: ^0.11.15
         version: 0.11.15
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -419,9 +401,6 @@ importers:
 
   examples/node-static:
     devDependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.0
-        version: 0.13.1
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
@@ -662,15 +641,15 @@ importers:
       '@netlify/vite-plugin':
         specifier: ^2.12.1
         version: 2.12.1(rollup@4.60.3)(srvx@0.11.15)(vite@8.0.11(@types/node@25.6.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.8.4))
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.1
-        version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.1
         version: link:../internal-helpers
       cookie-es:
         specifier: ^3.1.1
         version: 3.1.1
+      srvx:
+        specifier: ^0.11.15
+        version: 0.11.15
       vite:
         specifier: ^8.0.0
         version: 8.0.11(@types/node@25.6.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.8.4)
@@ -684,12 +663,12 @@ importers:
 
   packages/node:
     dependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.1
-        version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.1
         version: link:../internal-helpers
+      srvx:
+        specifier: ^0.11.15
+        version: 0.11.15
       vite:
         specifier: ^8.0.0
         version: 8.0.11(@types/node@25.6.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.8.4)
@@ -703,12 +682,12 @@ importers:
 
   packages/vercel:
     dependencies:
-      '@remix-run/node-fetch-server':
-        specifier: ^0.13.1
-        version: 0.13.1
       '@vite-deploy/internal-helpers':
         specifier: ^0.1.1
         version: link:../internal-helpers
+      srvx:
+        specifier: ^0.11.15
+        version: 0.11.15
       vite:
         specifier: ^8.0.0
         version: 8.0.11(@types/node@25.6.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.21.0)(yaml@2.8.4)
@@ -1972,9 +1951,6 @@ packages:
 
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
-
-  '@remix-run/node-fetch-server@0.13.1':
-    resolution: {integrity: sha512-dOL+A/C84EA47gO/ps52KGrVSiYy96512rwtbXmJfWKYFm1FbrbjA3jao1hcIfao+jwVNEaZ1kTMwFjiino+HQ==}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.18':
     resolution: {integrity: sha512-lIDyUAfD7U3+BWKzdxMbJcsYHuqXqmGz40aeRqvuAm3y5TkJSYTBW2RDrn65DJFPQqVjUAUqq5uz8urzQ8aBdQ==}
@@ -7796,8 +7772,6 @@ snapshots:
       supports-color: 10.2.2
 
   '@poppinss/exception@1.2.3': {}
-
-  '@remix-run/node-fetch-server@0.13.1': {}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.18':
     optional: true

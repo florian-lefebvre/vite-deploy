@@ -1,12 +1,12 @@
 import { rm } from "node:fs/promises";
 import { join } from "node:path";
-import { createRequest, sendResponse } from "@remix-run/node-fetch-server";
 import {
 	createBuildPlugin,
 	createHandlerPlugin,
 	createPrerenderPlugin,
 	VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
+import { NodeRequest, sendNodeResponse } from "srvx/node";
 import type { Plugin } from "vite";
 import packageJson from "../package.json" with { type: "json" };
 import type { ExportedHandler, Options } from "./types.js";
@@ -116,9 +116,9 @@ export function node({
 					if ("handler" in mod.default) {
 						mod.default.handler(req, res);
 					} else {
-						request = createRequest(req, res);
+						request = new NodeRequest({ req, res });
 						const response = await mod.default.fetch(request);
-						await sendResponse(res, response);
+						await sendNodeResponse(res, response);
 					}
 					return { type: "success" };
 				} catch (error) {
