@@ -2,6 +2,11 @@ packages:
   - docs
   - examples/*
   - packages/*
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  sharp: false
+  workerd: false
 linkWorkspacePackages: true
 preferWorkspacePackages: true
 # This prevents the examples to have the `workspace:` prefix
