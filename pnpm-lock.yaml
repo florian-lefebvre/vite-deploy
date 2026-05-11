@@ -172,7 +172,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       vite:
         specifier: ^8.0.10
@@ -188,7 +188,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       vite:
         specifier: ^8.0.10
@@ -200,7 +200,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       vite:
         specifier: ^8.0.10
@@ -212,7 +212,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       vite:
         specifier: ^8.0.10
@@ -224,7 +224,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       vite:
         specifier: ^8.0.10
@@ -267,7 +267,7 @@ importers:
         specifier: ^19.0.3
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/netlify':
-        specifier: ^0.0.3
+        specifier: ^0.1.0
         version: link:../../packages/netlify
       '@vitejs/plugin-react':
         specifier: ^6.0.1
@@ -295,7 +295,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -317,7 +317,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -333,7 +333,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -355,7 +355,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -374,7 +374,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -393,7 +393,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -405,7 +405,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       vite:
         specifier: ^8.0.10
@@ -454,7 +454,7 @@ importers:
         specifier: ^19.0.3
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/node':
-        specifier: ^0.0.3
+        specifier: ^0.0.4
         version: link:../../packages/node
       '@vitejs/plugin-react':
         specifier: ^6.0.1
@@ -485,7 +485,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       vite:
         specifier: ^8.0.10
@@ -501,7 +501,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       vite:
         specifier: ^8.0.10
@@ -513,7 +513,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       vite:
         specifier: ^8.0.10
@@ -525,7 +525,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       vite:
         specifier: ^8.0.10
@@ -537,7 +537,7 @@ importers:
         specifier: 7.0.0-dev.20260428.1
         version: 7.0.0-dev.20260428.1
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       vite:
         specifier: ^8.0.10
@@ -580,7 +580,7 @@ importers:
         specifier: ^19.0.3
         version: 19.2.3(@types/react@19.2.14)
       '@vite-deploy/vercel':
-        specifier: ^0.0.4
+        specifier: ^0.0.5
         version: link:../../packages/vercel
       '@vitejs/plugin-react':
         specifier: ^6.0.1

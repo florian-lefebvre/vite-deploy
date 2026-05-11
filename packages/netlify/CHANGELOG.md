@@ -1,5 +1,20 @@
 # @vite-deploy/netlify
 
+## 0.1.0
+
+### Minor Changes
+
+- [#28](https://github.com/web-runes/vite-deploy/pull/28) [`6557834`](https://github.com/web-runes/vite-deploy/commit/65578347653450bc1bed6f59200e1d0d7187bf71) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Implements remaining context properties
+
+  Until now, accessing `cookies`, `next`, `params` or `rewrite` on the `context` would throw with error `Not implemented`. Now:
+
+  - `cookies` and `params` are implemented
+  - `next` and `rewrite` throw a more helpful error
+
+### Patch Changes
+
+- [#30](https://github.com/web-runes/vite-deploy/pull/30) [`fabc858`](https://github.com/web-runes/vite-deploy/commit/fabc85802e8db7a2e05185f37f71743fe46b4f68) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Updates how requests and responses are converted internally
+
 ## 0.0.3
 
 ### Patch Changes

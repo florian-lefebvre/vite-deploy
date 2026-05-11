@@ -1,5 +1,11 @@
 # @vite-deploy/vercel
 
+## 0.0.5
+
+### Patch Changes
+
+- [#30](https://github.com/web-runes/vite-deploy/pull/30) [`fabc858`](https://github.com/web-runes/vite-deploy/commit/fabc85802e8db7a2e05185f37f71743fe46b4f68) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Updates how requests and responses are converted internally
+
 ## 0.0.4
 
 ### Patch Changes
