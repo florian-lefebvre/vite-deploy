@@ -8,6 +8,7 @@ import {
 	createPrerenderPlugin,
 	VITE_ENVIRONMENT_NAMES,
 } from "@vite-deploy/internal-helpers";
+import { parseCookie, parseSetCookie, serializeCookie } from "cookie-es";
 import type { Plugin } from "vite";
 import packageJson from "../package.json" with { type: "json" };
 import type { ExportedHandler, Options } from "./types.js";
@@ -142,7 +143,6 @@ export function netlify({
 				try {
 					request = createRequest(req, res);
 
-					// TODO: implement missing
 					const response = await mod.default.fetch(request, {
 						get url() {
 							// biome-ignore lint/style/noNonNullAssertion: request is defined at this stage
@@ -185,19 +185,74 @@ export function netlify({
 							typeof req.headers["x-nf-request-id"] === "string"
 								? req.headers["x-nf-request-id"]
 								: "mock-netlify-request-id",
-						get cookies(): never {
-							throw new Error("Not implemented.");
+						cookies: {
+							get: (key) => parseCookie(req.headers.cookie ?? "")[key] ?? "",
+							// @ts-expect-error types are weird
+							set: (...args) => {
+								const cookie =
+									typeof args[0] === "string"
+										? {
+												name: args[0],
+												value: args[1] as string,
+											}
+										: args[0];
+								req.headers["set-cookie"] ??= [];
+								let index = 0;
+								for (let i = 0; i < req.headers["set-cookie"].length; i++) {
+									const raw = req.headers["set-cookie"][i];
+									const parsed = parseSetCookie(raw);
+									if (parsed?.name === cookie.name) {
+										index = i;
+										break;
+									}
+								}
+								req.headers["set-cookie"][index] = [
+									serializeCookie({
+										name: cookie.name,
+										value: cookie.value,
+										domain: cookie.domain,
+										expires:
+											typeof cookie.expires === "number"
+												? new Date(cookie.expires)
+												: cookie.expires,
+										httpOnly: cookie.httpOnly,
+										maxAge: cookie.maxAge,
+										path: cookie.path,
+										sameSite: cookie.sameSite?.toLowerCase() as any,
+									}),
+									...(cookie.unparsed ?? []),
+								].join("; ");
+							},
+							delete: (input) => {
+								const options =
+									typeof input === "string" ? { name: input } : input;
+
+								req.headers["set-cookie"] ??= [];
+								req.headers["set-cookie"].push(
+									serializeCookie({
+										name: options.name,
+										value: "deleted",
+										domain: options.domain,
+										path: options.path,
+										expires: new Date(0),
+									}),
+								);
+							},
 						},
 						json: (input) => Response.json(input),
 						log: console.info,
 						next() {
-							throw new Error("Not implemented.");
+							throw new Error("`context.next` is not implemented");
 						},
-						get params(): never {
-							throw new Error("Not implemented.");
-						},
+						// https://docs.netlify.com/build/functions/api/#params
+						// We do not use named parameters so it's safe to default to
+						// an empty object
+						params: {},
+						// https://answers.netlify.com/t/new-syntax-for-rewrites-in-edge-functions/88257
 						rewrite() {
-							throw new Error("Not implemented.");
+							throw new Error(
+								"`context.rewrite` is deprecated by Netlify, and not implemented.",
+							);
 						},
 					});
 					await sendResponse(res, response);
