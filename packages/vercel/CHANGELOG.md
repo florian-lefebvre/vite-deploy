@@ -1,5 +1,11 @@
 # @vite-deploy/vercel
 
+## 0.1.0
+
+### Minor Changes
+
+- [#31](https://github.com/web-runes/vite-deploy/pull/31) [`0ec2d47`](https://github.com/web-runes/vite-deploy/commit/0ec2d47b713720bcc42194cff75686f1b40082b2) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - Adds Vercel specific mock headers
+
 ## 0.0.5
 
 ### Patch Changes
