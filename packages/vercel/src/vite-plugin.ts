@@ -76,6 +76,17 @@ function configPlugin(
 	};
 }
 
+function setHeaders(
+	headers: Headers,
+	obj: Record<string, string | (() => string)>,
+) {
+	for (const [key, value] of Object.entries(obj)) {
+		if (!headers.has(key)) {
+			headers.set(key, typeof value === "string" ? value : value());
+		}
+	}
+}
+
 export function vercel({
 	handlerEntrypoint,
 	requestLoggingLevel,
@@ -96,8 +107,22 @@ export function vercel({
 				let request: Request | undefined;
 
 				try {
-					// TODO: https://vercel.com/docs/headers/request-headers?framework=other
 					request = new NodeRequest({ req, res });
+					// https://vercel.com/docs/headers/request-headers?framework=other
+					setHeaders(request.headers, {
+						"x-vercel-id": "local-dev",
+						// biome-ignore lint/style/noNonNullAssertion: defined by now
+						"x-vercel-deployment-url": () => new URL(req.url!).host,
+						"x-vercel-ip-continent": "mock",
+						"x-vercel-ip-country": "mock",
+						"x-vercel-ip-country-region": "Mock Country",
+						"x-vercel-ip-city": "Mock City",
+						"x-vercel-ip-latitude": "0",
+						"x-vercel-ip-longitude": "0",
+						"x-vercel-ip-timezone": "UTC",
+						"x-vercel-ip-postal-code": "mock",
+					});
+
 					const response = await mod.default.fetch(request);
 					await sendNodeResponse(res, response);
 					return { type: "success" };
