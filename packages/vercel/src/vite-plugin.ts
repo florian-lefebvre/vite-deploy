@@ -112,7 +112,7 @@ export function vercel({
 					setHeaders(request.headers, {
 						"x-vercel-id": "local-dev",
 						// biome-ignore lint/style/noNonNullAssertion: defined by now
-						"x-vercel-deployment-url": () => new URL(req.url!).host,
+						"x-vercel-deployment-url": () => new URL(request!.url).host,
 						"x-vercel-ip-continent": "mock",
 						"x-vercel-ip-country": "mock",
 						"x-vercel-ip-country-region": "Mock Country",
