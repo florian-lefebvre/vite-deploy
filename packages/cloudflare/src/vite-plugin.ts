@@ -20,23 +20,50 @@ export function cloudflare({ config, ...userOptions }: Options): Array<Plugin> {
 		createPrerenderPlugin({
 			userOptions,
 			// May be handled ootb by https://github.com/cloudflare/workers-sdk/pull/12788
-			onBuildDone: async ({ output, serverEnvironment }) => {
-				if (output !== "static") return;
+			onBuildDone: async ({ output, serverEnvironment, clientEnvironment }) => {
+				if (output === "static") {
+					// Clear server bundle but keep the wrangler config. Needs removing the main field
+					// to indicate as an assets-only worker
+					const serverOutDir = join(
+						serverEnvironment.config.root,
+						serverEnvironment.config.build.outDir,
+					);
+					const wranglerPath = join(serverOutDir, "wrangler.json");
+					const wranglerConfig = JSON.parse(
+						await readFile(wranglerPath, "utf-8"),
+					);
+					wranglerConfig.main = undefined;
+					await rm(serverOutDir, { force: true, recursive: true });
+					await mkdir(serverOutDir, { recursive: true });
+					await writeFile(
+						wranglerPath,
+						JSON.stringify(wranglerConfig),
+						"utf-8",
+					);
+					return;
+				}
 
-				// Clear server bundle but keep the wrangler config. Needs removing the main field
-				// to indicate as an assets-only worker
-				const serverOutDir = join(
-					serverEnvironment.config.root,
-					serverEnvironment.config.build.outDir,
+				// Inject headers
+				const headersPath = join(
+					clientEnvironment.config.root,
+					clientEnvironment.config.build.outDir,
+					"_headers",
 				);
-				const wranglerPath = join(serverOutDir, "wrangler.json");
-				const wranglerConfig = JSON.parse(
-					await readFile(wranglerPath, "utf-8"),
-				);
-				wranglerConfig.main = undefined;
-				await rm(serverOutDir, { force: true, recursive: true });
-				await mkdir(serverOutDir, { recursive: true });
-				await writeFile(wranglerPath, JSON.stringify(wranglerConfig), "utf-8");
+				const rule = `/${serverEnvironment.config.build.assetsDir}/*`;
+				let headers = "";
+				try {
+					headers = await readFile(headersPath, "utf-8");
+				} catch {
+					// Doesn't exist yet
+				}
+				if (headers.includes(rule)) {
+					clientEnvironment.logger.warn(
+						`Rule for ${rule} already defined in _headers. Skipping static assets cache rule.`,
+					);
+					return;
+				}
+				headers += `\n${rule}\n  Cache-Control: public, max-age=31536000, immutable\n`;
+				await writeFile(headersPath, headers.trim(), "utf-8");
 			},
 		}),
 		{

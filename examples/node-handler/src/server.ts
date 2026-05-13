@@ -4,13 +4,15 @@ import sirv from "sirv";
 import mod from "./handler";
 
 const server = http.createServer((req, res) =>
-	sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-		req,
-		res,
-		() => {
-			mod.handler(req, res);
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
 		},
-	),
+	})(req, res, () => {
+		mod.handler(req, res);
+	}),
 );
 
 server.listen(3000, () => {

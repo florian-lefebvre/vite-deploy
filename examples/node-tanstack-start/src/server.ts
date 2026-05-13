@@ -5,14 +5,16 @@ import sirv from "sirv";
 import { toNodeHandler } from "srvx/node";
 
 const server = http.createServer((req, res) =>
-	sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-		req,
-		res,
-		() => {
-			// @ts-expect-error
-			toNodeHandler(mod.fetch)(req, res);
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
 		},
-	),
+	})(req, res, () => {
+		// @ts-expect-error
+		toNodeHandler(mod.fetch)(req, res);
+	}),
 );
 
 server.listen(3000, () => {

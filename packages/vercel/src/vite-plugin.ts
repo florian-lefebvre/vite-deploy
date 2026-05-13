@@ -162,6 +162,13 @@ export function vercel({
 								handle: "filesystem",
 							},
 							{
+								src: `^/${serverEnvironment.config.build.assetsDir}/(.*)$`,
+								headers: {
+									"Cache-Control": "public, max-age=31536000, immutable",
+								},
+								continue: true,
+							},
+							{
 								src: "/.*",
 								dest: "__server",
 							},

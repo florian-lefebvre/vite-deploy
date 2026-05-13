@@ -24,26 +24,28 @@ export default defineConfig({
 
 If you want to use Tanstack Start with a Node handler, you will need to convert the `fetch` handler to a Node handler. We recommend [`srvx`](https://srvx.h3.dev/):
 
-```ts title="src/server.ts" {1-2,13}
-import mod from "@tanstack/react-start/server-entry";
-import { toNodeHandler } from "srvx/node";
+```ts title="src/server.ts" {3,5,16}
 import * as http from "node:http";
-import sirv from "sirv";
 import { fileURLToPath } from "node:url";
+import mod from "@tanstack/react-start/server-entry";
+import sirv from "sirv";
+import { toNodeHandler } from "srvx/node";
 
 const server = http.createServer((req, res) =>
-  sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-    req,
-    res,
-    () => {
-      // @ts-expect-error
-      toNodeHandler(mod.fetch)(req, res);
-    },
-  ),
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
+		},
+	})(req, res, () => {
+		// @ts-expect-error
+		toNodeHandler(mod.fetch)(req, res);
+	}),
 );
 
 server.listen(3000, () => {
-  console.log("Ready at http://localhost:3000");
+	console.log("Ready at http://localhost:3000");
 });
 ```
 

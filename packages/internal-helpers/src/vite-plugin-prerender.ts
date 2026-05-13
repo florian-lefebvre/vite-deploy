@@ -36,6 +36,7 @@ interface Options {
 	onBuildDone?: (params: {
 		output: PrerenderOptions["output"];
 		serverEnvironment: BuildEnvironment;
+		clientEnvironment: BuildEnvironment;
 	}) => void | Promise<void>;
 }
 
@@ -168,6 +169,7 @@ export function createPrerenderPlugin({
 					await onBuildDone?.({
 						output: "server",
 						serverEnvironment,
+						clientEnvironment,
 					});
 					return;
 				}
@@ -263,6 +265,7 @@ export function createPrerenderPlugin({
 					await onBuildDone?.({
 						output: "static",
 						serverEnvironment,
+						clientEnvironment,
 					});
 					return;
 				}
@@ -294,6 +297,7 @@ export function createPrerenderPlugin({
 				await onBuildDone?.({
 					output: "hybrid",
 					serverEnvironment,
+					clientEnvironment,
 				});
 			},
 		},

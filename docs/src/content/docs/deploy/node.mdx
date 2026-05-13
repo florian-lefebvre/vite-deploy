@@ -6,28 +6,28 @@ The [Node adapter](/adapters/node/) allows you to deploy your Vite project to ma
 
 ## Simple HTTP server
 
-You need to handle serving static, for example using [`sirv`](https://github.com/lukeed/sirv/tree/main/packages/sirv):
+You need to handle serving static, for example using [`sirv`](https://npmx.dev/package/sirv):
 
 ```ts title="src/server.ts"
-import mod from "./handler";
-import { toNodeHandler } from "srvx/node";
 import * as http from "node:http";
-import sirv from "sirv";
 import { fileURLToPath } from "node:url";
+import sirv from "sirv";
+import mod from "./handler";
 
 const server = http.createServer((req, res) =>
-  sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-    req,
-    res,
-    () => {
-      // @ts-expect-error
-      toNodeHandler(mod.fetch)(req, res);
-    },
-  ),
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
+		},
+	})(req, res, () => {
+		mod.handler(req, res);
+	}),
 );
 
 server.listen(3000, () => {
-  console.log("Ready at http://localhost:3000");
+	console.log("Ready at http://localhost:3000");
 });
 ```
 
@@ -56,14 +56,16 @@ if (cluster.isPrimary) {
   });
 } else {
   const server = http.createServer((req, res) =>
-    sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-      req,
-      res,
-      () => {
-        // @ts-expect-error
-        toNodeHandler(mod.fetch)(req, res);
-      },
-    ),
+  	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+  		setHeaders: (res, pathname) => {
+  			if (pathname.startsWith("/assets/")) {
+  				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  			}
+  		},
+  	})(req, res, () => {
+  		// @ts-expect-error
+  		toNodeHandler(mod.fetch)(req, res);
+  	}),
   );
 
   server.listen(3000, () => {

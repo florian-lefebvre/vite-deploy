@@ -21,7 +21,13 @@ import { Steps } from "@astrojs/starlight/components"
     const server = Deno.serve({
         port: 3000,
         handler(request) {
-            const response = toFetchHandler(sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true }))(request);
+            const response = toFetchHandler(sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+                setHeaders: (res, pathname) => {
+                    if (pathname.startsWith("/assets/")) {
+                        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+                    }
+                },
+            }))(request);
             if (response.status !== 404) {
                 return response;
             }

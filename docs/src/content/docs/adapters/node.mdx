@@ -234,23 +234,25 @@ export default defineConfig({
 The module can contain anything. You need to implement what you'll need for your production server needs, including serving static assets. For example using a simple Node server:
 
 ```ts title="src/server.ts"
-import mod from "./handler";
 import * as http from "node:http";
-import sirv from "sirv";
 import { fileURLToPath } from "node:url";
+import sirv from "sirv";
+import mod from "./handler";
 
 const server = http.createServer((req, res) =>
-  sirv(fileURLToPath(new URL("../client/", import.meta.url)), { dev: true })(
-    req,
-    res,
-    () => {
-      mod.handler(req, res);
-    },
-  ),
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
+		},
+	})(req, res, () => {
+		mod.handler(req, res);
+	}),
 );
 
 server.listen(3000, () => {
-  console.log("Ready at http://localhost:3000");
+	console.log("Ready at http://localhost:3000");
 });
 ```
 
@@ -274,5 +276,53 @@ export default defineConfig({
     // ...
     requestLoggingLevel: "silent"
   })]
+});
+```
+
+## Static assets
+
+The adapter does not handle static assets automatically when specifying the [`serverEntrypoint`](#serverentrypoint). You can for example serve them using [`sirv`](https://npmx.dev/package/sirv):
+
+```ts title="src/server.ts" {3,7}
+import * as http from "node:http";
+import { fileURLToPath } from "node:url";
+import sirv from "sirv";
+import mod from "./handler";
+
+const server = http.createServer((req, res) =>
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)))(req, res, () => {
+		mod.handler(req, res);
+	}),
+);
+
+server.listen(3000, () => {
+	console.log("Ready at http://localhost:3000");
+});
+```
+
+### Caching
+
+Do not cache all static assets aggressively. We recommend you only cache the ones under [`build.assetsDir`](https://vite.dev/config/build-options#build-assetsdir) (defaults to `assets`). For example, using [`sirv`](https://npmx.dev/package/sirv):
+
+```ts title="src/server.ts" {8-12}
+import * as http from "node:http";
+import { fileURLToPath } from "node:url";
+import sirv from "sirv";
+import mod from "./handler";
+
+const server = http.createServer((req, res) =>
+	sirv(fileURLToPath(new URL("../client/", import.meta.url)), {
+		setHeaders: (res, pathname) => {
+			if (pathname.startsWith("/assets/")) {
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			}
+		},
+	})(req, res, () => {
+		mod.handler(req, res);
+	}),
+);
+
+server.listen(3000, () => {
+	console.log("Ready at http://localhost:3000");
 });
 ```

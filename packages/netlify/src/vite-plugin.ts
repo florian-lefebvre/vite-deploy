@@ -1,4 +1,4 @@
-import { rm } from "node:fs/promises";
+import { rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import netlifyPlugin from "@netlify/vite-plugin";
 import {
@@ -268,18 +268,33 @@ export function netlify({
 		createPrerenderPlugin({
 			userOptions,
 			onBuildDone: async ({ output, serverEnvironment }) => {
-				if (output !== "static") return;
+				const serverOutDir = join(
+					serverEnvironment.config.root,
+					serverEnvironment.config.build.outDir,
+				);
 
-				// Clear server bundle
-				await rm(
-					join(
-						serverEnvironment.config.root,
-						serverEnvironment.config.build.outDir,
-					),
-					{
+				if (output === "static") {
+					// Clear server bundle
+					await rm(serverOutDir, {
 						force: true,
 						recursive: true,
-					},
+					});
+					return;
+				}
+
+				await writeFile(
+					join(serverOutDir, "../config.json"),
+					JSON.stringify({
+						headers: [
+							{
+								for: `/${serverEnvironment.config.build.assetsDir}/*`,
+								values: {
+									"Cache-Control": "public, max-age=31536000, immutable",
+								},
+							},
+						],
+					}),
+					"utf-8",
 				);
 			},
 		}),
