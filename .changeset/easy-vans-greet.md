@@ -4,4 +4,4 @@
 "@vite-deploy/vercel": minor
 ---
 
-Adds automatic static assets caching stored under `build.assetsDir`
+Adds automatic caching for static assets stored under `build.assetsDir`
