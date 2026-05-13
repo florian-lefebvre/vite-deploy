@@ -1,5 +1,17 @@
 # @vite-deploy/internal-helpers
 
+## 0.2.0
+
+### Minor Changes
+
+- [#33](https://github.com/web-runes/vite-deploy/pull/33) [`cd7c21a`](https://github.com/web-runes/vite-deploy/commit/cd7c21a3b3e5c9c4723bfdf88c880122b95beaa8) Thanks [@florian-lefebvre](https://github.com/florian-lefebvre)! - `onBuildDone()` on `createPrerenderPlugin` now accepts a client environment:
+
+  ```js
+  createPrerenderPlugin({
+    onBuildDone({ clientEnvironment }) {},
+  });
+  ```
+
 ## 0.1.1
 
 ### Patch Changes
