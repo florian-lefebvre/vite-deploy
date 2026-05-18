@@ -10,13 +10,13 @@
 		"start": "node dist/server/index.mjs"
 	},
 	"dependencies": {
-		"hono": "^4.12.15",
+		"hono": "^4.12.19",
 		"sirv": "^3.0.2",
 		"srvx": "^0.11.15"
 	},
 	"devDependencies": {
-		"@typescript/native-preview": "7.0.0-dev.20260428.1",
+		"@typescript/native-preview": "7.0.0-dev.20260517.1",
 		"@vite-deploy/node": "^0.0.5",
-		"vite": "^8.0.10"
+		"vite": "^8.0.13"
 	}
 }
