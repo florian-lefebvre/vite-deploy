@@ -19,5 +19,6 @@
 			"matchDepTypes": ["engines"],
 			"enabled": false
 		}
-	]
+	],
+	"ignorePaths": ["**/node_modules/**", "**/bower_components/**"]
 }
